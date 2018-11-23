@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<head>
+    <script src="//d3js.org/d3.v5.min.js"></script>
+</head>
+<body>
+<script type="module">
+    import * as bub from './bubbles.mjs'
+
+    const data1 = [[10, 3, 5, 10], [15, 2, 9, 15], [12, 8, 8, 12], [12.1, 2, 6, 12.1]];
+    const data2 = [[12.1, 5, 5, 12.1], [12, 7, 9, 12], [15, 8, 8, 15], [10, 2, 6, 10]];
+
+    document.addEventListener("DOMContentLoaded", function () {
+        let bubbles = bub.create(d3, "#chart");
+        d3.select("#applyData1").on("click", () =>bubbles.apply(data1));
+        d3.select("#applyData2").on("click", () =>bubbles.apply(data2));
+    });
+</script>
+<button id="applyData1">Example 1</button>
+<button id="applyData2">Example 2</button>
+<div id="chart" style="height: 400px; width: 1200px"></div>
+</body>
+</html>
