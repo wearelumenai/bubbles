@@ -1,6 +1,6 @@
-"use strict";
+'use strict'
 
 import Vue from 'vue'
 import App from './App.vue'
 
-new Vue(App);
+new Vue(App)
