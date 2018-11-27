@@ -1,5 +1,5 @@
 const d3 = require('d3');
-const bub = require('esm')(module)('./bubbles.mjs');
+const bub = require('esm')(module)('./Bubbles.mjs');
 
 const data = [[10,3,5,20], [15, 2, 9, 15], [12, 8, 8, 10]];
 

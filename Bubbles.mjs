@@ -1,6 +1,6 @@
 "use strict";
 
-import * as container from "./container.mjs";
+import * as container from "./Container.mjs";
 
 class Bubbles {
     constructor(d3, containerSelector) {
