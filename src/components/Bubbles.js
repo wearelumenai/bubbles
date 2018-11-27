@@ -1,11 +1,11 @@
 "use strict";
 
-import * as container from "./Container.mjs";
+import * as d3 from "d3"
+import * as container from "./Container.js";
 
 class Bubbles {
-    constructor(d3, containerSelector) {
-        this.d3 = d3;
-        this.container = container.create(d3, containerSelector);
+    constructor(containerSelector) {
+        this.container = container.create(containerSelector);
         this._doApply = this._applyFirst;
     }
 
@@ -23,10 +23,10 @@ class Bubbles {
         this.nodes = this.container.getNodes(projection);
         this._doApply();
     }
-    
+
     _optimizeLayout() {
-        let collisionForce = this.d3.forceCollide(n => n.radius);
-        this._collideSimulation = this.d3.forceSimulation()
+        let collisionForce = d3.forceCollide(n => n.radius);
+        this._collideSimulation = d3.forceSimulation()
             .nodes(this.nodes)
             .force('collide', collisionForce)
             .on('tick', () => this._drawNodes());
@@ -70,7 +70,7 @@ class Bubbles {
     _moveCircles() {
         let clusterNodes = this._clusters.data(this.nodes);
         clusterNodes.exit().remove();
-        let clusterTransitions = this._getTransition(clusterNodes);
+        let clusterTransitions = Bubbles._makeTransition(clusterNodes);
         this._updateClusterNodes(clusterTransitions);
         return clusterTransitions;
     }
@@ -78,13 +78,13 @@ class Bubbles {
     _moveLabels() {
         let labelNodes = this._labels.data(this.nodes);
         labelNodes.exit().remove();
-        let labelTransition = this._getTransition(labelNodes);
+        let labelTransition = Bubbles._makeTransition(labelNodes);
         Bubbles._updateLabelNodes(labelTransition);
         return labelTransition;
     }
 
-    _getTransition(nodes) {
-        return nodes.transition().ease(this.d3.easeLinear).duration(800);
+    static _makeTransition(clusters) {
+        return clusters.transition().ease(d3.easeLinear).duration(800);
     }
 
     _onLayoutMoved(clusterTransition, labelTransition, callback) {
@@ -115,6 +115,6 @@ class Bubbles {
 }
 
 
-export function create(d3, data, container) {
-    return new Bubbles(d3, data, container)
+export function create(container) {
+    return new Bubbles(container)
 }

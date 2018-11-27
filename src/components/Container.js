@@ -1,9 +1,10 @@
 "use strict";
 
+import * as d3 from "d3"
+
 class RangeHelper {
 
-    constructor(d3, boundingRect) {
-        this.d3 = d3;
+    constructor(boundingRect) {
         this.boundingRect = boundingRect;
     }
 
@@ -17,42 +18,42 @@ class RangeHelper {
 
     _getRadiusRange(area) {
         let ratio = this._getAreaRatio(area);
-        let domain = this._getDomainRange(area);
+        let domain = RangeHelper._getDomainRange(area);
         let minRadius = Math.sqrt(domain[0] * ratio);
         let maxRadius = Math.sqrt(domain[1] * ratio);
-        let range = this.d3.scalePow().exponent(.5).domain(domain).range([minRadius, maxRadius]);
+        let range = d3.scalePow().exponent(.5).domain(domain).range([minRadius, maxRadius]);
         return (i) => range(area[i]);
     }
 
     _getXRange(x, radiusRange) {
         let {mostLeftRadius, mostRightRadius} = RangeHelper._getSideRadius(x, radiusRange);
-        let domain = this._getDomainRange(x);
-        let range = this.d3.scaleLinear().domain(domain).range([mostLeftRadius, this.boundingRect.width - mostRightRadius]);
+        let domain = RangeHelper._getDomainRange(x);
+        let range = d3.scaleLinear().domain(domain).range([mostLeftRadius, this.boundingRect.width - mostRightRadius]);
         return (i) => range(x[i]);
     }
 
     _getYRange(y, radiusRange) {
         let {mostLeftRadius, mostRightRadius} = RangeHelper._getSideRadius(y, radiusRange);
-        let domain = this._getDomainRange(y);
-        let range = this.d3.scaleLinear().domain(domain).range([mostLeftRadius, this.boundingRect.height - mostRightRadius]);
+        let domain = RangeHelper._getDomainRange(y);
+        let range = d3.scaleLinear().domain(domain).range([mostLeftRadius, this.boundingRect.height - mostRightRadius]);
         return (i) => range(y[i]);
     }
 
     _getColorRange(color) {
-        let domain = this._getDomainRange(color);
-        let range = this.d3.scaleLinear().domain(domain).range(['orange', 'red']);
+        let domain = RangeHelper._getDomainRange(color);
+        let range = d3.scaleLinear().domain(domain).range(['orange', 'red']);
         return (i) => range(color[i]);
     }
 
-    _getDomainRange(domainValues) {
-        let minValue = this.d3.min(domainValues);
-        let maxValue = this.d3.max(domainValues);
+    static _getDomainRange(domainValues) {
+        let minValue = d3.min(domainValues);
+        let maxValue = d3.max(domainValues);
         return [minValue, maxValue];
     }
 
     _getAreaRatio(area) {
         let boundingRectArea = this.boundingRect.width * this.boundingRect.height;
-        let totalArea = this.d3.sum(area) * Math.PI;
+        let totalArea = d3.sum(area) * Math.PI;
         return .3 * boundingRectArea / totalArea;
     }
 
@@ -91,16 +92,15 @@ class NodeBuilder {
 }
 
 class Container {
-    constructor(d3, containerSelector) {
-        this.d3 = d3;
+    constructor(containerSelector) {
         this.containerSelector = containerSelector;
         this.container = this._getContainer();
         this.boundingClientRect = this.container.node().getBoundingClientRect();
-        this.rangeHelper = new RangeHelper(this.d3, this.boundingClientRect);
+        this.rangeHelper = new RangeHelper(this.boundingClientRect);
     }
 
     _getContainer() {
-        let container = this.d3.select(this.containerSelector);
+        let container = d3.select(this.containerSelector);
         return container.append("svg").style("width", "100%").style("height", "100%");
     }
 
@@ -134,6 +134,6 @@ export function argMinMax(values) {
     return {argmin: minmax[0], argmax: minmax[1]}
 }
 
-export function create(d3, containerSelector) {
-    return new Container(d3, containerSelector)
+export function create(containerSelector) {
+    return new Container(containerSelector)
 }

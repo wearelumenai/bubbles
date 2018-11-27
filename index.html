@@ -2,20 +2,10 @@
 <meta charset="utf-8">
 <html>
 <head>
-    <script src="https://unpkg.com/d3"></script>
-    <script src="https://unpkg.com/vue"></script>
-    <script src="https://unpkg.com/vuex"></script>
+    <title>Distance based clustering visualization</title>
 </head>
 <body>
-<div id="app">
-    <bubbles></bubbles>
-    <selector></selector>
-</div>
-<script type="module">
-    import App from './App.mjs'
-    Vue.use(Vuex);
-    const store = new Vuex.Store(App.Store);
-    new Vue(App.Root(store, d3));
-</script>
+<div id="app"></div>
+<script src="dist/main.js" type="text/javascript"></script>
 </body>
 </html>
