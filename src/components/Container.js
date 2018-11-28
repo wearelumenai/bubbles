@@ -34,7 +34,7 @@ class RangeHelper {
   _getYRange (y, radiusRange) {
     let {mostLeftRadius, mostRightRadius} = RangeHelper._getSideRadius(y, radiusRange)
     let domain = RangeHelper._getDomainRange(y)
-    let range = d3.scaleLinear().domain(domain).range([mostLeftRadius, this.boundingRect.height - mostRightRadius])
+    let range = d3.scaleLinear().domain(domain).range([this.boundingRect.height - mostRightRadius, mostLeftRadius])
     return (i) => range(y[i])
   }
 
