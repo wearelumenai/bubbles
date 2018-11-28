@@ -10,6 +10,7 @@ class Bubbles {
   }
 
   _applyFirst () {
+    this._drawNodes()
     this._optimizeLayout()
     this._doApply = this._applyOthers
   }
@@ -25,7 +26,7 @@ class Bubbles {
   }
 
   _optimizeLayout () {
-    let collisionForce = d3.forceCollide(n => n.radius)
+    let collisionForce = d3.forceCollide(n => n.radius).strength(0.2)
     this._collideSimulation = d3.forceSimulation()
       .nodes(this.nodes)
       .force('collide', collisionForce)
@@ -40,31 +41,31 @@ class Bubbles {
   _drawCircles () {
     this._clusters = this.container.selectAll('.cluster')
     let clusterNodes = this._clusters.data(this.nodes)
-    clusterNodes.enter()
+    let newClusterNodes = clusterNodes.enter()
       .append('circle')
       .attr('class', 'cluster')
       .attr('data-label', n => n.label)
       .attr('r', n => n.radius)
-    this._updateClusterNodes(clusterNodes)
+    this._updateClusterNodes(newClusterNodes.merge(clusterNodes))
   }
 
   _displayLabels () {
     this._labels = this.container.selectAll('.label')
     let labelNodes = this._labels.data(this.nodes)
-    labelNodes.enter()
+    let newLabelNodes = labelNodes.enter()
       .append('text')
       .attr('class', 'label')
       .attr('text-anchor', 'middle')
       .attr('alignment-baseline', 'central')
       .text(i => i.label)
-    Bubbles._updateLabelNodes(labelNodes)
+    Bubbles._updateLabelNodes(newLabelNodes.merge(labelNodes))
   }
 
   _moveLayout () {
     let clusterTransition = this._moveCircles()
     let labelTransition = this._moveLabels()
     let then = (callback) => this._onLayoutMoved(clusterTransition, labelTransition, callback)
-    return {then}
+    return { then }
   }
 
   _moveCircles () {
