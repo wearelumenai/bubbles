@@ -1,15 +1,47 @@
 <template>
-    <div>
-        <q-btn @click="example1" label="Exemple 1" color="primary" class="q-ma-md"></q-btn>
-        <span class="label" :class="{chosen: choice[0]}" style="padding: 3px">
-          x = premium ; y = montant ski; couleur = premium
-        </span>
-        <br>
-        <q-btn @click="example2" label="Exemple 2" color="primary" class="q-ma-md"></q-btn>
-        <span class="label" :class="{chosen: choice[1]}" style="padding: 3px">
-          x = nb location voitures ; y = nb produits assurance; couleur = nb location voitures
-        </span>
+  <div class="table">
+    <div class="row header">
+      <div class="label cell">
+      </div>
+      <div class="label cell">
+        X
+      </div>
+      <div class="label cell">
+        Y
+      </div>
+      <div class="label cell">
+        Couleur
+      </div>
     </div>
+    <div class="row" :class="{chosen: choice[0]}">
+      <div class="cell">
+        <q-btn @click="example1" label="Exemple 1" color="primary"></q-btn>
+      </div>
+      <div class="label cell">
+        nb premium
+      </div>
+      <div class="label cell">
+        montant ski
+      </div>
+      <div class="label cell">
+        nb premium
+      </div>
+    </div>
+    <div class="row" :class="{chosen: choice[1]}">
+      <div class="label cell">
+        <q-btn @click="example2" label="Exemple 2" color="primary"></q-btn>
+      </div>
+      <div class="label cell">
+        nb location voitures
+      </div>
+      <div class="label cell">
+        nb produits assurance
+      </div>
+      <div class="label cell">
+        nb location voitures
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -53,7 +85,21 @@ export default {
 </script>
 
 <style>
-.chosen {
-  text-decoration: underline
+.table {
+  display: table;
+}
+.row {
+  display: table-row;
+}
+.cell {
+  display: table-cell;
+  padding: 5px;
+  border-right: 1pt solid black;
+}
+.row.header {
+  font-weight: 700;
+}
+.row.chosen {
+background-color: aliceblue;
 }
 </style>
