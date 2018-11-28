@@ -42,8 +42,8 @@ class Bubbles {
 
   _getPositionForces () {
     let initialPosition = this.nodes.map(n => [n.x, n.y])
-    let xForce = d3.forceX((d, i) => initialPosition[i][0]).strength(0.1)
-    let yForce = d3.forceY((d, i) => initialPosition[i][1]).strength(0.1)
+    let xForce = d3.forceX((_, i) => initialPosition[i][0]).strength(0.1)
+    let yForce = d3.forceY((_, i) => initialPosition[i][1]).strength(0.1)
     return { xForce, yForce }
   }
 
