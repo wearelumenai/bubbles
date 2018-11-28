@@ -26,11 +26,25 @@ class Bubbles {
   }
 
   _optimizeLayout () {
-    let collisionForce = d3.forceCollide(n => n.radius).strength(0.2)
+    let collisionForce = this._getCollisionForce()
+    let { xForce, yForce } = this._getPositionForces()
     this._collideSimulation = d3.forceSimulation()
       .nodes(this.nodes)
       .force('collide', collisionForce)
+      .force('x', xForce)
+      .force('y', yForce)
       .on('tick', () => this._drawNodes())
+  }
+
+  _getCollisionForce () {
+    return d3.forceCollide(n => n.radius).strength(0.4)
+  }
+
+  _getPositionForces () {
+    let initialPosition = this.nodes.map(n => [n.x, n.y])
+    let xForce = d3.forceX((d, i) => initialPosition[i][0]).strength(0.1)
+    let yForce = d3.forceY((d, i) => initialPosition[i][1]).strength(0.1)
+    return { xForce, yForce }
   }
 
   _drawNodes () {
