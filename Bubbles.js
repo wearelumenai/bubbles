@@ -37,7 +37,7 @@ class Bubbles {
   }
 
   _getCollisionForce () {
-    return d3.forceCollide(n => n.radius).strength(0.4)
+    return d3.forceCollide(n => n.radius * 0.8).strength(0.4)
   }
 
   _getPositionForces () {

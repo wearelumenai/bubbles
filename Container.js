@@ -12,29 +12,29 @@ class RangeHelper {
     let xRange = this._getXRange(x, radiusRange)
     let yRange = this._getYRange(y, radiusRange)
     let colorRange = this._getColorRange(color)
-    return {colorRange, xRange, yRange, radiusRange}
+    return { colorRange, xRange, yRange, radiusRange }
   }
 
   _getRadiusRange (area) {
     let ratio = this._getAreaRatio(area)
     let domain = RangeHelper._getDomainRange(area)
-    let minRadius = Math.sqrt(domain[0] * ratio)
-    let maxRadius = Math.sqrt(domain[1] * ratio)
-    let range = d3.scalePow().exponent(0.5).domain(domain).range([minRadius, maxRadius])
-    return (i) => range(area[i])
+    let minArea = domain[0] * ratio
+    let maxArea = domain[1] * ratio
+    let range = d3.scaleLinear().domain(domain).range([minArea, maxArea])
+    return (i) => Math.sqrt(range(area[i]) / Math.PI)
   }
 
   _getXRange (x, radiusRange) {
-    let {mostLeftRadius, mostRightRadius} = RangeHelper._getSideRadius(x, radiusRange)
+    let { lowerRadius, upperRadius } = RangeHelper._getBoundRadius(x, radiusRange)
     let domain = RangeHelper._getDomainRange(x)
-    let range = d3.scaleLinear().domain(domain).range([mostLeftRadius, this.boundingRect.width - mostRightRadius])
+    let range = d3.scaleLinear().domain(domain).range([lowerRadius, this.boundingRect.width - upperRadius])
     return (i) => range(x[i])
   }
 
   _getYRange (y, radiusRange) {
-    let {mostLeftRadius, mostRightRadius} = RangeHelper._getSideRadius(y, radiusRange)
+    let { lowerRadius, upperRadius } = RangeHelper._getBoundRadius(y, radiusRange)
     let domain = RangeHelper._getDomainRange(y)
-    let range = d3.scaleLinear().domain(domain).range([this.boundingRect.height - mostRightRadius, mostLeftRadius])
+    let range = d3.scaleLinear().domain(domain).range([this.boundingRect.height - upperRadius, lowerRadius])
     return (i) => range(y[i])
   }
 
@@ -52,15 +52,26 @@ class RangeHelper {
 
   _getAreaRatio (area) {
     let boundingRectArea = this.boundingRect.width * this.boundingRect.height
-    let totalArea = d3.sum(area) * Math.PI
-    return 0.3 * boundingRectArea / totalArea
+    let totalArea = d3.sum(area)
+    return boundingRectArea / totalArea * 0.3
   }
 
-  static _getSideRadius (values, radiusRange) {
-    let {argmin, argmax} = argMinMax(values)
-    let mostLeftRadius = radiusRange(argmin)
-    let mostRightRadius = radiusRange(argmax)
-    return {mostLeftRadius, mostRightRadius}
+  static _getBoundRadius (values, radiusRange) {
+    let { argmin, argmax } = RangeHelper._argRange(values)
+    let lowerRadius = radiusRange(argmin)
+    let upperRadius = radiusRange(argmax)
+    return { lowerRadius, upperRadius }
+  }
+
+  static _argRange (values) {
+    let minmax = [0, 0]
+
+    values.forEach((value, i) => {
+      if (values[minmax[0]] > value) { minmax[0] = i }
+      if (values[minmax[1]] < value) { minmax[1] = i }
+    })
+
+    return { argmin: minmax[0], argmax: minmax[1] }
   }
 }
 
@@ -91,15 +102,20 @@ class NodeBuilder {
 }
 
 class Container {
-  constructor (containerSelector) {
+  constructor (containerSelector, document) {
     this.containerSelector = containerSelector
-    this.container = this._getContainer()
+    this.container = this._getContainer(document)
     this.boundingClientRect = this.container.node().getBoundingClientRect()
     this.rangeHelper = new RangeHelper(this.boundingClientRect)
   }
 
-  _getContainer () {
-    let container = d3.select(this.containerSelector)
+  _getContainer (document) {
+    let container
+    if (typeof document !== 'undefined') {
+      container = d3.select(document).select(this.containerSelector)
+    } else {
+      container = d3.select(this.containerSelector)
+    }
     return container.append('svg').style('width', '100%').style('height', '100%')
   }
 
@@ -120,17 +136,6 @@ class Container {
   }
 }
 
-export function argMinMax (values) {
-  let minmax = [0, 0]
-
-  values.forEach((value, i) => {
-    if (values[minmax[0]] > value) { minmax[0] = i }
-    if (values[minmax[1]] < value) { minmax[1] = i }
-  })
-
-  return {argmin: minmax[0], argmax: minmax[1]}
-}
-
-export function create (containerSelector) {
-  return new Container(containerSelector)
+export function create (containerSelector, document) {
+  return new Container(containerSelector, document)
 }
