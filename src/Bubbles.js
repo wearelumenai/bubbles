@@ -1,11 +1,11 @@
 'use strict'
 
 import * as d3 from 'd3'
-import * as container from './Container.js'
+import Container from './Container.js'
 
 class Bubbles {
   constructor (containerSelector) {
-    this.container = container.create(containerSelector)
+    this.container = new Container(containerSelector)
     this._doApply = this._applyFirst
   }
 
