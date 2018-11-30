@@ -5,8 +5,8 @@ import Container from './Container.js'
 import NodeBuilder from './NodeBuilder.js'
 
 class Bubbles {
-  constructor (containerSelector) {
-    this.container = new Container(containerSelector)
+  constructor (container) {
+    this.container = container
     this._doApply = this._applyFirst
   }
 
@@ -54,18 +54,21 @@ class Bubbles {
   }
 
   _drawCircles () {
-    this._clusters = this.container.selectAll('.cluster')
+    this._clusters = this._getClusters()
     let clusterNodes = this._clusters.data(this.nodes)
     let newClusterNodes = clusterNodes.enter()
       .append('circle')
       .attr('class', 'cluster')
       .attr('data-label', n => n.label)
-      .attr('r', n => n.radius)
     this._updateClusterNodes(newClusterNodes.merge(clusterNodes))
   }
 
+  _getClusters () {
+    return this.container.selectAll('.cluster')
+  }
+
   _displayLabels () {
-    this._labels = this.container.selectAll('.label')
+    this._labels = this._getLabels()
     let labelNodes = this._labels.data(this.nodes)
     let newLabelNodes = labelNodes.enter()
       .append('text')
@@ -74,6 +77,10 @@ class Bubbles {
       .attr('alignment-baseline', 'central')
       .text(i => i.label)
     Bubbles._updateLabelNodes(newLabelNodes.merge(labelNodes))
+  }
+
+  _getLabels () {
+    return this.container.selectAll('.label')
   }
 
   _moveLayout () {
@@ -114,6 +121,7 @@ class Bubbles {
 
   _updateClusterNodes (clusterNodes) {
     clusterNodes
+      .attr('r', n => n.radius)
       .attr('fill', n => n.color)
       .attr('cx', n => {
         n.x = this.container.boundX(n)
@@ -132,6 +140,7 @@ class Bubbles {
   }
 }
 
-export function create (container) {
+export function create (containerSelector, document) {
+  let container = new Container(containerSelector, document)
   return new Bubbles(container)
 }
