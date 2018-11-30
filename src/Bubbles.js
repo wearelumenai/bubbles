@@ -2,6 +2,7 @@
 
 import * as d3 from 'd3'
 import Container from './Container.js'
+import NodeBuilder from './NodeBuilder.js'
 
 class Bubbles {
   constructor (containerSelector) {
@@ -21,7 +22,7 @@ class Bubbles {
   }
 
   apply (projection) {
-    this.nodes = this.container.getNodes(projection)
+    this.nodes = new NodeBuilder(projection).getNodes(this.container)
     this._doApply()
   }
 

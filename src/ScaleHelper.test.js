@@ -4,6 +4,7 @@ const X = [3, 12, 7]
 const Y = [14, 12, 9]
 const Areas = [16, 49, 25]
 const Colors = [3, 8, 12]
+const Rect = { width: 957, height: 319 }
 
 test('get indices of min and max', () => {
   const scaleHelper = getScaleHelper()
@@ -99,5 +100,5 @@ function checkColorScale (colorScale) {
 }
 
 function getScaleHelper () {
-  return new ScaleHelper({ width: 957, height: 319 })
+  return new ScaleHelper(Rect)
 }
