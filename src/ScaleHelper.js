@@ -32,7 +32,7 @@ export default class ScaleHelper {
   _getYScale (y, radiusScale) {
     let { lowerRadius, upperRadius } = ScaleHelper._getBoundRadius(y, radiusScale)
     let domain = ScaleHelper._range(y)
-    let scale = d3.scaleLinear().domain(domain).range([this.boundingRect.height - upperRadius, lowerRadius])
+    let scale = d3.scaleLinear().domain(domain).range([this.boundingRect.height - lowerRadius, upperRadius])
     return (i) => scale(y[i])
   }
 

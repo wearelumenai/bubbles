@@ -88,9 +88,9 @@ function checkXScale (xScale) {
 }
 
 function checkYScale (yScale) {
-  expect(yScale(0)).toBeCloseTo(90, 1)
-  expect(yScale(1)).toBeCloseTo(152.8, 1)
-  expect(yScale(2)).toBeCloseTo(247, 1)
+  expect(yScale(0)).toBeCloseTo(72, 1)
+  expect(yScale(1)).toBeCloseTo(134.8, 1)
+  expect(yScale(2)).toBeCloseTo(229, 1)
 }
 
 function checkColorScale (colorScale) {

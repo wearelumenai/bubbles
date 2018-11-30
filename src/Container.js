@@ -21,8 +21,8 @@ export default class Container {
     return container.append('svg').style('width', '100%').style('height', '100%')
   }
 
-  getScales (x, y, area, color) {
-    return this.scaleHelper.generate(x, y, area, color)
+  getScales (x, y, areas, colors) {
+    return this.scaleHelper.generate(x, y, areas, colors)
   }
 
   selectAll (selector) {
