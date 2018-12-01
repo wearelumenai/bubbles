@@ -29,7 +29,7 @@ test('container bounding rectangle', () => {
 test('radius scale', () => {
   const scaleHelper = getScaleHelper()
   let radiusScale = scaleHelper._getRadiusScale(Areas)
-  checkRadiusScale(radiusScale)
+  assertRadiusScale(radiusScale)
 })
 
 test('area ratio', () => {
@@ -50,50 +50,50 @@ test('x scale', () => {
   const scaleHelper = getScaleHelper()
   let radiusScale = scaleHelper._getRadiusScale(Areas)
   let xScale = scaleHelper._getXScale(X, radiusScale)
-  checkXScale(xScale)
+  assertXScale(xScale)
 })
 
 test('y scale', () => {
   const scaleHelper = getScaleHelper()
   let radiusScale = scaleHelper._getRadiusScale(Areas)
   let yScale = scaleHelper._getYScale(Y, radiusScale)
-  checkYScale(yScale)
+  assertYScale(yScale)
 })
 
 test('color scale', () => {
   const scaleHelper = getScaleHelper()
   let colorScale = scaleHelper._getColorScale(Colors)
-  checkColorScale(colorScale)
+  assertColorScale(colorScale)
 })
 
 test('generate scales', () => {
   const scaleHelper = getScaleHelper()
   let scales = scaleHelper.generate(X, Y, Areas, Colors)
-  checkRadiusScale(scales.radiusScale)
-  checkXScale(scales.xScale)
-  checkYScale(scales.yScale)
-  checkColorScale(scales.colorScale)
+  assertRadiusScale(scales.radiusScale)
+  assertXScale(scales.xScale)
+  assertYScale(scales.yScale)
+  assertColorScale(scales.colorScale)
 })
 
-function checkRadiusScale (radiusScale) {
+function assertRadiusScale (radiusScale) {
   expect(radiusScale(0)).toBeCloseTo(72, 1)
   expect(radiusScale(1)).toBeCloseTo(126, 1)
   expect(radiusScale(2)).toBeCloseTo(90, 1)
 }
 
-function checkXScale (xScale) {
+function assertXScale (xScale) {
   expect(xScale(0)).toBeCloseTo(72, 1)
   expect(xScale(1)).toBeCloseTo(831, 1)
   expect(xScale(2)).toBeCloseTo(409.3, 1)
 }
 
-function checkYScale (yScale) {
+function assertYScale (yScale) {
   expect(yScale(0)).toBeCloseTo(72, 1)
   expect(yScale(1)).toBeCloseTo(134.8, 1)
   expect(yScale(2)).toBeCloseTo(229, 1)
 }
 
-function checkColorScale (colorScale) {
+function assertColorScale (colorScale) {
   expect(colorScale(0)).toEqual('rgb(255, 165, 0)')
   expect(colorScale(1)).toEqual('rgb(255, 73, 0)')
   expect(colorScale(2)).toEqual('rgb(255, 0, 0)')

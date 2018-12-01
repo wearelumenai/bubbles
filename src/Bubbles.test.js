@@ -18,20 +18,19 @@ test('draw nodes', () => {
   bub._drawNodes()
   let clusters = bub._getClusters()
   clusters.each(function () {
-    let element = d3.select(this)
-    let i = parseAttr(element, 'data-label')
-    expect(parseAttr(element, 'cx')).toBe(nodes[i].x)
-    expect(parseAttr(element, 'cy')).toBe(nodes[i].y)
-    expect(parseAttr(element, 'r')).toBe(nodes[i].radius)
-    expect(element.attr('fill')).toBe(nodes[i].color)
+    let circle = d3.select(this)
+    assertCirdle(circle, nodes)
+  })
+  let labels = bub._getLabels()
+  labels.each(function () {
+    let label = d3.select(this)
+    assertLabel(label, nodes)
   })
 })
 
 test('optimize layout', done => {
   let bub = getBubbles()
-  let projectionWithOverlap = moveAndOverlap()
-  let nodesBeforeCollision = new NodeBuilder(projectionWithOverlap).getNodes(bub.container)
-  bub.apply(projectionWithOverlap)
+  let nodesBeforeCollision = applyOverlap(bub)
   setTimeout(() => {
     let nodesAfterCollision = bub.nodes
     expect(nodesAfterCollision[0].x).toBeCloseTo(nodesBeforeCollision[0].x, 1)
@@ -46,12 +45,8 @@ test('optimize layout', done => {
 
 test('move clusters', done => {
   let bub = getBubbles()
-  let nodesBeforeMove = new NodeBuilder(Projection).getNodes(bub.container)
-  nodesBeforeMove = [nodesBeforeMove[0], nodesBeforeMove[2], nodesBeforeMove[1]]
-  bub.nodes = nodesBeforeMove
-  bub._applyFirst()
-  let projectionWithOverlap = moveAndOverlap()
-  bub.apply(projectionWithOverlap)
+  let nodesBeforeMove = applyScramble(bub)
+  applyOverlap(bub)
   setTimeout(() => {
     let nodesAfterMove = bub.nodes
     expect(nodesAfterMove[0].x).toBeCloseTo(nodesBeforeMove[0].x, 1)
@@ -63,6 +58,56 @@ test('move clusters', done => {
     done()
   }, 300)
 })
+
+test('transition end', () => {
+  let bub = getBubbles()
+  let endReached = false
+  bub._onLayoutMoved(fakeTransition(), fakeTransition(), () => { endReached = true })
+  expect(endReached).toBe(true)
+})
+
+function fakeTransition () {
+  let tr = {}
+  let simulate = (cb) => {
+    let i
+    for (i = 0; i < 20; i++) {
+      cb()
+    }
+    return tr
+  }
+  tr.each = (cb) => simulate(cb)
+  tr.on = (ev, cb) => simulate(cb)
+  return tr
+}
+
+function applyScramble (bub) {
+  let nodesBeforeMove = new NodeBuilder(Projection).getNodes(bub.container)
+  nodesBeforeMove = [nodesBeforeMove[0], nodesBeforeMove[2], nodesBeforeMove[1]]
+  bub.nodes = nodesBeforeMove
+  bub._applyFirst()
+  return nodesBeforeMove
+}
+
+function applyOverlap (bub) {
+  let projectionWithOverlap = moveAndOverlap()
+  let nodesBeforeCollision = new NodeBuilder(projectionWithOverlap).getNodes(bub.container)
+  bub.apply(projectionWithOverlap)
+  return nodesBeforeCollision
+}
+
+function assertCirdle (circle, nodes) {
+  let i = parseAttr(circle, 'data-label')
+  expect(parseAttr(circle, 'cx')).toBe(nodes[i].x)
+  expect(parseAttr(circle, 'cy')).toBe(nodes[i].y)
+  expect(parseAttr(circle, 'r')).toBe(nodes[i].radius)
+  expect(circle.attr('fill')).toBe(nodes[i].color)
+}
+
+function assertLabel (label, nodes) {
+  let i = parseInt(label.text())
+  expect(parseAttr(label, 'x')).toBe(nodes[i].x)
+  expect(parseAttr(label, 'y')).toBe(nodes[i].y)
+}
 
 function parseAttr (element, name) {
   return parseFloat(element.attr(name))
