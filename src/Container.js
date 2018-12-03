@@ -24,6 +24,10 @@ export default class Container {
     return container
   }
 
+  mouse () {
+    return d3.mouse(this.containerElement.node())
+  }
+
   getScales (x, y, areas, colors) {
     return this.scaleHelper.generate(x, y, areas, colors)
   }

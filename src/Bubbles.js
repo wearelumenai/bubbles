@@ -7,11 +7,12 @@ import NodeBuilder from './NodeBuilder.js'
 class Bubbles {
   constructor (container) {
     this.container = container
-    const self = this
-    this.container.containerElement.on('mousemove', function () {
-      let coord = d3.mouse(this)
-      self._displayInfo(coord[0], coord[1])
-    }).on('mouseout', this._hideInfo)
+    this.container.containerElement
+      .on('mousemove', () => {
+        let [x, y] = this.container.mouse()
+        this._displayInfo(x, y)
+      })
+      .on('mouseout', () => this._hideInfo())
     this._doApply = this._applyFirst
   }
 
@@ -156,16 +157,15 @@ class Bubbles {
   }
 
   _updateCircles (circles) {
-    let self = this
     circles
       .attr('r', n => n.radius)
       .attr('fill', n => n.color)
       .attr('cx', n => {
-        n.x = self.container.boundX(n)
+        n.x = this.container.boundX(n)
         return n.x
       })
       .attr('cy', n => {
-        n.y = self.container.boundY(n)
+        n.y = this.container.boundY(n)
         return n.y
       })
   }
