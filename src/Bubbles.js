@@ -5,7 +5,7 @@ import Container from './Container.js'
 import NodeBuilder from './NodeBuilder.js'
 
 class Bubbles {
-  constructor (container, listeners) {
+  constructor (container) {
     this.container = container
     this._doApply = this._applyFirst
   }
@@ -21,9 +21,8 @@ class Bubbles {
     this._moveLayout().then(this._optimizeLayout)
   }
 
-  apply (projection, listeners) {
+  apply (projection) {
     this.nodes = new NodeBuilder(projection).getNodes(this.container)
-    this.listeners = listeners
     this._doApply()
   }
 
@@ -61,7 +60,6 @@ class Bubbles {
       .append('circle')
       .attr('class', 'cluster')
       .attr('data-label', n => n.label)
-    newClusterNodes = this._applyListeners(newClusterNodes)
     this._updateClusterNodes(newClusterNodes.merge(clusterNodes))
   }
 
@@ -78,19 +76,7 @@ class Bubbles {
       .attr('text-anchor', 'middle')
       .attr('alignment-baseline', 'central')
       .text(i => i.label)
-    newLabelNodes = this._applyListeners(newLabelNodes)
     Bubbles._updateLabelNodes(newLabelNodes.merge(labelNodes))
-  }
-
-  _applyListeners (resource) {
-    if (this.listeners) {
-      Object.entries(this.listeners).forEach(
-        ([event, handler]) => {
-          resource = resource.on(event, handler)
-        }
-      )
-    }
-    return resource
   }
 
   _getLabels () {
