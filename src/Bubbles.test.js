@@ -88,7 +88,7 @@ test('no infos when no cluster', () => {
   let bub = getBubbles()
   let projectionWithOverlap = makeOverlap()
   bub.clusters = new NodeBuilder(projectionWithOverlap).getNodes(bub.container)
-  bub._displayInfo(100, 150)
+  bub._displayInfo(150, 180)
   let info = bub._getInfo()
   expect(info.empty()).toBe(false)
   expect(info.style('display')).toBe('none')
