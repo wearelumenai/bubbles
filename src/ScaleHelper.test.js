@@ -26,16 +26,30 @@ test('container bounding rectangle', () => {
   expect(rect.height).toBe(319)
 })
 
-test('radius scale', () => {
+test('ensure positive area unchanged', () => {
   const scaleHelper = getScaleHelper()
-  let radiusScale = scaleHelper._getRadiusScale(Areas)
-  assertRadiusScale(radiusScale)
+  let { domain, positiveArea } = scaleHelper._ensurePositiveArea(Areas)
+  expect(domain).toEqual([16, 49])
+  expect(positiveArea).toEqual(Areas)
+})
+
+test('ensure positive area becomes positive', () => {
+  const scaleHelper = getScaleHelper()
+  let { domain, positiveArea } = scaleHelper._ensurePositiveArea([-10, -1, 10])
+  expect(domain).toEqual([1, 21])
+  expect(positiveArea).toEqual([1, 10, 21])
 })
 
 test('area ratio', () => {
   const scaleHelper = getScaleHelper()
   let ratio = scaleHelper._getAreaRatio(Areas)
   expect(ratio).toBeCloseTo(1017.6, 1)
+})
+
+test('radius scale', () => {
+  const scaleHelper = getScaleHelper()
+  let radiusScale = scaleHelper._getRadiusScale(Areas)
+  assertRadiusScale(radiusScale)
 })
 
 test('radius of lower and upper clusters', () => {

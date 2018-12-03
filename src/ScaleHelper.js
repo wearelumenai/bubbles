@@ -14,12 +14,12 @@ export default class ScaleHelper {
   }
 
   _getRadiusScale (area) {
-    let ratio = this._getAreaRatio(area)
-    let domain = ScaleHelper._range(area)
+    let { domain, positiveArea } = this._ensurePositiveArea(area)
+    let ratio = this._getAreaRatio(positiveArea)
     let minArea = domain[0] * ratio
     let maxArea = domain[1] * ratio
     let scale = d3.scaleLinear().domain(domain).range([minArea, maxArea])
-    return (i) => Math.sqrt(scale(area[i]) / Math.PI)
+    return (i) => Math.sqrt(scale(positiveArea[i]) / Math.PI)
   }
 
   _getXScale (x, radiusScale) {
@@ -46,6 +46,16 @@ export default class ScaleHelper {
     let minValue = d3.min(domainValues)
     let maxValue = d3.max(domainValues)
     return [minValue, maxValue]
+  }
+
+  _ensurePositiveArea (area) {
+    let positiveArea = area
+    let domain = ScaleHelper._range(area)
+    if (domain[0] < 0) {
+      positiveArea = area.map(a => a - domain[0] + 1)
+      domain = [1, domain[1] - domain[0] + 1]
+    }
+    return { domain, positiveArea }
   }
 
   _getAreaRatio (area) {
