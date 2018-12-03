@@ -8,81 +8,81 @@ const Rect = { width: 957, height: 319 }
 
 test('get indices of min and max', () => {
   const scaleHelper = getScaleHelper()
-  let { argmin, argmax } = scaleHelper.constructor._argrange([1, 0, 4, 3, 2])
+  const { argmin, argmax } = scaleHelper.constructor._argrange([1, 0, 4, 3, 2])
   expect(argmin).toBe(1)
   expect(argmax).toBe(2)
 })
 
 test('get min and max', () => {
   const scaleHelper = getScaleHelper()
-  let minmax = scaleHelper.constructor._range([1, 0, 4, 3, 2])
+  const minmax = scaleHelper.constructor._range([1, 0, 4, 3, 2])
   expect(minmax).toEqual([0, 4])
 })
 
 test('container bounding rectangle', () => {
   const scaleHelper = getScaleHelper()
-  let rect = scaleHelper.boundingRect
+  const rect = scaleHelper.boundingRect
   expect(rect.width).toBe(957)
   expect(rect.height).toBe(319)
 })
 
 test('ensure positive area unchanged', () => {
   const scaleHelper = getScaleHelper()
-  let { domain, positiveArea } = scaleHelper._ensurePositiveArea(Areas)
+  const { domain, positiveArea } = scaleHelper._ensurePositiveArea(Areas)
   expect(domain).toEqual([16, 49])
   expect(positiveArea).toEqual(Areas)
 })
 
 test('ensure positive area becomes positive', () => {
   const scaleHelper = getScaleHelper()
-  let { domain, positiveArea } = scaleHelper._ensurePositiveArea([-10, -1, 10])
+  const { domain, positiveArea } = scaleHelper._ensurePositiveArea([-10, -1, 10])
   expect(domain).toEqual([1, 21])
   expect(positiveArea).toEqual([1, 10, 21])
 })
 
 test('area ratio', () => {
   const scaleHelper = getScaleHelper()
-  let ratio = scaleHelper._getAreaRatio(Areas)
+  const ratio = scaleHelper._getAreaRatio(Areas)
   expect(ratio).toBeCloseTo(1017.6, 1)
 })
 
 test('radius scale', () => {
   const scaleHelper = getScaleHelper()
-  let radiusScale = scaleHelper._getRadiusScale(Areas)
+  const radiusScale = scaleHelper._getRadiusScale(Areas)
   assertRadiusScale(radiusScale)
 })
 
 test('radius of lower and upper clusters', () => {
   const scaleHelper = getScaleHelper()
-  let radiusScale = scaleHelper._getRadiusScale(Areas)
-  let { lowerRadius, upperRadius } = scaleHelper.constructor._getBoundRadius(X, radiusScale)
+  const radiusScale = scaleHelper._getRadiusScale(Areas)
+  const { lowerRadius, upperRadius } = scaleHelper.constructor._getBoundRadius(X, radiusScale)
   expect(lowerRadius).toBe(radiusScale(0))
   expect(upperRadius).toBe(radiusScale(1))
 })
 
 test('x scale', () => {
   const scaleHelper = getScaleHelper()
-  let radiusScale = scaleHelper._getRadiusScale(Areas)
-  let xScale = scaleHelper._getXScale(X, radiusScale)
+  const radiusScale = scaleHelper._getRadiusScale(Areas)
+  const xScale = scaleHelper._getXScale(X, radiusScale)
   assertXScale(xScale)
 })
 
 test('y scale', () => {
   const scaleHelper = getScaleHelper()
-  let radiusScale = scaleHelper._getRadiusScale(Areas)
-  let yScale = scaleHelper._getYScale(Y, radiusScale)
+  const radiusScale = scaleHelper._getRadiusScale(Areas)
+  const yScale = scaleHelper._getYScale(Y, radiusScale)
   assertYScale(yScale)
 })
 
 test('color scale', () => {
   const scaleHelper = getScaleHelper()
-  let colorScale = scaleHelper._getColorScale(Colors)
+  const colorScale = scaleHelper._getColorScale(Colors)
   assertColorScale(colorScale)
 })
 
 test('generate scales', () => {
   const scaleHelper = getScaleHelper()
-  let scales = scaleHelper.generate(X, Y, Areas, Colors)
+  const scales = scaleHelper.generate(X, Y, Areas, Colors)
   assertRadiusScale(scales.radiusScale)
   assertXScale(scales.xScale)
   assertYScale(scales.yScale)

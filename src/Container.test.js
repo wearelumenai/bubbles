@@ -13,8 +13,8 @@ test('no dom', () => {
 })
 
 test('container provide scale functions', () => {
-  let container = getContainer()
-  let scales = container.getScales(X, Y, Areas, Colors)
+  const container = getContainer()
+  const scales = container.getScales(X, Y, Areas, Colors)
   expect(typeof scales.radiusScale === 'function').toBe(true)
   expect(typeof scales.xScale === 'function').toBe(true)
   expect(typeof scales.yScale === 'function').toBe(true)
@@ -22,42 +22,42 @@ test('container provide scale functions', () => {
 })
 
 test('container element is svg', () => {
-  let container = getContainer()
-  let element = container.containerElement
+  const container = getContainer()
+  const element = container.containerElement
   expect(element.node().tagName).toBe('svg')
 })
 
 test('select sub elements', () => {
-  let container = getContainer()
-  let element = container.containerElement
-  let rect = element.append('rect').attr('class', 'selectme').node()
-  let sel = container.selectAll('.selectme').node()
+  const container = getContainer()
+  const element = container.containerElement
+  const rect = element.append('rect').attr('class', 'selectme').node()
+  const sel = container.selectAll('.selectme').node()
   expect(rect).toEqual(sel)
 })
 
 test('x in bound', () => {
-  let container = getContainer()
-  let xLowered = container.boundX({ radius: 57, x: 920 })
+  const container = getContainer()
+  const xLowered = container.boundX({ radius: 57, x: 920 })
   expect(xLowered).toBe(900)
-  let xRaised = container.boundX({ radius: 57, x: 20 })
+  const xRaised = container.boundX({ radius: 57, x: 20 })
   expect(xRaised).toBe(57)
-  let xUnchanged = container.boundX({ radius: 57, x: 880 })
+  const xUnchanged = container.boundX({ radius: 57, x: 880 })
   expect(xUnchanged).toBe(880)
 })
 
 test('y in bound', () => {
-  let container = getContainer()
-  let yLowered = container.boundY({ radius: 19, y: 305 })
+  const container = getContainer()
+  const yLowered = container.boundY({ radius: 19, y: 305 })
   expect(yLowered).toBe(300)
-  let yRaised = container.boundY({ radius: 19, y: 5 })
+  const yRaised = container.boundY({ radius: 19, y: 5 })
   expect(yRaised).toBe(19)
-  let yUnchanged = container.boundY({ radius: 19, y: 280 })
+  const yUnchanged = container.boundY({ radius: 19, y: 280 })
   expect(yUnchanged).toBe(280)
 })
 
 function getContainer () {
-  let document = new jsdom.JSDOM('<body><div id="bubble-chart"></div></body>').window.document
-  let container = new Container('#bubble-chart', document)
+  const document = new jsdom.JSDOM('<body><div id="bubble-chart"></div></body>').window.document
+  const container = new Container('#bubble-chart', document)
   // Tweak because JSDOM do not implement getClientBoundingRect
   container.boundingClientRect = Rect
   container.scaleHelper = new ScaleHelper(Rect)

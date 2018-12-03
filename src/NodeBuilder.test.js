@@ -13,7 +13,7 @@ const Projection = [
 ]
 
 test('unzip data', () => {
-  let builder = getNodeBuilder()
+  const builder = getNodeBuilder()
   expect(builder.x).toEqual(X)
   expect(builder.y).toEqual(Y)
   expect(builder.areas).toEqual(Areas)
@@ -21,9 +21,9 @@ test('unzip data', () => {
 })
 
 test('get nodes in container', () => {
-  let builder = getNodeBuilder()
-  let fakeContainer = { getScales: () => new ScaleHelper(Rect).generate(X, Y, Areas, Colors) }
-  let nodes = builder.getNodes(fakeContainer)
+  const builder = getNodeBuilder()
+  const fakeContainer = { getScales: () => new ScaleHelper(Rect).generate(X, Y, Areas, Colors) }
+  const nodes = builder.getNodes(fakeContainer)
   nodes.forEach(element => {
     expect(element.x + element.radius).toBeLessThanOrEqual(957)
     expect(element.x - element.radius).toBeGreaterThanOrEqual(0)

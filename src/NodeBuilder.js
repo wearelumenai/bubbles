@@ -1,7 +1,7 @@
 export default class NodeBuilder {
   constructor (projection) {
     this.projection = projection
-    let unzipped = this.projection[0].map((col, i) => this.projection.map(row => row[i]))
+    const unzipped = this.projection[0].map((col, i) => this.projection.map(row => row[i]))
     this.x = unzipped[0]
     this.y = unzipped[1]
     this.colors = unzipped[2]
@@ -9,7 +9,7 @@ export default class NodeBuilder {
   }
 
   getNodes (container) {
-    let scales = container.getScales(this.x, this.y, this.areas, this.colors)
+    const scales = container.getScales(this.x, this.y, this.areas, this.colors)
 
     return this.projection.map((d, i) => {
       return {

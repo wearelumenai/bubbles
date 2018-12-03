@@ -12,27 +12,27 @@ const Projection = [
 ]
 
 test('draw clusters', () => {
-  let bub = getBubbles()
-  let clusters = new NodeBuilder(Projection).getNodes(bub.container)
+  const bub = getBubbles()
+  const clusters = new NodeBuilder(Projection).getNodes(bub.container)
   bub.clusters = clusters
   bub._drawClusters()
-  let circles = bub._getCircles()
+  const circles = bub._getCircles()
   circles.each(function () {
-    let circle = d3.select(this)
+    const circle = d3.select(this)
     assertCirdle(circle, clusters)
   })
-  let labels = bub._getLabels()
+  const labels = bub._getLabels()
   labels.each(function () {
-    let label = d3.select(this)
+    const label = d3.select(this)
     assertLabel(label, clusters)
   })
 })
 
 test('optimize layout', done => {
-  let bub = getBubbles()
-  let clustersBeforeCollision = applyOverlap(bub)
+  const bub = getBubbles()
+  const clustersBeforeCollision = applyOverlap(bub)
   setTimeout(() => {
-    let clustersAfterCollision = bub.clusters
+    const clustersAfterCollision = bub.clusters
     expect(clustersAfterCollision[0].x).toBeCloseTo(clustersBeforeCollision[0].x, 1)
     expect(clustersAfterCollision[0].y).toBeCloseTo(clustersBeforeCollision[0].y, 1)
     expect(clustersAfterCollision[1].x).toBeCloseTo(clustersBeforeCollision[1].x, 1)
@@ -44,11 +44,11 @@ test('optimize layout', done => {
 })
 
 test('move clusters', done => {
-  let bub = getBubbles()
-  let clustersBeforeMove = applyScramble(bub)
+  const bub = getBubbles()
+  const clustersBeforeMove = applyScramble(bub)
   applyOverlap(bub)
   setTimeout(() => {
-    let clustersAfterMove = bub.clusters
+    const clustersAfterMove = bub.clusters
     expect(clustersAfterMove[0].x).toBeCloseTo(clustersBeforeMove[0].x, 1)
     expect(clustersAfterMove[0].y).toBeCloseTo(clustersBeforeMove[0].y, 1)
     expect(clustersAfterMove[1].x).not.toBeCloseTo(clustersBeforeMove[1].x, 1)
@@ -60,24 +60,24 @@ test('move clusters', done => {
 })
 
 test('transition end', () => {
-  let bub = getBubbles()
+  const bub = getBubbles()
   let endReached = false
   bub._onLayoutMoved(fakeTransition(), fakeTransition(), () => { endReached = true })
   expect(endReached).toBe(true)
 })
 
 test('get clusters at position', () => {
-  let bub = getBubbles()
-  let projectionWithOverlap = makeOverlap()
+  const bub = getBubbles()
+  const projectionWithOverlap = makeOverlap()
   bub.clusters = new NodeBuilder(projectionWithOverlap).getNodes(bub.container)
   bub._drawClusters()
-  let clusters = bub.getClustersAtPosition(800, 200)
+  const clusters = bub.getClustersAtPosition(800, 200)
   expect(clusters).toEqual([2, 1])
 })
 
 function fakeTransition () {
-  let tr = {}
-  let simulate = (cb) => {
+  const tr = {}
+  const simulate = (cb) => {
     let i
     for (i = 0; i < 20; i++) {
       cb()
@@ -98,21 +98,21 @@ function applyScramble (bub) {
 }
 
 function applyOverlap (bub) {
-  let projectionWithOverlap = makeOverlap()
-  let clustersBeforeCollision = new NodeBuilder(projectionWithOverlap).getNodes(bub.container)
+  const projectionWithOverlap = makeOverlap()
+  const clustersBeforeCollision = new NodeBuilder(projectionWithOverlap).getNodes(bub.container)
   bub.apply(projectionWithOverlap)
   return clustersBeforeCollision
 }
 
 function makeOverlap () {
-  let projectionWithOverlap = Projection.slice()
+  const projectionWithOverlap = Projection.slice()
   projectionWithOverlap[1][1] = 10
   projectionWithOverlap[2][0] = 11
   return projectionWithOverlap
 }
 
 function assertCirdle (circle, clusters) {
-  let i = parseAttr(circle, 'data-label')
+  const i = parseAttr(circle, 'data-label')
   expect(parseAttr(circle, 'cx')).toBe(clusters[i].x)
   expect(parseAttr(circle, 'cy')).toBe(clusters[i].y)
   expect(parseAttr(circle, 'r')).toBe(clusters[i].radius)
@@ -120,7 +120,7 @@ function assertCirdle (circle, clusters) {
 }
 
 function assertLabel (label, clusters) {
-  let i = parseInt(label.text())
+  const i = parseInt(label.text())
   expect(parseAttr(label, 'x')).toBe(clusters[i].x)
   expect(parseAttr(label, 'y')).toBe(clusters[i].y)
 }
@@ -130,8 +130,8 @@ function parseAttr (element, name) {
 }
 
 function getBubbles () {
-  let document = new jsdom.JSDOM('<body><div id="bubble-chart"></div></body>').window.document
-  let bub = bubbles.create('#bubble-chart', document)
+  const document = new jsdom.JSDOM('<body><div id="bubble-chart"></div></body>').window.document
+  const bub = bubbles.create('#bubble-chart', document)
   // Tweak because JSDOM do not implement getClientBoundingRect
   bub.container.boundingClientRect = Rect
   bub.container.scaleHelper = new ScaleHelper(Rect)

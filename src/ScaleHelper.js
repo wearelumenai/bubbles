@@ -6,45 +6,45 @@ export default class ScaleHelper {
   }
 
   generate (x, y, area, color) {
-    let radiusScale = this._getRadiusScale(area)
-    let xScale = this._getXScale(x, radiusScale)
-    let yScale = this._getYScale(y, radiusScale)
-    let colorScale = this._getColorScale(color)
+    const radiusScale = this._getRadiusScale(area)
+    const xScale = this._getXScale(x, radiusScale)
+    const yScale = this._getYScale(y, radiusScale)
+    const colorScale = this._getColorScale(color)
     return { colorScale, xScale, yScale, radiusScale }
   }
 
   _getRadiusScale (area) {
-    let { domain, positiveArea } = this._ensurePositiveArea(area)
-    let ratio = this._getAreaRatio(positiveArea)
-    let minArea = domain[0] * ratio
-    let maxArea = domain[1] * ratio
-    let scale = d3.scaleLinear().domain(domain).range([minArea, maxArea])
+    const { domain, positiveArea } = this._ensurePositiveArea(area)
+    const ratio = this._getAreaRatio(positiveArea)
+    const minArea = domain[0] * ratio
+    const maxArea = domain[1] * ratio
+    const scale = d3.scaleLinear().domain(domain).range([minArea, maxArea])
     return (i) => Math.sqrt(scale(positiveArea[i]) / Math.PI)
   }
 
   _getXScale (x, radiusScale) {
-    let { lowerRadius, upperRadius } = ScaleHelper._getBoundRadius(x, radiusScale)
-    let domain = ScaleHelper._range(x)
-    let scale = d3.scaleLinear().domain(domain).range([lowerRadius, this.boundingRect.width - upperRadius])
+    const { lowerRadius, upperRadius } = ScaleHelper._getBoundRadius(x, radiusScale)
+    const domain = ScaleHelper._range(x)
+    const scale = d3.scaleLinear().domain(domain).range([lowerRadius, this.boundingRect.width - upperRadius])
     return (i) => scale(x[i])
   }
 
   _getYScale (y, radiusScale) {
-    let { lowerRadius, upperRadius } = ScaleHelper._getBoundRadius(y, radiusScale)
-    let domain = ScaleHelper._range(y)
-    let scale = d3.scaleLinear().domain(domain).range([this.boundingRect.height - lowerRadius, upperRadius])
+    const { lowerRadius, upperRadius } = ScaleHelper._getBoundRadius(y, radiusScale)
+    const domain = ScaleHelper._range(y)
+    const scale = d3.scaleLinear().domain(domain).range([this.boundingRect.height - lowerRadius, upperRadius])
     return (i) => scale(y[i])
   }
 
   _getColorScale (color) {
-    let domain = ScaleHelper._range(color)
-    let scale = d3.scaleLinear().domain(domain).range(['orange', 'red'])
+    const domain = ScaleHelper._range(color)
+    const scale = d3.scaleLinear().domain(domain).range(['orange', 'red'])
     return (i) => scale(color[i])
   }
 
   static _range (domainValues) {
-    let minValue = d3.min(domainValues)
-    let maxValue = d3.max(domainValues)
+    const minValue = d3.min(domainValues)
+    const maxValue = d3.max(domainValues)
     return [minValue, maxValue]
   }
 
@@ -59,20 +59,20 @@ export default class ScaleHelper {
   }
 
   _getAreaRatio (area) {
-    let boundingRectArea = this.boundingRect.width * this.boundingRect.height
-    let totalArea = d3.sum(area)
+    const boundingRectArea = this.boundingRect.width * this.boundingRect.height
+    const totalArea = d3.sum(area)
     return boundingRectArea / totalArea * 0.3
   }
 
   static _getBoundRadius (values, radiusScale) {
-    let { argmin, argmax } = ScaleHelper._argrange(values)
-    let lowerRadius = radiusScale(argmin)
-    let upperRadius = radiusScale(argmax)
+    const { argmin, argmax } = ScaleHelper._argrange(values)
+    const lowerRadius = radiusScale(argmin)
+    const upperRadius = radiusScale(argmax)
     return { lowerRadius, upperRadius }
   }
 
   static _argrange (values) {
-    let minmax = [0, 0]
+    const minmax = [0, 0]
 
     values.forEach((value, i) => {
       if (values[minmax[0]] > value) { minmax[0] = i }
