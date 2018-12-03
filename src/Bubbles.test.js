@@ -6,9 +6,9 @@ const NodeBuilder = require('./NodeBuilder').default
 
 const Rect = { width: 957, height: 319 }
 const Projection = [
-  [3, 14, 16, 3],
-  [12, 12, 49, 8],
-  [7, 9, 25, 12]
+  [3, 14, 3, 16],
+  [12, 12, 8, 49],
+  [7, 9, 12, 25]
 ]
 
 test('draw nodes', () => {

@@ -4,8 +4,8 @@ export default class NodeBuilder {
     let unzipped = this.projection[0].map((col, i) => this.projection.map(row => row[i]))
     this.x = unzipped[0]
     this.y = unzipped[1]
-    this.areas = unzipped[2]
-    this.colors = unzipped[3]
+    this.colors = unzipped[2]
+    this.areas = unzipped[3]
   }
 
   getNodes (container) {

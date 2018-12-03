@@ -7,9 +7,9 @@ const Areas = [16, 49, 25]
 const Colors = [3, 8, 12]
 const Rect = { width: 957, height: 319 }
 const Projection = [
-  [3, 14, 16, 3],
-  [12, 12, 49, 8],
-  [7, 9, 25, 12]
+  [3, 14, 3, 16],
+  [12, 12, 8, 49],
+  [7, 9, 12, 25]
 ]
 
 test('unzip data', () => {
