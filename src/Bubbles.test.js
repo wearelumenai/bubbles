@@ -70,9 +70,28 @@ test('get clusters at position', () => {
   let bub = getBubbles()
   let projectionWithOverlap = makeOverlap()
   bub.clusters = new NodeBuilder(projectionWithOverlap).getNodes(bub.container)
-  bub._drawClusters()
   let clusters = bub.getClustersAtPosition(800, 200)
   expect(clusters).toEqual([2, 1])
+})
+
+test('get infos', () => {
+  let bub = getBubbles()
+  let projectionWithOverlap = makeOverlap()
+  bub.clusters = new NodeBuilder(projectionWithOverlap).getNodes(bub.container)
+  bub._displayInfo(800, 200)
+  let info = bub._getInfo()
+  expect(info.empty()).toBe(false)
+  expect(info.style('display')).toBe('block')
+})
+
+test('no infos when no cluster', () => {
+  let bub = getBubbles()
+  let projectionWithOverlap = makeOverlap()
+  bub.clusters = new NodeBuilder(projectionWithOverlap).getNodes(bub.container)
+  bub._displayInfo(100, 150)
+  let info = bub._getInfo()
+  expect(info.empty()).toBe(false)
+  expect(info.style('display')).toBe('none')
 })
 
 function fakeTransition () {

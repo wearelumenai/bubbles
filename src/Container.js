@@ -7,7 +7,7 @@ export default class Container {
   constructor (containerSelector, document) {
     this.containerSelector = containerSelector
     this.containerElement = this._getContainer(document)
-    this.boundingClientRect = this.containerElement.node().getBoundingClientRect()
+    this.boundingClientRect = this.containerElement.select('svg').node().getBoundingClientRect()
     this.scaleHelper = new ScaleHelper(this.boundingClientRect)
   }
 
@@ -18,15 +18,18 @@ export default class Container {
     } else {
       container = d3.select(this.containerSelector)
     }
-    return container.append('svg').style('width', '100%').style('height', '100%')
+    container.style('position', 'relative').style('margin', '0')
+    container.append('svg').style('position', 'absolute').style('top', '0').style('left', '0').style('height', '100%').style('width', '100%')
+    container.append('p').attr('class', 'info').style('position', 'absolute').style('width', '7em')
+    return container
   }
 
   getScales (x, y, areas, colors) {
     return this.scaleHelper.generate(x, y, areas, colors)
   }
 
-  selectAll (selector) {
-    return this.containerElement.selectAll(selector)
+  selectSVG (selector) {
+    return this.containerElement.select('svg').selectAll(selector)
   }
 
   boundX (node) {

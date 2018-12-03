@@ -21,17 +21,29 @@ test('container provide scale functions', () => {
   expect(typeof scales.colorScale === 'function').toBe(true)
 })
 
-test('container element is svg', () => {
+test('container has relative position', () => {
   let container = getContainer()
-  let element = container.containerElement
-  expect(element.node().tagName).toBe('svg')
+  expect(container.containerElement.style('position')).toBe('relative')
 })
 
-test('select sub elements', () => {
+test('container element has svg', () => {
   let container = getContainer()
-  let element = container.containerElement
+  let element = container.containerElement.select('svg')
+  expect(element.empty()).toBe(false)
+})
+
+test('container element has p', () => {
+  let container = getContainer()
+  let element = container.containerElement.select('.info')
+  expect(element.empty()).toBe(false)
+  expect(element.node().tagName).toBe('P')
+})
+
+test('select element in svg', () => {
+  let container = getContainer()
+  let element = container.containerElement.select('svg')
   let rect = element.append('rect').attr('class', 'selectme').node()
-  let sel = container.selectAll('.selectme').node()
+  let sel = container.selectSVG('.selectme').node()
   expect(rect).toEqual(sel)
 })
 

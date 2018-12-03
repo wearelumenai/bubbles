@@ -51,9 +51,10 @@ export default class ScaleHelper {
   _ensurePositiveArea (area) {
     let positiveArea = area
     let domain = ScaleHelper._range(area)
-    if (domain[0] < 0) {
-      positiveArea = area.map(a => a - domain[0] + 1)
-      domain = [1, domain[1] - domain[0] + 1]
+    const minArea = 200
+    if (domain[0] < minArea) {
+      positiveArea = area.map(a => a - domain[0] + minArea)
+      domain = [minArea, domain[1] - domain[0] + minArea]
     }
     return { domain, positiveArea }
   }
