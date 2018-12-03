@@ -10,8 +10,18 @@ class Bubbles {
     this._doApply = this._applyFirst
   }
 
+  apply (projection) {
+    this.clusters = new NodeBuilder(projection).getNodes(this.container)
+    this._doApply()
+  }
+
+  getClustersAtPosition (x, y) {
+    let clustersAtPosition = this.clusters
+      .filter(d => Math.pow(x - d.x, 2) + Math.pow(y - d.y, 2) < Math.pow(d.radius, 2))
+    return clustersAtPosition.sort((a, b) => a.radius - b.radius).map(d => d.label)
+  }
   _applyFirst () {
-    this._drawNodes()
+    this._drawClusters()
     this._optimizeLayout()
     this._doApply = this._applyOthers
   }
@@ -21,20 +31,15 @@ class Bubbles {
     this._moveLayout().then(this._optimizeLayout)
   }
 
-  apply (projection) {
-    this.nodes = new NodeBuilder(projection).getNodes(this.container)
-    this._doApply()
-  }
-
   _optimizeLayout () {
     let collisionForce = this._getCollisionForce()
     let { xForce, yForce } = this._getPositionForces()
     this._collideSimulation = d3.forceSimulation()
-      .nodes(this.nodes)
+      .nodes(this.clusters)
       .force('collide', collisionForce)
       .force('x', xForce)
       .force('y', yForce)
-      .on('tick', () => this._drawNodes())
+      .on('tick', () => this._drawClusters())
   }
 
   _getCollisionForce () {
@@ -42,34 +47,34 @@ class Bubbles {
   }
 
   _getPositionForces () {
-    let initialPosition = this.nodes.map(n => [n.x, n.y])
+    let initialPosition = this.clusters.map(n => [n.x, n.y])
     let xForce = d3.forceX((_, i) => initialPosition[i][0]).strength(0.1)
     let yForce = d3.forceY((_, i) => initialPosition[i][1]).strength(0.1)
     return { xForce, yForce }
   }
 
-  _drawNodes () {
+  _drawClusters () {
     this._drawCircles()
     this._displayLabels()
   }
 
   _drawCircles () {
-    this._clusters = this._getClusters()
-    let clusterNodes = this._clusters.data(this.nodes)
-    let newClusterNodes = clusterNodes.enter()
+    this._circles = this._getCircles()
+    let circles = this._circles.data(this.clusters)
+    let newCircles = circles.enter()
       .append('circle')
       .attr('class', 'cluster')
       .attr('data-label', n => n.label)
-    this._updateClusterNodes(newClusterNodes.merge(clusterNodes))
+    this._updateCircles(newCircles.merge(circles))
   }
 
-  _getClusters () {
+  _getCircles () {
     return this.container.selectAll('.cluster')
   }
 
   _displayLabels () {
     this._labels = this._getLabels()
-    let labelNodes = this._labels.data(this.nodes)
+    let labelNodes = this._labels.data(this.clusters)
     let newLabelNodes = labelNodes.enter()
       .append('text')
       .attr('class', 'label')
@@ -84,43 +89,43 @@ class Bubbles {
   }
 
   _moveLayout () {
-    let clusterTransition = this._moveCircles()
+    let circleTransition = this._moveCircles()
     let labelTransition = this._moveLabels()
-    let then = (callback) => this._onLayoutMoved(clusterTransition, labelTransition, callback)
+    let then = (callback) => this._onLayoutMoved(circleTransition, labelTransition, callback)
     return { then }
   }
 
   _moveCircles () {
-    let clusterNodes = this._clusters.data(this.nodes)
-    clusterNodes.exit().remove()
-    let clusterTransitions = Bubbles._makeTransition(clusterNodes)
-    this._updateClusterNodes(clusterTransitions)
-    return clusterTransitions
+    let circles = this._circles.data(this.clusters)
+    circles.exit().remove()
+    let circleTransition = Bubbles._makeTransition(circles)
+    this._updateCircles(circleTransition)
+    return circleTransition
   }
 
   _moveLabels () {
-    let labelNodes = this._labels.data(this.nodes)
+    let labelNodes = this._labels.data(this.clusters)
     labelNodes.exit().remove()
     let labelTransition = Bubbles._makeTransition(labelNodes)
     Bubbles._updateLabelNodes(labelTransition)
     return labelTransition
   }
 
-  static _makeTransition (clusters) {
-    return clusters.transition().ease(d3.easeLinear).duration(800)
+  static _makeTransition (circles) {
+    return circles.transition().ease(d3.easeLinear).duration(800)
   }
 
-  _onLayoutMoved (clusterTransition, labelTransition, callback) {
+  _onLayoutMoved (circleTransition, labelTransition, callback) {
     let thisCallback = callback.bind(this)
     let n = 0
     let onStart = () => ++n
     let onEnd = () => --n || thisCallback()
-    clusterTransition.each(onStart).on('end', onEnd)
+    circleTransition.each(onStart).on('end', onEnd)
     labelTransition.each(onStart).on('end', onEnd)
   }
 
-  _updateClusterNodes (clusterNodes) {
-    clusterNodes
+  _updateCircles (circles) {
+    circles
       .attr('r', n => n.radius)
       .attr('fill', n => n.color)
       .attr('cx', n => {
