@@ -19,7 +19,7 @@ test('draw nodes', () => {
   let clusters = bub._getClusters()
   clusters.each(function () {
     let circle = d3.select(this)
-    assertCirdle(circle, nodes)
+    assertCircle(circle, nodes)
   })
   let labels = bub._getLabels()
   labels.each(function () {
@@ -95,7 +95,7 @@ function applyOverlap (bub) {
   return nodesBeforeCollision
 }
 
-function assertCirdle (circle, nodes) {
+function assertCircle (circle, nodes) {
   let i = parseAttr(circle, 'data-label')
   expect(parseAttr(circle, 'cx')).toBe(nodes[i].x)
   expect(parseAttr(circle, 'cy')).toBe(nodes[i].y)
