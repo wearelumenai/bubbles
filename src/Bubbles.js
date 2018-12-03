@@ -7,12 +7,7 @@ import NodeBuilder from './NodeBuilder.js'
 class Bubbles {
   constructor (container) {
     this.container = container
-    this.container.containerElement
-      .on('mousemove', () => {
-        let [x, y] = this.container.mouse()
-        this._displayInfo(x, y)
-      })
-      .on('mouseout', () => this._hideInfo())
+    this.container.onMouse((info, x, y) => this._displayInfo(info, x, y), (info) => this._hideInfo(info))
     this._doApply = this._applyFirst
   }
 
@@ -97,27 +92,22 @@ class Bubbles {
     return this.container.selectSVG('.label')
   }
 
-  _displayInfo (x, y) {
-    let info = this._getInfo()
+  _displayInfo (info, x, y) {
     let labels = this.getClustersAtPosition(x, y)
     if (labels.length > 0) {
       let cluster = this.clusters[labels[0]]
       let infoText = `${cluster.label}: x=${cluster.data[0]}; y=${cluster.data[1]}; a=${cluster.data[3]}`
       info.text(infoText)
-      this._getInfo().style('display', 'block')
+      info.style('display', 'block')
       info.style('left', (x + 15) + 'px')
       info.style('top', (y + 5) + 'px')
     } else {
-      this._hideInfo()
+      this._hideInfo(info)
     }
   }
 
-  _hideInfo () {
-    this._getInfo().style('display', 'none')
-  }
-
-  _getInfo () {
-    return this.container.containerElement.select('.info')
+  _hideInfo (info) {
+    info.style('display', 'none')
   }
 
   _moveLayout () {

@@ -24,6 +24,20 @@ export default class Container {
     return container
   }
 
+  getInfo () {
+    return this.containerElement.select('.info')
+  }
+
+  onMouse (onMove, onOut) {
+    let info = this.getInfo()
+    this.containerElement
+      .on('mousemove', () => {
+        let [x, y] = this.mouse()
+        onMove(info, x, y)
+      })
+      .on('mouseout', () => onOut(info))
+  }
+
   mouse () {
     return d3.mouse(this.containerElement.node())
   }
