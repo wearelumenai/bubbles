@@ -32,13 +32,13 @@ export default class Container {
     let info = this.getInfo()
     this.containerElement
       .on('mousemove', () => {
-        let [x, y] = this.mouse()
+        let [x, y] = this.getMousePosition()
         onMove(info, x, y)
       })
       .on('mouseout', () => onOut(info))
   }
 
-  mouse () {
+  getMousePosition () {
     return d3.mouse(this.containerElement.node())
   }
 
