@@ -67,7 +67,7 @@ test('select element in svg', () => {
   expect(rect).toEqual(sel)
 })
 
-test('x in bound', () => {
+test('x in bound, circle case', () => {
   const container = getContainer()
   const xLowered = container.boundX({ radius: 57, x: 920 })
   expect(xLowered).toBe(900)
@@ -77,7 +77,17 @@ test('x in bound', () => {
   expect(xUnchanged).toBe(880)
 })
 
-test('y in bound', () => {
+test('x in bound, rectangle case', () => {
+  const container = getContainer()
+  const xLowered = container.boundX({ width: 57, left: 920 })
+  expect(xLowered).toBe(900)
+  const xNotRaised = container.boundX({ width: 57, left: 20 })
+  expect(xNotRaised).toBe(20)
+  const xUnchanged = container.boundX({ width: 57, left: 880 })
+  expect(xUnchanged).toBe(880)
+})
+
+test('y in bound when, circle case', () => {
   const container = getContainer()
   const yLowered = container.boundY({ radius: 19, y: 305 })
   expect(yLowered).toBe(300)
@@ -85,6 +95,22 @@ test('y in bound', () => {
   expect(yRaised).toBe(19)
   const yUnchanged = container.boundY({ radius: 19, y: 280 })
   expect(yUnchanged).toBe(280)
+})
+
+test('y in bound when, rectangle case', () => {
+  const container = getContainer()
+  const yLowered = container.boundY({ height: 19, top: 305 })
+  expect(yLowered).toBe(300)
+  const yNotRaised = container.boundY({ height: 19, top: 5 })
+  expect(yNotRaised).toBe(5)
+  const yUnchanged = container.boundY({ height: 19, top: 280 })
+  expect(yUnchanged).toBe(280)
+})
+
+test('unknown bound', () => {
+  const container = getContainer()
+  expect(() => container.boundX({ unboundable: true })).toThrow(TypeError)
+  expect(() => container.boundY({ unboundable: true })).toThrow(TypeError)
 })
 
 test('check mouse events', done => {

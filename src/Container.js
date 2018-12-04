@@ -62,10 +62,22 @@ export default class Container {
   }
 
   boundX (node) {
-    return Math.max(node.radius, Math.min(this.boundingClientRect.width - node.radius, node.x))
+    if ('radius' in node) {
+      return Math.max(node.radius, Math.min(this.boundingClientRect.width - node.radius, node.x))
+    }
+    if ('width' in node) {
+      return Math.min(this.boundingClientRect.width - node.width, node.left)
+    }
+    throw new TypeError('unable to bound node')
   }
 
   boundY (node) {
-    return Math.max(node.radius, Math.min(this.boundingClientRect.height - node.radius, node.y))
+    if ('radius' in node) {
+      return Math.max(node.radius, Math.min(this.boundingClientRect.height - node.radius, node.y))
+    }
+    if ('height' in node) {
+      return Math.min(this.boundingClientRect.height - node.height, node.top)
+    }
+    throw new TypeError('unable to bound node')
   }
 }

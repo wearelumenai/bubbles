@@ -93,14 +93,17 @@ class Bubbles {
   }
 
   _displayInfo (info, x, y) {
-    let labels = this.getClustersAtPosition(x, y)
-    if (labels.length > 0) {
-      let cluster = this.clusters[labels[0]]
-      let infoText = `${cluster.label}: x=${cluster.data[0]}; y=${cluster.data[1]}; a=${cluster.data[3]}`
+    let [label] = this.getClustersAtPosition(x, y)
+    if (typeof label !== 'undefined') {
+      const cluster = this.clusters[label]
+      const infoText = `${cluster.label}: x=${cluster.data[0]}; y=${cluster.data[1]}; a=${cluster.data[3]}`
       info.text(infoText)
       info.style('display', 'block')
-      info.style('left', (x + 15) + 'px')
-      info.style('top', (y + 5) + 'px')
+      const boudingRect = info.node().getBoundingClientRect()
+      const left = this.container.boundX({ left: x + 15, width: boudingRect.width })
+      const top = this.container.boundY({ top: y + 5, height: boudingRect.height })
+      info.style('left', left + 'px')
+      info.style('top', top + 'px')
     } else {
       this._hideInfo(info)
     }
