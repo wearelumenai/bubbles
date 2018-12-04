@@ -11,22 +11,9 @@ class Bubbles {
     this._doApply = this._applyFirst
   }
 
-  apply (projection, listeners) {
+  apply (projection) {
     this.clusters = new NodeBuilder(projection).getNodes(this.container)
-    this.listeners = listeners
-    this._applyListeners(this.container.containerElement)
     this._doApply()
-  }
-
-  _applyListeners (resource) {
-    if (this.listeners) {
-      Object.entries(this.listeners).forEach(
-        ([event, handler]) => {
-          resource = resource.on(event, handler)
-        }
-      )
-    }
-    return resource
   }
 
   getClustersAtPosition (x, y) {
@@ -180,7 +167,7 @@ class Bubbles {
   }
 }
 
-export function create (containerSelector, document) {
-  const container = new Container(containerSelector, document)
+export function create (containerSelector, listeners, document) {
+  const container = new Container(containerSelector, listeners, document)
   return new Bubbles(container)
 }

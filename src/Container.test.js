@@ -87,9 +87,23 @@ test('y in bound', () => {
   expect(yUnchanged).toBe(280)
 })
 
+test('check listeners', done => {
+  const container = getContainer()
+  let clicked = 0
+  const listeners = {
+    click: () => {
+      clicked++
+    }
+  }
+  container._applyListeners(listeners)
+  container.containerElement.dispatch('click')
+  expect(clicked).toBe(1)
+  done()
+})
+
 function getContainer () {
   const document = new jsdom.JSDOM('<body><div id="bubble-chart"></div></body>').window.document
-  const container = new Container('#bubble-chart', document)
+  const container = new Container('#bubble-chart', {}, document)
   // Tweak because JSDOM do not implement getClientBoundingRect
   container.boundingClientRect = Rect
   container.scaleHelper = new ScaleHelper(Rect)

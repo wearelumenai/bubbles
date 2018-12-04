@@ -4,9 +4,10 @@ import * as d3 from 'd3'
 import ScaleHelper from './ScaleHelper'
 
 export default class Container {
-  constructor (containerSelector, document) {
+  constructor (containerSelector, listeners, document) {
     this.containerSelector = containerSelector
     this.containerElement = this._getContainer(document)
+    this._applyListeners(listeners)
     this.boundingClientRect = this.containerElement.select('svg').node().getBoundingClientRect()
     this.scaleHelper = new ScaleHelper(this.boundingClientRect)
   }
@@ -24,18 +25,28 @@ export default class Container {
     return container
   }
 
+  _applyListeners (listeners) {
+    if (listeners) {
+      Object.entries(listeners).forEach(
+        ([event, handler]) => {
+          this.containerElement.on(event, handler)
+        }
+      )
+    }
+  }
+
   getInfo () {
     return this.containerElement.select('.info')
   }
 
   onMouse (onMove, onOut) {
-    const info = this.getInfo()
-    this.containerElement
-      .on('mousemove', () => {
+    this._applyListeners({
+      'mousemove': () => {
         const [x, y] = this.getMousePosition()
-        onMove(info, x, y)
-      })
-      .on('mouseout', () => onOut(info))
+        onMove(this.getInfo(), x, y)
+      },
+      'mouseout': () => onOut(this.getInfo())
+    })
   }
 
   getMousePosition () {

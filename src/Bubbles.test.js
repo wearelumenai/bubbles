@@ -43,21 +43,6 @@ test('optimize layout', done => {
   }, 300)
 })
 
-test('check listeners', done => {
-  const bub = getBubbles()
-  const projection = [[1, 1, 1, 1], [1, 1, 1, 1]]
-  let clicked = 0
-  const listeners = {
-    click: () => {
-      clicked++
-    }
-  }
-  bub.apply(projection, listeners)
-  bub.container.containerElement.dispatch('click')
-  expect(clicked).toBe(1)
-  done()
-})
-
 test('move clusters', done => {
   const bub = getBubbles()
   const clustersBeforeMove = applyScramble(bub)
@@ -165,7 +150,7 @@ function parseAttr (element, name) {
 
 function getBubbles () {
   const document = new jsdom.JSDOM('<body><div id="bubble-chart"></div></body>').window.document
-  const bub = bubbles.create('#bubble-chart', document)
+  const bub = bubbles.create('#bubble-chart', {}, document)
   // Tweak because JSDOM do not implement getClientBoundingRect
   bub.container.boundingClientRect = Rect
   bub.container.scaleHelper = new ScaleHelper(Rect)
