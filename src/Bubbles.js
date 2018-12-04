@@ -4,6 +4,12 @@ import * as d3 from 'd3'
 import Container from './Container.js'
 import NodeBuilder from './NodeBuilder.js'
 
+// class Circles {
+//   constructor (clusters) {
+//     this.clusters = clusters
+//   }
+// }
+
 class Bubbles {
   constructor (container) {
     this.container = container
@@ -17,7 +23,6 @@ class Bubbles {
     this.clusters = builder.getNodes(this.container)
     this.xClusters = this._getAxisClusters(builder.orderX())
     this.yClusters = this._getAxisClusters(builder.orderY())
-    this._hideAxis()
     this._doApply()
   }
 
@@ -35,7 +40,7 @@ class Bubbles {
     this.container._xAxisElement.style('display', 'block')
     let clusters = this.xClusters.map((d, i) => {
       let x = d.x + (i === 0 ? -1 : i === 4 ? 1 : 0) * d.radius
-      let y = i % 2 === 0 ? '0' : '1em'
+      let y = 0
       let text = `${Math.round(d.data[0] * 100) / 100}(${d.label})`
       let anchor = i === 0 ? 'start' : i === 4 ? 'end' : 'middle'
       let align = 'text-before-edge'
@@ -55,6 +60,18 @@ class Bubbles {
       }
       if (clusters[2].x + textLengths[2] / 2 > clusters[4].x) {
         clusters[2].x = clusters[4].x - textLengths[2] / 2
+      }
+      if (clusters[1].x + textLengths[1] / 2 > clusters[2].x - textLengths[2] / 2) {
+        clusters[1].y = '1em'
+      }
+      if (clusters[1].x - textLengths[1] / 2 < clusters[0].x + textLengths[0]) {
+        clusters[1].y = '1em'
+      }
+      if (clusters[3].x - textLengths[3] / 2 < clusters[2].x + textLengths[2] / 2) {
+        clusters[3].y = '1em'
+      }
+      if (clusters[3].x + textLengths[3] / 2 > clusters[4].x - textLengths[4]) {
+        clusters[3].y = '1em'
       }
       if (clusters[1].x + textLengths[1] / 2 > clusters[3].x - textLengths[3] / 2) {
         clusters[3].x = clusters[1].x + textLengths[1] / 2 + textLengths[3] / 2
@@ -224,6 +241,7 @@ class Bubbles {
   }
 
   _moveLayout () {
+    this._hideAxis()
     const circleTransition = this._moveCircles()
     const labelTransition = this._moveLabels()
     const then = (callback) => this._onLayoutMoved(circleTransition, labelTransition, callback)
