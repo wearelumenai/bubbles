@@ -7,11 +7,7 @@ import NodeBuilder from './NodeBuilder.js'
 class Bubbles {
   constructor (container) {
     this.container = container
-    const _this = this
-    this.container.containerElement.on('mousemove', function () {
-      let coord = d3.mouse(this)
-      _this._displayInfo(coord[0], coord[1])
-    }).on('mouseout', () => _this._hideInfo)
+    this.container.onMouse((info, x, y) => this._displayInfo(info, x, y), (info) => this._hideInfo(info))
     this._doApply = this._applyFirst
   }
 
@@ -62,7 +58,7 @@ class Bubbles {
   }
 
   _getCollisionForce () {
-    return d3.forceCollide(n => n.radius).strength(0.4)
+    return d3.forceCollide(n => n.radius * 0.8).strength(0.4)
   }
 
   _getPositionForces () {
@@ -109,27 +105,22 @@ class Bubbles {
     return this.container.selectSVG('.label')
   }
 
-  _displayInfo (x, y) {
-    let info = this._getInfo()
+  _displayInfo (info, x, y) {
     let labels = this.getClustersAtPosition(x, y)
     if (labels.length > 0) {
       let cluster = this.clusters[labels[0]]
       let infoText = `${cluster.label}: x=${cluster.data[0]}; y=${cluster.data[1]}; a=${cluster.data[3]}`
       info.text(infoText)
-      this._getInfo().style('display', 'block')
+      info.style('display', 'block')
       info.style('left', (x + 15) + 'px')
       info.style('top', (y + 5) + 'px')
     } else {
-      this._hideInfo()
+      this._hideInfo(info)
     }
   }
 
-  _hideInfo () {
-    this._getInfo().style('display', 'none')
-  }
-
-  _getInfo () {
-    return this.container.containerElement.select('.info')
+  _hideInfo (info) {
+    info.style('display', 'none')
   }
 
   _moveLayout () {
@@ -169,16 +160,15 @@ class Bubbles {
   }
 
   _updateCircles (circles) {
-    const self = this
     circles
       .attr('r', n => n.radius)
       .attr('fill', n => n.color)
       .attr('cx', n => {
-        n.x = self.container.boundX(n)
+        n.x = this.container.boundX(n)
         return n.x
       })
       .attr('cy', n => {
-        n.y = self.container.boundY(n)
+        n.y = this.container.boundY(n)
         return n.y
       })
   }

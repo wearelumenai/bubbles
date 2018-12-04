@@ -24,6 +24,24 @@ export default class Container {
     return container
   }
 
+  getInfo () {
+    return this.containerElement.select('.info')
+  }
+
+  onMouse (onMove, onOut) {
+    let info = this.getInfo()
+    this.containerElement
+      .on('mousemove', () => {
+        let [x, y] = this.getMousePosition()
+        onMove(info, x, y)
+      })
+      .on('mouseout', () => onOut(info))
+  }
+
+  getMousePosition () {
+    return d3.mouse(this.containerElement.node())
+  }
+
   getScales (x, y, areas, colors) {
     return this.scaleHelper.generate(x, y, areas, colors)
   }
