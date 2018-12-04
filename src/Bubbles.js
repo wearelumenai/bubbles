@@ -7,12 +7,18 @@ import NodeBuilder from './NodeBuilder.js'
 class Bubbles {
   constructor (container) {
     this.container = container
+    const _this = this
+    this.container.containerElement.on('mousemove', function () {
+      let coord = d3.mouse(this)
+      _this._displayInfo(coord[0], coord[1])
+    }).on('mouseout', () => _this._hideInfo)
     this._doApply = this._applyFirst
   }
 
   apply (projection, listeners) {
     this.clusters = new NodeBuilder(projection).getNodes(this.container)
     this.listeners = listeners
+    this._applyListeners(this.container.containerElement)
     this._doApply()
   }
 
@@ -56,7 +62,7 @@ class Bubbles {
   }
 
   _getCollisionForce () {
-    return d3.forceCollide(n => n.radius * 0.8).strength(0.4)
+    return d3.forceCollide(n => n.radius).strength(0.4)
   }
 
   _getPositionForces () {
@@ -74,33 +80,58 @@ class Bubbles {
   _drawCircles () {
     this._circles = this._getCircles()
     const circles = this._circles.data(this.clusters)
-    const newCircles = circles.enter()
+    let newCircles = circles.enter()
       .append('circle')
+      .style('pointer-events', 'none')
       .attr('class', 'cluster')
       .attr('data-label', n => n.label)
-    this._applyListeners(newCircles)
+    // newCircles = this._applyListeners(newCircles)
     this._updateCircles(newCircles.merge(circles))
   }
 
   _getCircles () {
-    return this.container.selectAll('.cluster')
+    return this.container.selectSVG('.cluster')
   }
 
   _displayLabels () {
     this._labels = this._getLabels()
-    const labelNodes = this._labels.data(this.clusters)
-    const newLabelNodes = labelNodes.enter()
+    const labels = this._labels.data(this.clusters)
+    let newLabels = labels.enter()
       .append('text')
+      .style('pointer-events', 'none')
       .attr('class', 'label')
       .attr('text-anchor', 'middle')
       .attr('alignment-baseline', 'central')
       .text(i => i.label)
-    this._applyListeners(newLabelNodes)
-    Bubbles._updateLabelNodes(newLabelNodes.merge(labelNodes))
+    // newLabels = this._applyListeners(newLabels)
+    Bubbles._updateLabels(newLabels.merge(labels))
   }
 
   _getLabels () {
-    return this.container.selectAll('.label')
+    return this.container.selectSVG('.label')
+  }
+
+  _displayInfo (x, y) {
+    let info = this._getInfo()
+    let labels = this.getClustersAtPosition(x, y)
+    if (labels.length > 0) {
+      let cluster = this.clusters[labels[0]]
+      let infoText = `${cluster.label}: x=${cluster.data[0]}; y=${cluster.data[1]}; a=${cluster.data[3]}`
+      info.text(infoText)
+      this._getInfo().style('display', 'block')
+      info.style('left', (x + 15) + 'px')
+      info.style('top', (y + 5) + 'px')
+    } else {
+      this._hideInfo()
+    }
+  }
+
+  _hideInfo () {
+    this._getInfo().style('display', 'none')
+  }
+
+  _getInfo () {
+    return this.container.containerElement.select('.info')
   }
 
   _moveLayout () {
@@ -119,10 +150,10 @@ class Bubbles {
   }
 
   _moveLabels () {
-    const labelNodes = this._labels.data(this.clusters)
-    labelNodes.exit().remove()
-    const labelTransition = Bubbles._makeTransition(labelNodes)
-    Bubbles._updateLabelNodes(labelTransition)
+    const labels = this._labels.data(this.clusters)
+    labels.exit().remove()
+    const labelTransition = Bubbles._makeTransition(labels)
+    Bubbles._updateLabels(labelTransition)
     return labelTransition
   }
 
@@ -140,21 +171,22 @@ class Bubbles {
   }
 
   _updateCircles (circles) {
+    let self = this
     circles
       .attr('r', n => n.radius)
       .attr('fill', n => n.color)
       .attr('cx', n => {
-        n.x = this.container.boundX(n)
+        n.x = self.container.boundX(n)
         return n.x
       })
       .attr('cy', n => {
-        n.y = this.container.boundY(n)
+        n.y = self.container.boundY(n)
         return n.y
       })
   }
 
-  static _updateLabelNodes (labelNodes) {
-    labelNodes
+  static _updateLabels (labels) {
+    labels
       .attr('x', n => n.x)
       .attr('y', n => n.y)
   }

@@ -43,6 +43,23 @@ test('optimize layout', done => {
   }, 300)
 })
 
+test('check listeners', done => {
+  const bub = getBubbles()
+  const projection = [[1, 1, 1, 1], [1, 1, 1, 1]]
+  const clicked = [0, 0]
+  const listeners = {
+    click: d => {
+      console.log(d)
+      clicked[d.label]++
+      console.log(d)
+    }
+  }
+  bub.apply(projection, listeners)
+  bub.container.containerElement.dispatch.call('click')
+  expect(clicked).toBe([1, 1])
+  done()
+})
+
 test('move clusters', done => {
   const bub = getBubbles()
   const clustersBeforeMove = applyScramble(bub)
@@ -70,9 +87,28 @@ test('get clusters at position', () => {
   const bub = getBubbles()
   const projectionWithOverlap = makeOverlap()
   bub.clusters = new NodeBuilder(projectionWithOverlap).getNodes(bub.container)
-  bub._drawClusters()
   const clusters = bub.getClustersAtPosition(800, 200)
   expect(clusters).toEqual([2, 1])
+})
+
+test('get infos', () => {
+  const bub = getBubbles()
+  const projectionWithOverlap = makeOverlap()
+  bub.clusters = new NodeBuilder(projectionWithOverlap).getNodes(bub.container)
+  bub._displayInfo(800, 200)
+  const info = bub._getInfo()
+  expect(info.empty()).toBe(false)
+  expect(info.style('display')).toBe('block')
+})
+
+test('no infos when no cluster', () => {
+  const bub = getBubbles()
+  const projectionWithOverlap = makeOverlap()
+  bub.clusters = new NodeBuilder(projectionWithOverlap).getNodes(bub.container)
+  bub._displayInfo(150, 180)
+  const info = bub._getInfo()
+  expect(info.empty()).toBe(false)
+  expect(info.style('display')).toBe('none')
 })
 
 function fakeTransition () {

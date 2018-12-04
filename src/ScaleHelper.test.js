@@ -2,7 +2,7 @@ const ScaleHelper = require('./ScaleHelper.js').default
 
 const X = [3, 12, 7]
 const Y = [14, 12, 9]
-const Areas = [16, 49, 25]
+const Areas = [160, 490, 250]
 const Colors = [3, 8, 12]
 const Rect = { width: 957, height: 319 }
 
@@ -29,21 +29,21 @@ test('container bounding rectangle', () => {
 test('ensure positive area unchanged', () => {
   const scaleHelper = getScaleHelper()
   const { domain, positiveArea } = scaleHelper._ensurePositiveArea(Areas)
-  expect(domain).toEqual([16, 49])
+  expect(domain).toEqual([160, 490])
   expect(positiveArea).toEqual(Areas)
 })
 
 test('ensure positive area becomes positive', () => {
   const scaleHelper = getScaleHelper()
   const { domain, positiveArea } = scaleHelper._ensurePositiveArea([-10, -1, 10])
-  expect(domain).toEqual([1, 21])
-  expect(positiveArea).toEqual([1, 10, 21])
+  expect(domain).toEqual([160, 180])
+  expect(positiveArea).toEqual([160, 169, 180])
 })
 
 test('area ratio', () => {
   const scaleHelper = getScaleHelper()
   const ratio = scaleHelper._getAreaRatio(Areas)
-  expect(ratio).toBeCloseTo(1017.6, 1)
+  expect(ratio).toBeCloseTo(101.76, 1)
 })
 
 test('radius scale', () => {

@@ -21,17 +21,49 @@ test('container provide scale functions', () => {
   expect(typeof scales.colorScale === 'function').toBe(true)
 })
 
+test('container has relative position', () => {
+  const container = getContainer()
+  expect(container.containerElement.style('position')).toBe('relative')
+})
+
+test('container element has svg', () => {
+  const container = getContainer()
+  const element = container.containerElement.select('svg')
+  expect(element.empty()).toBe(false)
+})
+
+test('container element has p', () => {
+  const container = getContainer()
+  const element = container.containerElement.select('.info')
+  expect(element.empty()).toBe(false)
+  expect(element.node().tagName).toBe('P')
+})
+
 test('container element is svg', () => {
   const container = getContainer()
   const element = container.containerElement
-  expect(element.node().tagName).toBe('svg')
+  expect(element.node().tagName).toBe('DIV')
+})
+
+test('container element is svg', () => {
+  const container = getContainer()
+  const element = container.containerElement
+  expect(element.node().tagName).toBe('DIV')
 })
 
 test('select sub elements', () => {
   const container = getContainer()
   const element = container.containerElement
   const rect = element.append('rect').attr('class', 'selectme').node()
-  const sel = container.selectAll('.selectme').node()
+  const sel = element.selectAll('.selectme').node()
+  expect(rect).toEqual(sel)
+})
+
+test('select element in svg', () => {
+  const container = getContainer()
+  const element = container.containerElement.select('svg')
+  const rect = element.append('rect').attr('class', 'selectme').node()
+  const sel = container.selectSVG('.selectme').node()
   expect(rect).toEqual(sel)
 })
 
