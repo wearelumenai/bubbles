@@ -13,15 +13,17 @@ const Projection = [
 
 test('draw clusters', () => {
   const bub = getBubbles()
-  const clusters = new NodeBuilder(Projection).getNodes(bub.container)
+  const builder = new NodeBuilder(Projection)
+  const clusters = builder.getNodes(bub.container)
   bub.clusters = clusters
+  bub._makeRender(builder)
   bub._drawClusters()
-  const circles = bub._getCircles()
+  const circles = bub.circleRender._getCircles()
   circles.each(function () {
     const circle = d3.select(this)
     assertCirdle(circle, clusters)
   })
-  const labels = bub._getLabels()
+  const labels = bub.labelRender._getLabels()
   labels.each(function () {
     const label = d3.select(this)
     assertLabel(label, clusters)
@@ -74,47 +76,6 @@ test('get clusters at position', () => {
   expect(clusters).toEqual([2, 1])
 })
 
-test('display infos', () => {
-  const bub = getBubbles()
-  const projectionWithOverlap = makeOverlap()
-  bub.clusters = new NodeBuilder(projectionWithOverlap).getNodes(bub.container)
-  const info = bub.container._infoElement
-  bub._displayInfo(info, 800, 200)
-  expect(info.empty()).toBe(false)
-  expect(info.style('display')).toBe('block')
-})
-
-test('hide info when no cluster', () => {
-  const bub = getBubbles()
-  const projectionWithOverlap = makeOverlap()
-  bub.clusters = new NodeBuilder(projectionWithOverlap).getNodes(bub.container)
-  const info = bub.container._infoElement
-  bub._displayInfo(info, 150, 180)
-  expect(info.empty()).toBe(false)
-  expect(info.style('display')).toBe('none')
-})
-
-test('display infos on mouse move', done => {
-  const bub = getBubbles()
-  const projectionWithOverlap = makeOverlap()
-  bub.clusters = new NodeBuilder(projectionWithOverlap).getNodes(bub.container)
-  bub.container.getMousePosition = () => [800, 200]
-  bub.container._chartElement.dispatch('mousemove')
-  done()
-  const info = bub.container._infoElement
-  expect(info.style('display')).toBe('block')
-})
-
-test('hide infos on mouse out', done => {
-  const bub = getBubbles()
-  const projectionWithOverlap = makeOverlap()
-  bub.clusters = new NodeBuilder(projectionWithOverlap).getNodes(bub.container)
-  bub.container._chartElement.dispatch('mouseout')
-  done()
-  const info = bub.container._infoElement
-  expect(info.style('display')).toBe('none')
-})
-
 function fakeTransition () {
   const tr = {}
   const simulate = (cb) => {
@@ -130,9 +91,11 @@ function fakeTransition () {
 }
 
 function applyScramble (bub) {
-  let clustersBeforeMove = new NodeBuilder(Projection).getNodes(bub.container)
+  const builder = new NodeBuilder(Projection)
+  let clustersBeforeMove = builder.getNodes(bub.container)
   clustersBeforeMove = [clustersBeforeMove[0], clustersBeforeMove[2], clustersBeforeMove[1]]
   bub.clusters = clustersBeforeMove
+  bub._makeRender(builder)
   bub._applyFirst()
   return clustersBeforeMove
 }
@@ -175,5 +138,6 @@ function getBubbles () {
   // Tweak because JSDOM do not implement getClientBoundingRect
   bub.container._chartBoundingRect = Rect
   bub.container.scaleHelper = new ScaleHelper(Rect)
+  bub.axisRender.displayAxis = () => {}
   return bub
 }
