@@ -8,7 +8,7 @@ export default class Container {
     this.containerSelector = containerSelector
     this._containerElement = this._makeContainer(document)
     this._applyListeners(listeners)
-    this.scaleHelper = new ScaleHelper(this._chartBoundingRect)
+    this.resize()
   }
 
   _makeContainer (document) {
@@ -21,7 +21,6 @@ export default class Container {
     container.style('position', 'relative').style('margin', '0')
     this._infoElement = this._makeInfo(container)
     this._chartElement = this._makeChart(container)
-    this._chartBoundingRect = this._chartElement.node().getBoundingClientRect()
     this._xAxisElement = this._makeXAxis(container)
     this._yAxisElement = this._makeYAxis(container)
     return container
@@ -47,6 +46,9 @@ export default class Container {
       .style('right', '0')
     chart.append('svg')
       .attr('class', 'chart')
+      .style('position', 'absolute')
+      .style('top', '0')
+      .style('left', '0')
       .style('height', '100%')
       .style('width', '100%')
     return chart
@@ -61,6 +63,9 @@ export default class Container {
       .style('right', '0')
     xAxis.append('svg')
       .attr('class', 'x-axis')
+      .style('position', 'absolute')
+      .style('top', '0')
+      .style('left', '0')
       .style('height', '100%')
       .style('width', '100%')
     return xAxis
@@ -75,6 +80,9 @@ export default class Container {
       .style('width', '7em')
     yAxis.append('svg')
       .attr('class', 'y-axis')
+      .style('position', 'absolute')
+      .style('top', '0')
+      .style('left', '0')
       .style('height', '100%')
       .style('width', '100%')
     return yAxis
@@ -88,6 +96,11 @@ export default class Container {
         }
       )
     }
+  }
+
+  resize () {
+    this._chartBoundingRect = this._chartElement.node().getBoundingClientRect()
+    this.scaleHelper = new ScaleHelper(this._chartBoundingRect)
   }
 
   onMouse (onMove, onOut) {

@@ -12,6 +12,7 @@ class Bubbles {
   }
 
   apply (projection) {
+    this.projection = projection
     const builder = new NodeBuilder(projection)
     this.clusters = builder.getNodes(this.container)
     this.xClusters = this._getAxisClusters(builder.orderX())
@@ -68,7 +69,7 @@ class Bubbles {
       let y = d.y + (i === 0 ? 1 : i === 4 ? -1 : 0) * d.radius
       let text = `${Math.round(d.data[1] * 100) / 100}(${d.label})`
       let anchor = 'middle'
-      let align = i === 0 ? 'text-after-edge' : i === 4 ? 'text-before-edge' : 'central'
+      let align = i === 0 ? 'alphabetical' : i === 4 ? 'hanging' : 'central'
       let fill = i % 2 === 1 ? 'Blue' : (i === 2 ? 'MidnightBlue' : 'DeepSkyBlue')
       return { x, y, text, anchor, align, fill }
     })
@@ -282,4 +283,9 @@ class Bubbles {
 export function create (containerSelector, listeners, document) {
   const container = new Container(containerSelector, listeners, document)
   return new Bubbles(container)
+}
+
+export function resize (bubbles, document) {
+  bubbles.container.resize()
+  bubbles.apply(bubbles.projection)
 }
