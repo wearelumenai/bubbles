@@ -22,4 +22,16 @@ export default class NodeBuilder {
       }
     })
   }
+
+  orderX () {
+    return NodeBuilder._order(this.x)
+  }
+
+  orderY () {
+    return NodeBuilder._order(this.y)
+  }
+
+  static _order (array) {
+    return array.map((_, i) => i).sort((a, b) => array[a] - array[b])
+  }
 }

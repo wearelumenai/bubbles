@@ -28,8 +28,12 @@ test('container has relative position', () => {
 
 test('container element has svg components', () => {
   const container = getContainer()
-  const element = container._containerElement.select('.chart')
-  expect(element.node().tagName.toLowerCase()).toBe('svg')
+  const chartElement = container._containerElement.select('.chart')
+  expect(chartElement.node().tagName.toLowerCase()).toBe('svg')
+  const xAxisElement = container._containerElement.select('.x-axis')
+  expect(xAxisElement.node().tagName.toLowerCase()).toBe('svg')
+  const yAxisElement = container._containerElement.select('.y-axis')
+  expect(yAxisElement.node().tagName.toLowerCase()).toBe('svg')
 })
 
 test('container element has p', () => {

@@ -32,6 +32,18 @@ test('get nodes in container', () => {
   })
 })
 
+test('x order', () => {
+  const builder = getNodeBuilder()
+  let xOrder = builder.orderX()
+  expect(xOrder).toEqual([0, 2, 1])
+})
+
+test('y order', () => {
+  const builder = getNodeBuilder()
+  let yOrder = builder.orderY()
+  expect(yOrder).toEqual([2, 1, 0])
+})
+
 function getNodeBuilder () {
   return new NodeBuilder(Projection)
 }

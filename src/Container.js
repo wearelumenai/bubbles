@@ -22,6 +22,8 @@ export default class Container {
     this._infoElement = this._makeInfo(container)
     this._chartElement = this._makeChart(container)
     this._chartBoundingRect = this._chartElement.node().getBoundingClientRect()
+    this._xAxisElement = this._makeXAxis(container)
+    this._yAxisElement = this._makeYAxis(container)
     return container
   }
 
@@ -37,7 +39,7 @@ export default class Container {
   }
 
   _makeChart (container) {
-    const chart = container.append('div')
+    let chart = container.append('div')
       .style('position', 'absolute')
       .style('top', '0')
       .style('bottom', '2em')
@@ -48,6 +50,34 @@ export default class Container {
       .style('height', '100%')
       .style('width', '100%')
     return chart
+  }
+
+  _makeXAxis (container) {
+    let xAxis = container.append('div')
+      .style('position', 'absolute')
+      .style('height', '2em')
+      .style('bottom', '0')
+      .style('left', '2em')
+      .style('right', '0')
+    xAxis.append('svg')
+      .attr('class', 'x-axis')
+      .style('height', '100%')
+      .style('width', '100%')
+    return xAxis
+  }
+
+  _makeYAxis (container) {
+    let yAxis = container.append('div')
+      .style('position', 'absolute')
+      .style('top', '0')
+      .style('bottom', '2em')
+      .style('left', '0')
+      .style('width', '2em')
+    yAxis.append('svg')
+      .attr('class', 'y-axis')
+      .style('height', '100%')
+      .style('width', '100%')
+    return yAxis
   }
 
   _applyListeners (listeners) {
