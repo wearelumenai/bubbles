@@ -46,17 +46,15 @@ test('optimize layout', done => {
 test('check listeners', done => {
   const bub = getBubbles()
   const projection = [[1, 1, 1, 1], [1, 1, 1, 1]]
-  const clicked = [0, 0]
+  let clicked = 0
   const listeners = {
-    click: d => {
-      console.log(d)
-      clicked[d.label]++
-      console.log(d)
+    click: () => {
+      clicked++
     }
   }
   bub.apply(projection, listeners)
-  bub.container.containerElement.dispatch.call('click')
-  expect(clicked).toBe([1, 1])
+  bub.container.containerElement.dispatch('click')
+  expect(clicked).toBe(1)
   done()
 })
 

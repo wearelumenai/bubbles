@@ -85,7 +85,6 @@ class Bubbles {
       .style('pointer-events', 'none')
       .attr('class', 'cluster')
       .attr('data-label', n => n.label)
-    // newCircles = this._applyListeners(newCircles)
     this._updateCircles(newCircles.merge(circles))
   }
 
@@ -103,7 +102,6 @@ class Bubbles {
       .attr('text-anchor', 'middle')
       .attr('alignment-baseline', 'central')
       .text(i => i.label)
-    // newLabels = this._applyListeners(newLabels)
     Bubbles._updateLabels(newLabels.merge(labels))
   }
 
@@ -171,7 +169,7 @@ class Bubbles {
   }
 
   _updateCircles (circles) {
-    let self = this
+    const self = this
     circles
       .attr('r', n => n.radius)
       .attr('fill', n => n.color)
