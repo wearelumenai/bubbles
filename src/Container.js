@@ -29,10 +29,10 @@ export default class Container {
   }
 
   onMouse (onMove, onOut) {
-    let info = this.getInfo()
+    const info = this.getInfo()
     this.containerElement
       .on('mousemove', () => {
-        let [x, y] = this.getMousePosition()
+        const [x, y] = this.getMousePosition()
         onMove(info, x, y)
       })
       .on('mouseout', () => onOut(info))
