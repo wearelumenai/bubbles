@@ -99,9 +99,9 @@ class Bubbles {
       const infoText = `${cluster.label}: x=${cluster.data[0]}; y=${cluster.data[1]}; a=${cluster.data[3]}`
       info.text(infoText)
       info.style('display', 'block')
-      const boudingRect = info.node().getBoundingClientRect()
-      const left = this.container.boundX({ left: x + 15, width: boudingRect.width })
-      const top = this.container.boundY({ top: y + 5, height: boudingRect.height })
+      const boundingRect = info.node().getBoundingClientRect()
+      const left = this.container.boundX({ left: x - 15, width: boundingRect.width })
+      const top = this.container.boundY({ top: y, height: boundingRect.height })
       info.style('left', left + 'px')
       info.style('top', top + 'px')
     } else {

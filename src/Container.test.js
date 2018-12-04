@@ -23,37 +23,37 @@ test('container provide scale functions', () => {
 
 test('container has relative position', () => {
   const container = getContainer()
-  expect(container.containerElement.style('position')).toBe('relative')
+  expect(container._containerElement.style('position')).toBe('relative')
 })
 
-test('container element has svg', () => {
+test('container element has svg components', () => {
   const container = getContainer()
-  const element = container.containerElement.select('svg')
-  expect(element.empty()).toBe(false)
+  const element = container._containerElement.select('.chart')
+  expect(element.node().tagName.toLowerCase()).toBe('svg')
 })
 
 test('container element has p', () => {
   const container = getContainer()
-  const element = container.containerElement.select('.info')
+  const element = container._containerElement.select('.info')
   expect(element.empty()).toBe(false)
-  expect(element.node().tagName).toBe('P')
+  expect(element.node().tagName.toLowerCase()).toBe('p')
 })
 
 test('container element is svg', () => {
   const container = getContainer()
-  const element = container.containerElement
+  const element = container._containerElement
   expect(element.node().tagName).toBe('DIV')
 })
 
 test('container element is svg', () => {
   const container = getContainer()
-  const element = container.containerElement
+  const element = container._containerElement
   expect(element.node().tagName).toBe('DIV')
 })
 
 test('select sub elements', () => {
   const container = getContainer()
-  const element = container.containerElement
+  const element = container._containerElement
   const rect = element.append('rect').attr('class', 'selectme').node()
   const sel = element.selectAll('.selectme').node()
   expect(rect).toEqual(sel)
@@ -61,7 +61,7 @@ test('select sub elements', () => {
 
 test('select element in svg', () => {
   const container = getContainer()
-  const element = container.containerElement.select('svg')
+  const element = container._containerElement.select('svg')
   const rect = element.append('rect').attr('class', 'selectme').node()
   const sel = container.selectSVG('.selectme').node()
   expect(rect).toEqual(sel)
@@ -122,8 +122,8 @@ test('check mouse events', done => {
   }, () => {
     mouseOut = true
   })
-  container.containerElement.dispatch('mousemove')
-  container.containerElement.dispatch('mouseout')
+  container._chartElement.dispatch('mousemove')
+  container._chartElement.dispatch('mouseout')
   done()
   expect(mouseMoved).toBe(true)
   expect(mouseOut).toBe(true)
@@ -131,6 +131,7 @@ test('check mouse events', done => {
 
 test('check listeners', done => {
   const container = getContainer()
+  container._applyListeners()
   let clicked = false
   const listeners = {
     click: () => {
@@ -138,7 +139,7 @@ test('check listeners', done => {
     }
   }
   container._applyListeners(listeners)
-  container.containerElement.dispatch('click')
+  container._chartElement.dispatch('click')
   done()
   expect(clicked).toBe(true)
 })
@@ -147,7 +148,7 @@ function getContainer () {
   const document = new jsdom.JSDOM('<body><div id="bubble-chart"></div></body>').window.document
   const container = new Container('#bubble-chart', {}, document)
   // Tweak because JSDOM do not implement getClientBoundingRect
-  container.boundingClientRect = Rect
+  container._chartBoundingRect = Rect
   container.scaleHelper = new ScaleHelper(Rect)
   return container
 }

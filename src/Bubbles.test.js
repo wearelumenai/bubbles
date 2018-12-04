@@ -78,7 +78,7 @@ test('display infos', () => {
   const bub = getBubbles()
   const projectionWithOverlap = makeOverlap()
   bub.clusters = new NodeBuilder(projectionWithOverlap).getNodes(bub.container)
-  const info = bub.container.getInfo()
+  const info = bub.container._infoElement
   bub._displayInfo(info, 800, 200)
   expect(info.empty()).toBe(false)
   expect(info.style('display')).toBe('block')
@@ -88,7 +88,7 @@ test('hide info when no cluster', () => {
   const bub = getBubbles()
   const projectionWithOverlap = makeOverlap()
   bub.clusters = new NodeBuilder(projectionWithOverlap).getNodes(bub.container)
-  const info = bub.container.getInfo()
+  const info = bub.container._infoElement
   bub._displayInfo(info, 150, 180)
   expect(info.empty()).toBe(false)
   expect(info.style('display')).toBe('none')
@@ -99,9 +99,9 @@ test('display infos on mouse move', done => {
   const projectionWithOverlap = makeOverlap()
   bub.clusters = new NodeBuilder(projectionWithOverlap).getNodes(bub.container)
   bub.container.getMousePosition = () => [800, 200]
-  bub.container.containerElement.dispatch('mousemove')
+  bub.container._chartElement.dispatch('mousemove')
   done()
-  const info = bub.container.getInfo()
+  const info = bub.container._infoElement
   expect(info.style('display')).toBe('block')
 })
 
@@ -109,9 +109,9 @@ test('hide infos on mouse out', done => {
   const bub = getBubbles()
   const projectionWithOverlap = makeOverlap()
   bub.clusters = new NodeBuilder(projectionWithOverlap).getNodes(bub.container)
-  bub.container.containerElement.dispatch('mouseout')
+  bub.container._chartElement.dispatch('mouseout')
   done()
-  const info = bub.container.getInfo()
+  const info = bub.container._infoElement
   expect(info.style('display')).toBe('none')
 })
 
@@ -173,7 +173,7 @@ function getBubbles () {
   const document = new jsdom.JSDOM('<body><div id="bubble-chart"></div></body>').window.document
   const bub = bubbles.create('#bubble-chart', {}, document)
   // Tweak because JSDOM do not implement getClientBoundingRect
-  bub.container.boundingClientRect = Rect
+  bub.container._chartBoundingRect = Rect
   bub.container.scaleHelper = new ScaleHelper(Rect)
   return bub
 }
