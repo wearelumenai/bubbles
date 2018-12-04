@@ -74,7 +74,7 @@ test('get clusters at position', () => {
   expect(clusters).toEqual([2, 1])
 })
 
-test('get infos', () => {
+test('display infos', () => {
   const bub = getBubbles()
   const projectionWithOverlap = makeOverlap()
   bub.clusters = new NodeBuilder(projectionWithOverlap).getNodes(bub.container)
@@ -84,13 +84,34 @@ test('get infos', () => {
   expect(info.style('display')).toBe('block')
 })
 
-test('no infos when no cluster', () => {
+test('hide info when no cluster', () => {
   const bub = getBubbles()
   const projectionWithOverlap = makeOverlap()
   bub.clusters = new NodeBuilder(projectionWithOverlap).getNodes(bub.container)
   const info = bub.container.getInfo()
   bub._displayInfo(info, 150, 180)
   expect(info.empty()).toBe(false)
+  expect(info.style('display')).toBe('none')
+})
+
+test('display infos on mouse move', done => {
+  const bub = getBubbles()
+  const projectionWithOverlap = makeOverlap()
+  bub.clusters = new NodeBuilder(projectionWithOverlap).getNodes(bub.container)
+  bub.container.getMousePosition = () => [800, 200]
+  bub.container.containerElement.dispatch('mousemove')
+  done()
+  const info = bub.container.getInfo()
+  expect(info.style('display')).toBe('block')
+})
+
+test('hide infos on mouse out', done => {
+  const bub = getBubbles()
+  const projectionWithOverlap = makeOverlap()
+  bub.clusters = new NodeBuilder(projectionWithOverlap).getNodes(bub.container)
+  bub.container.containerElement.dispatch('mouseout')
+  done()
+  const info = bub.container.getInfo()
   expect(info.style('display')).toBe('none')
 })
 

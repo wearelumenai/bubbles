@@ -87,18 +87,34 @@ test('y in bound', () => {
   expect(yUnchanged).toBe(280)
 })
 
+test('check mouse events', done => {
+  const container = getContainer()
+  let mouseMoved = false
+  let mouseOut = false
+  container.onMouse((info, x, y) => {
+    mouseMoved = true
+  }, () => {
+    mouseOut = true
+  })
+  container.containerElement.dispatch('mousemove')
+  container.containerElement.dispatch('mouseout')
+  done()
+  expect(mouseMoved).toBe(true)
+  expect(mouseOut).toBe(true)
+})
+
 test('check listeners', done => {
   const container = getContainer()
-  let clicked = 0
+  let clicked = false
   const listeners = {
     click: () => {
-      clicked++
+      clicked = true
     }
   }
   container._applyListeners(listeners)
   container.containerElement.dispatch('click')
-  expect(clicked).toBe(1)
   done()
+  expect(clicked).toBe(true)
 })
 
 function getContainer () {
