@@ -1,5 +1,7 @@
 import * as d3 from 'd3'
 
+const progressiveTimeLine = [10, 290]
+
 export default class CircleRender {
   constructor (container) {
     this.container = container
@@ -48,20 +50,28 @@ export default class CircleRender {
 
   _updateCircles (circles) {
     circles
+      .each(n => {
+        n.tick = n.tick ? n.tick + 1 : 1
+      })
       .attr('r', n => n.radius)
       .attr('fill', n => n.color)
       .attr('cx', n => {
-        n.t = n.t ? n.t + 1 : 1
-        if (n.t > 50) {
-          n.x = this.container.boundX(n)
-        }
+        n.x = this._progressiveBound(n.x, this.container.boundX(n), n.tick, progressiveTimeLine)
         return n.x
       })
       .attr('cy', n => {
-        if (n.t > 50) {
-          n.y = this.container.boundY(n)
-        }
+        n.y = this._progressiveBound(n.y, this.container.boundY(n), n.tick, progressiveTimeLine)
         return n.y
       })
+  }
+
+  _progressiveBound (current, bound, tick, [t0, t1]) {
+    if (tick > t1) {
+      return bound
+    } else if (tick > t0) {
+      return current + (bound - current) / (t1 - t0) * (tick - t0)
+    } else {
+      return current
+    }
   }
 }

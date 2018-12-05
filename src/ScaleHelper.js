@@ -1,5 +1,6 @@
 import * as d3 from 'd3'
 
+const areaRescaleFactor = 20
 export default class ScaleHelper {
   constructor (boundingRect) {
     this.boundingRect = boundingRect
@@ -51,7 +52,7 @@ export default class ScaleHelper {
   _ensurePositiveArea (area) {
     let positiveArea = area
     let domain = ScaleHelper._range(area)
-    const minArea = 160
+    const minArea = domain[1] / areaRescaleFactor
     if (domain[0] < minArea) {
       positiveArea = area.map(a => a - domain[0] + minArea)
       domain = [minArea, domain[1] - domain[0] + minArea]
