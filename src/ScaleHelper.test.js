@@ -35,9 +35,9 @@ test('ensure positive area unchanged', () => {
 
 test('ensure positive area becomes positive', () => {
   const scaleHelper = getScaleHelper()
-  const { domain, positiveArea } = scaleHelper._ensurePositiveArea([-10, -1, 10])
-  expect(domain).toEqual([160, 180])
-  expect(positiveArea).toEqual([160, 169, 180])
+  const { domain, positiveArea } = scaleHelper._ensurePositiveArea([-20, -2, 20])
+  expect(domain).toEqual([1, 41])
+  expect(positiveArea).toEqual([1, 19, 41])
 })
 
 test('area ratio', () => {

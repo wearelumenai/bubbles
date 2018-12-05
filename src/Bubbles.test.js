@@ -31,12 +31,7 @@ test('optimize layout', done => {
   const clustersBeforeCollision = applyOverlap(bub)
   setTimeout(() => {
     const clustersAfterCollision = bub.clusters
-    expect(clustersAfterCollision[0].x).toBeCloseTo(clustersBeforeCollision[0].x, 1)
-    expect(clustersAfterCollision[0].y).toBeCloseTo(clustersBeforeCollision[0].y, 1)
-    expect(clustersAfterCollision[1].x).toBeCloseTo(clustersBeforeCollision[1].x, 1)
-    expect(clustersAfterCollision[1].y).not.toBeCloseTo(clustersBeforeCollision[1].y, 1)
-    expect(clustersAfterCollision[2].x).not.toBeCloseTo(clustersBeforeCollision[2].x, 1)
-    expect(clustersAfterCollision[2].y).toBeCloseTo(clustersBeforeCollision[2].y, 1)
+    assertPlacement(clustersBeforeCollision, clustersAfterCollision)
     done()
   }, 300)
 })
@@ -47,12 +42,7 @@ test('move clusters', done => {
   applyOverlap(bub)
   setTimeout(() => {
     const clustersAfterMove = bub.clusters
-    expect(clustersAfterMove[0].x).toBeCloseTo(clustersBeforeMove[0].x, 1)
-    expect(clustersAfterMove[0].y).toBeCloseTo(clustersBeforeMove[0].y, 1)
-    expect(clustersAfterMove[1].x).not.toBeCloseTo(clustersBeforeMove[1].x, 1)
-    expect(clustersAfterMove[1].y).not.toBeCloseTo(clustersBeforeMove[1].y, 1)
-    expect(clustersAfterMove[2].x).not.toBeCloseTo(clustersBeforeMove[2].x, 1)
-    expect(clustersAfterMove[2].y).not.toBeCloseTo(clustersBeforeMove[2].y, 1)
+    assertPlacement(clustersBeforeMove, clustersAfterMove)
     done()
   }, 300)
 })
@@ -95,6 +85,15 @@ test('resize', () => {
   expect(bub.clusters[1].x).toBeCloseTo(0, 1)
   expect(bub.clusters[2].x).toBeCloseTo(0, 1)
 })
+
+function assertPlacement (clustersBefore, clustersAfter) {
+  expect(clustersAfter[0].x).toBeCloseTo(clustersBefore[0].x, 1)
+  expect(clustersAfter[0].y).toBeCloseTo(clustersBefore[0].y, 1)
+  expect(clustersAfter[1].x).not.toBeCloseTo(clustersBefore[1].x, 1)
+  expect(clustersAfter[1].y).not.toBeCloseTo(clustersBefore[1].y, 1)
+  expect(clustersAfter[2].x).not.toBeCloseTo(clustersBefore[2].x, 1)
+  expect(clustersAfter[2].y).not.toBeCloseTo(clustersBefore[2].y, 1)
+}
 
 function fakeTransition () {
   const tr = {}
