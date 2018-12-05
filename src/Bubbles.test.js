@@ -13,20 +13,16 @@ const Projection = [
 
 test('draw clusters', () => {
   const bub = getBubbles()
-  const builder = new NodeBuilder(Projection, bub.container)
-  const clusters = builder.getNodes()
-  bub.clusters = clusters
-  bub._applyRender(builder)
-  bub._drawClusters()
+  bub.apply(Projection)
   const circles = bub.circleRender._getCircles()
   circles.each(function () {
     const circle = d3.select(this)
-    assertCirdle(circle, clusters)
+    assertCirdle(circle, bub.clusters)
   })
   const labels = bub.labelRender._getLabels()
   labels.each(function () {
     const label = d3.select(this)
-    assertLabel(label, clusters)
+    assertLabel(label, bub.clusters)
   })
 })
 
@@ -115,13 +111,9 @@ function fakeTransition () {
 }
 
 function applyScramble (bub) {
-  const builder = new NodeBuilder(Projection, bub.container)
-  let clustersBeforeMove = builder.getNodes()
-  clustersBeforeMove = [clustersBeforeMove[0], clustersBeforeMove[2], clustersBeforeMove[1]]
-  bub.clusters = clustersBeforeMove
-  bub._applyRender(builder)
-  bub._applyFirst()
-  return clustersBeforeMove
+  const scrampledProjection = [Projection[0], Projection[2], Projection[1]]
+  bub.apply(scrampledProjection)
+  return bub.clusters
 }
 
 function applyOverlap (bub) {
@@ -162,6 +154,6 @@ function getBubbles () {
   // Tweak because JSDOM do not implement getBoundingClientRect
   bub.container._chartBoundingRect = Rect
   bub.container.scaleHelper = new ScaleHelper(Rect)
-  bub.axisRender.displayAxis = () => {} // TODO: write tests for axis
+  bub.axisRender.displayAxis = () => {} // TODO: separate render tests
   return bub
 }
