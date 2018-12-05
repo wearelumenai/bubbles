@@ -71,7 +71,7 @@ test('transition end', () => {
 test('two clusters at position', () => {
   const bub = getBubbles()
   const projectionWithOverlap = makeOverlap()
-  bub.clusters = new NodeBuilder(projectionWithOverlap, bub.container).getNodes()
+  bub.circleRender.clusters = new NodeBuilder(projectionWithOverlap, bub.container).getNodes()
   const clusters = bub.getClustersAtPosition(800, 200)
   expect(clusters).toEqual([2, 1])
 })
@@ -79,7 +79,7 @@ test('two clusters at position', () => {
 test('no cluster at position', () => {
   const bub = getBubbles()
   const projectionWithOverlap = makeOverlap()
-  bub.clusters = new NodeBuilder(projectionWithOverlap, bub.container).getNodes()
+  bub.circleRender.clusters = new NodeBuilder(projectionWithOverlap, bub.container).getNodes()
   const clusters = bub.getClustersAtPosition(180, 180)
   expect(clusters).toEqual([])
 })

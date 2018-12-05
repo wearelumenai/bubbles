@@ -9,6 +9,16 @@ export default class CircleRender {
     this.clusters = builder.getNodes()
   }
 
+  getClustersAtPosition (x, y) {
+    let found = []
+    if (this.clusters) {
+      const clustersAtPosition = this.clusters
+        .filter(d => (Math.pow(x - d.x, 2) + Math.pow(y - d.y, 2)) < Math.pow(d.radius, 2))
+      found = clustersAtPosition.sort((a, b) => a.radius - b.radius).map(d => d.label)
+    }
+    return found
+  }
+
   drawCircles () {
     this._circles = this._getCircles()
     const circles = this._circles.data(this.clusters)

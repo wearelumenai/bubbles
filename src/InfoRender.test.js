@@ -1,7 +1,9 @@
 const jsdom = require('jsdom')
 const ScaleHelper = require('./ScaleHelper').default
 const NodeBuilder = require('./NodeBuilder').default
-const bubbles = require('./Bubbles')
+const Container = require('./Container').default
+const CircleRender = require('./CircleRender').default
+const InfoRender = require('./InfoRender').default
 
 const Rect = { width: 957, height: 319 }
 const Projection = [
@@ -51,13 +53,16 @@ function makeOverlap () {
 }
 
 function getInfoRender () {
-  const document = new jsdom.JSDOM('<body><div id="bubble-chart"></div></body>').window.document
-  const bub = bubbles.create('#bubble-chart', {}, document)
-  // Tweak because JSDOM do not implement getClientBoundingRect
-  bub.container._chartBoundingRect = Rect
-  bub.container.scaleHelper = new ScaleHelper(Rect)
   const projectionWithOverlap = makeOverlap()
-  bub.clusters = new NodeBuilder(projectionWithOverlap, bub.container).getNodes()
-  bub.infoRender.clusters = bub.clusters
-  return bub.infoRender
+  const document = new jsdom.JSDOM('<body><div id="bubble-chart"></div></body>').window.document
+  const container = new Container('#bubble-chart', {}, document)
+  // Tweak because JSDOM do not implement getClientBoundingRect
+  container._chartBoundingRect = Rect
+  container.scaleHelper = new ScaleHelper(Rect)
+  const circleRender = new CircleRender(container)
+  const infoRender = new InfoRender(container, circleRender)
+  const builder = new NodeBuilder(projectionWithOverlap, container)
+  circleRender.apply(builder)
+  infoRender.apply(builder)
+  return infoRender
 }
