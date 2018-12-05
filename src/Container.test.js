@@ -67,7 +67,7 @@ test('select element in svg', () => {
   const container = getContainer()
   const element = container._containerElement.select('svg')
   const rect = element.append('rect').attr('class', 'selectme').node()
-  const sel = container.selectSVG('.selectme').node()
+  const sel = container.selectChart('.selectme').node()
   expect(rect).toEqual(sel)
 })
 

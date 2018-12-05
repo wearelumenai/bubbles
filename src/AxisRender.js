@@ -10,8 +10,8 @@ export default class AxisRender {
   }
 
   hideAxis (builder) {
-    this.container._xAxisElement.style('display', 'none')
-    this.container._yAxisElement.style('display', 'none')
+    this.container.selectXAxis('.value').style('display', 'none')
+    this.container.selectYAxis('.value').style('display', 'none')
   }
 
   displayAxis () {
@@ -20,7 +20,7 @@ export default class AxisRender {
   }
 
   _displayXAxis () {
-    this.container._xAxisElement.style('display', 'block')
+    this.container.selectXAxis('.value').style('display', 'block')
     let clusters = this.xClusters.map((d, i) => {
       let x = d.x + (i === 0 ? -1 : i === 4 ? 1 : 0) * d.radius
       let y = 0
@@ -30,7 +30,7 @@ export default class AxisRender {
       let fill = i % 2 === 1 ? 'Blue' : (i === 2 ? 'MidnightBlue' : 'DeepSkyBlue')
       return { x, y, text, anchor, align, fill }
     })
-    let values = this.container._xAxisElement.select('.x-axis').selectAll('.value')
+    let values = this.container.selectXAxis('.value')
     this._collideXAxis(values, clusters)
     this._displayAxisValues(values, clusters)
   }
@@ -63,7 +63,7 @@ export default class AxisRender {
   }
 
   _displayYAxis () {
-    this.container._yAxisElement.style('display', 'block')
+    this.container.selectYAxis('.value').style('display', 'block')
     let clusters = this.yClusters.map((d, i) => {
       let x = '50%'
       let y = d.y + (i === 0 ? 1 : i === 4 ? -1 : 0) * d.radius
@@ -73,7 +73,7 @@ export default class AxisRender {
       let fill = i % 2 === 1 ? 'Blue' : (i === 2 ? 'MidnightBlue' : 'DeepSkyBlue')
       return { x, y, text, anchor, align, fill }
     })
-    let values = this.container._yAxisElement.select('.y-axis').selectAll('.value')
+    let values = this.container.selectYAxis('.value')
     this._collideYAxis(values, clusters)
     this._displayAxisValues(values, clusters)
   }

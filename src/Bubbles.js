@@ -11,10 +11,10 @@ import InfoRender from './InfoRender.js'
 class Bubbles {
   constructor (container) {
     this.container = container
-    this.axisRender = new AxisRender(this.container)
-    this.circleRender = new CircleRender(this.container)
-    this.labelRender = new LabelRender(this.container)
-    this.infoRender = new InfoRender(this.container, this.circleRender)
+    this.axisRender = new AxisRender(this.container.asAxisContainer())
+    this.circleRender = new CircleRender(this.container.asChartContainer())
+    this.labelRender = new LabelRender(this.container.asChartContainer())
+    this.infoRender = new InfoRender(this.container.asToolTipContainer(), this.circleRender)
     this._doApply = this._applyFirst
   }
 
@@ -40,10 +40,10 @@ class Bubbles {
   _applyFirst () {
     this._drawClusters()
     this._optimizeLayout()
-    this._doApply = this._applyOthers
+    this._doApply = this._applyThen
   }
 
-  _applyOthers () {
+  _applyThen () {
     this._collideSimulation.stop()
     this._moveLayout().then(this._optimizeLayout)
   }

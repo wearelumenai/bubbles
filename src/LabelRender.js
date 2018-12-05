@@ -31,7 +31,7 @@ export default class LabelRender {
   }
 
   _getLabels () {
-    return this.container.selectSVG('.label')
+    return this.container.selectChart('.label')
   }
 
   static _makeTransition (labels) {

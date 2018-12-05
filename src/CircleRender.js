@@ -39,7 +39,7 @@ export default class CircleRender {
   }
 
   _getCircles () {
-    return this.container.selectSVG('.cluster')
+    return this.container.selectChart('.cluster')
   }
 
   static _makeTransition (circles) {
