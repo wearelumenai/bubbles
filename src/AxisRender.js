@@ -1,10 +1,10 @@
 export default class AxisRender {
-  constructor (container, clusters, builder) {
+  constructor (container) {
     this.container = container
   }
 
-  apply (clusters, builder) {
-    this.clusters = clusters
+  apply (builder) {
+    this.clusters = builder.getNodes()
     this.xClusters = this._getAxisClusters(builder.orderX())
     this.yClusters = this._getAxisClusters(builder.orderY())
   }

@@ -5,8 +5,8 @@ export default class InfoRender {
     this.container.onMouse((info, x, y) => this._displayInfo(info, x, y), (info) => this._hideInfo(info))
   }
 
-  apply (clusters) {
-    this.clusters = clusters
+  apply (builder) {
+    this.clusters = builder.getNodes()
   }
 
   _displayInfo (info, x, y) {

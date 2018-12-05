@@ -5,8 +5,8 @@ export default class LabelRender {
     this.container = container
   }
 
-  apply (clusters) {
-    this.clusters = clusters
+  apply (builder) {
+    this.clusters = builder.getNodes()
   }
 
   displayLabels () {

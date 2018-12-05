@@ -20,17 +20,17 @@ class Bubbles {
 
   apply (projection) {
     this.projection = projection
-    const builder = new NodeBuilder(projection)
-    this.clusters = builder.getNodes(this.container)
-    this._makeRender(builder)
+    const builder = new NodeBuilder(projection, this.container)
+    this.clusters = builder.getNodes()
+    this._applyRender(builder)
     this._doApply()
   }
 
-  _makeRender (builder) {
-    this.axisRender.apply(this.clusters, builder)
-    this.circleRender.apply(this.clusters)
-    this.labelRender.apply(this.clusters)
-    this.infoRender.apply(this.clusters)
+  _applyRender (builder) {
+    this.axisRender.apply(builder)
+    this.circleRender.apply(builder)
+    this.labelRender.apply(builder)
+    this.infoRender.apply(builder)
   }
 
   getClustersAtPosition (x, y) {

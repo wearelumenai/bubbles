@@ -5,8 +5,8 @@ export default class CircleRender {
     this.container = container
   }
 
-  apply (clusters) {
-    this.clusters = clusters
+  apply (builder) {
+    this.clusters = builder.getNodes()
   }
 
   drawCircles () {

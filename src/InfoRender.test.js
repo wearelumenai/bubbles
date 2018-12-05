@@ -57,7 +57,7 @@ function getInfoRender () {
   bub.container._chartBoundingRect = Rect
   bub.container.scaleHelper = new ScaleHelper(Rect)
   const projectionWithOverlap = makeOverlap()
-  bub.clusters = new NodeBuilder(projectionWithOverlap).getNodes(bub.container)
+  bub.clusters = new NodeBuilder(projectionWithOverlap, bub.container).getNodes()
   bub.infoRender.clusters = bub.clusters
   return bub.infoRender
 }

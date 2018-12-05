@@ -22,8 +22,7 @@ test('unzip data', () => {
 
 test('get nodes in container', () => {
   const builder = getNodeBuilder()
-  const fakeContainer = { getScales: () => new ScaleHelper(Rect).generate(X, Y, Areas, Colors) }
-  const nodes = builder.getNodes(fakeContainer)
+  const nodes = builder.getNodes()
   nodes.forEach(element => {
     expect(element.x + element.radius).toBeLessThanOrEqual(957)
     expect(element.x - element.radius).toBeGreaterThanOrEqual(0)
@@ -45,5 +44,6 @@ test('y order', () => {
 })
 
 function getNodeBuilder () {
-  return new NodeBuilder(Projection)
+  const fakeContainer = { getScales: () => new ScaleHelper(Rect).generate(X, Y, Areas, Colors) }
+  return new NodeBuilder(Projection, fakeContainer)
 }
