@@ -51,11 +51,16 @@ export default class CircleRender {
       .attr('r', n => n.radius)
       .attr('fill', n => n.color)
       .attr('cx', n => {
-        n.x = this.container.boundX(n)
+        n.t = n.t ? n.t + 1 : 1
+        if (n.t > 50) {
+          n.x = this.container.boundX(n)
+        }
         return n.x
       })
       .attr('cy', n => {
-        n.y = this.container.boundY(n)
+        if (n.t > 50) {
+          n.y = this.container.boundY(n)
+        }
         return n.y
       })
   }
