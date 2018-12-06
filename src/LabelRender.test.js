@@ -10,7 +10,7 @@ test('draw clusters', () => {
   const labels = labelRender._getLabels()
   labels.each(function () {
     const label = d3.select(this)
-    const i = parseInt(label.text())
+    const i = common.parseLabel(label)
     expect(common.parseAttr(label, 'x')).toBe(labelsAtFixedPosition[i].x)
     expect(common.parseAttr(label, 'y')).toBe(labelsAtFixedPosition[i].y)
   })
@@ -26,7 +26,7 @@ test('move labels', () => {
     const circles = labelRender._getLabels()
     circles.each(function () {
       const label = d3.select(this)
-      const i = common.parseAttr(label, 'data-label')
+      const i = common.parseLabel(label)
       if (i !== 0) {
         expect(common.parseAttr(label, 'x')).not.toBe(labelsBeforeMove[i].x)
         expect(common.parseAttr(label, 'y')).not.toBe(labelsBeforeMove[i].y)

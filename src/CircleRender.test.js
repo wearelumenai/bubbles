@@ -11,7 +11,7 @@ test('draw circles', () => {
   const circles = circleRender._getCircles()
   circles.each(function () {
     const circle = d3.select(this)
-    const i = common.parseAttr(circle, 'data-label')
+    const i = common.parseLabel(circle)
     expect(common.parseAttr(circle, 'cx')).toBe(clustersAtFixedPosition[i].x)
     expect(common.parseAttr(circle, 'cy')).toBe(clustersAtFixedPosition[i].y)
     expect(common.parseAttr(circle, 'r')).toBe(clustersAtFixedPosition[i].radius)
@@ -29,7 +29,7 @@ test('move circles', () => {
     const circles = circleRender._getCircles()
     circles.each(function () {
       const circle = d3.select(this)
-      const i = common.parseAttr(circle, 'data-label')
+      const i = common.parseLabel(circle)
       if (i !== 0) {
         expect(common.parseAttr(circle, 'cx')).not.toBe(clustersBeforeMove[i].x)
         expect(common.parseAttr(circle, 'cy')).not.toBe(clustersBeforeMove[i].y)

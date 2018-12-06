@@ -1,4 +1,3 @@
-const jsdom = require('jsdom')
 const bubbles = require('./Bubbles')
 const NodeBuilder = require('./NodeBuilder').default
 const common = require('./common-test')
@@ -78,8 +77,5 @@ function fakeTransition () {
 }
 
 function getBubbles () {
-  const document = new jsdom.JSDOM('<body><div id="bubble-chart"></div></body>').window.document
-  const bub = bubbles.create('#bubble-chart', {}, document, common.Rect)
-  bub.axisRender.displayAxis = () => {} // TODO: separate render tests
-  return bub
+  return bubbles.create('#bubble-chart', {}, common.document, common.Rect)
 }

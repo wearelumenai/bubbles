@@ -10,8 +10,8 @@ export default class AxisRender {
   }
 
   hideAxis (builder) {
-    this.container.selectXAxis('.value').style('display', 'none')
-    this.container.selectYAxis('.value').style('display', 'none')
+    this._getXAxis().style('display', 'none')
+    this._getYAxis().style('display', 'none')
   }
 
   displayAxis () {
@@ -20,19 +20,24 @@ export default class AxisRender {
   }
 
   _displayXAxis () {
-    this.container.selectXAxis('.value').style('display', 'block')
     let clusters = this.xClusters.map((d, i) => {
+      let label = d.label
       let x = d.x + (i === 0 ? -1 : i === 4 ? 1 : 0) * d.radius
       let y = 0
       let text = `${Math.round(d.data[0] * 100) / 100}(${d.label})`
       let anchor = i === 0 ? 'start' : i === 4 ? 'end' : 'middle'
       let align = 'text-before-edge'
       let fill = i % 2 === 1 ? 'Blue' : (i === 2 ? 'MidnightBlue' : 'DeepSkyBlue')
-      return { x, y, text, anchor, align, fill }
+      return { label, x, y, text, anchor, align, fill }
     })
-    let values = this.container.selectXAxis('.value')
+    const values = this._getXAxis()
     this._collideXAxis(values, clusters)
     this._displayAxisValues(values, clusters)
+    this._getXAxis().style('display', 'block')
+  }
+
+  _getXAxis () {
+    return this.container.selectXAxis('.value')
   }
 
   _collideXAxis (values, clusters) {
@@ -63,19 +68,24 @@ export default class AxisRender {
   }
 
   _displayYAxis () {
-    this.container.selectYAxis('.value').style('display', 'block')
     let clusters = this.yClusters.map((d, i) => {
+      let label = d.label
       let x = '50%'
       let y = d.y + (i === 0 ? 1 : i === 4 ? -1 : 0) * d.radius
       let text = `${Math.round(d.data[1] * 100) / 100}(${d.label})`
       let anchor = 'middle'
       let align = i === 0 ? 'alphabetical' : i === 4 ? 'hanging' : 'central'
       let fill = i % 2 === 1 ? 'Blue' : (i === 2 ? 'MidnightBlue' : 'DeepSkyBlue')
-      return { x, y, text, anchor, align, fill }
+      return { label, x, y, text, anchor, align, fill }
     })
-    let values = this.container.selectYAxis('.value')
+    let values = this._getYAxis()
     this._collideYAxis(values, clusters)
     this._displayAxisValues(values, clusters)
+    this._getYAxis().style('display', 'block')
+  }
+
+  _getYAxis () {
+    return this.container.selectYAxis('.value')
   }
 
   _collideYAxis (values, clusters) {
@@ -101,7 +111,9 @@ export default class AxisRender {
   }
 
   _displayAxisValues (values, clusters) {
-    values.data(clusters).enter().append('text').attr('class', 'value')
+    values.data(clusters).enter().append('text')
+      .attr('data-label', d => d.label)
+      .attr('class', 'value')
       .attr('text-anchor', d => d.anchor)
       .attr('fill', d => d.fill)
       .attr('alignment-baseline', d => d.align)
@@ -112,8 +124,8 @@ export default class AxisRender {
   }
 
   _getAxisClusters (xDistribution) {
-    const xEff = xDistribution.length
-    const xIdx = [ 0, Math.round(xEff / 4), Math.round(xEff / 2), Math.round(3 * xEff / 4), xEff - 1 ]
-    return xIdx.map(i => this.clusters[xDistribution[i]])
+    const range = xDistribution.length - 1
+    const quartiles = [ 0, Math.round(range / 4), Math.round(range / 2), Math.round(3 * range / 4), range ]
+    return quartiles.map(i => this.clusters[xDistribution[i]])
   }
 }

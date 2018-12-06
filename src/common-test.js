@@ -11,7 +11,13 @@ export const Projection = [
   [7, 9, 12, 25]
 ]
 
-export const document = new jsdom.JSDOM('<body><div id="bubble-chart"></div></body>').window.document
+export const document = new jsdom.JSDOM('<body><div id="bubble-chart"></div></body>', {
+  beforeParse (window) {
+    window.Element.prototype.getComputedTextLength = function () {
+      return 20
+    }
+  }
+}).window.document
 
 export function getXYBetween (n2, n1) {
   let combine = (v1, v2, r1, r2) => v2 + (v1 - v2) * r2 / (r1 + r2)
@@ -33,4 +39,8 @@ export function makeScramble () {
 
 export function parseAttr (element, name) {
   return parseFloat(element.attr(name))
+}
+
+export function parseLabel (element) {
+  return parseInt(element.attr('data-label'))
 }
