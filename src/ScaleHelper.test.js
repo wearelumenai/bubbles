@@ -112,10 +112,11 @@ function assertYScale (yScale) {
 }
 
 function assertColorScale (colorScale) {
-  expect(d3.color(colorScale(0)).g).toBe(165)
-  expect(d3.color(colorScale(2)).g).toBe(0)
-  expect(d3.color(colorScale(1)).g).toBeLessThan(165)
-  expect(d3.color(colorScale(1)).g).toBeGreaterThan(0)
+  const color0 = d3.color(colorScale(0))
+  const color1 = d3.color(colorScale(1))
+  const color2 = d3.color(colorScale(2))
+  expect(color2.r < color1.r || color2.g < color1.g || color2.b < color1.b).toBe(true)
+  expect(color2.r > color0.r || color2.g > color0.g || color2.b > color0.b).toBe(true)
 }
 
 function getScaleHelper () {

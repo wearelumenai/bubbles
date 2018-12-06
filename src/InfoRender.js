@@ -13,7 +13,9 @@ export default class InfoRender {
     let [label] = this.circleRender.getClustersAtPosition(x, y)
     if (typeof label !== 'undefined') {
       const cluster = this.clusters[label]
-      const infoText = `${cluster.label}: x=${cluster.data[0]}; y=${cluster.data[1]}; a=${cluster.data[3]}`
+      const infoText = `${cluster.label}: x=${this._round2(cluster.data[0])}; ` +
+        `y=${this._round2(cluster.data[1])}; ` +
+        `a=${this._round2(cluster.data[3])}`
       info.text(infoText)
       info.style('display', 'block')
       const boundingRect = info.node().getBoundingClientRect()
@@ -24,6 +26,10 @@ export default class InfoRender {
     } else {
       this._hideInfo(info)
     }
+  }
+
+  _round2 (number) {
+    return Math.round(number * 100) / 100
   }
 
   _hideInfo (info) {
