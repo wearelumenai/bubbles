@@ -95,12 +95,12 @@ class Bubbles {
   }
 }
 
-export function create (containerSelector, listeners, document) {
-  const container = new Container(containerSelector, listeners, document)
+export function create (containerSelector, listeners, document, rect) {
+  const container = new Container(containerSelector, listeners, document, rect)
   return new Bubbles(container)
 }
 
-export function resize (bubbles, document) {
+export function resize (bubbles, document, rect) {
   bubbles.container.resize()
   bubbles.apply(bubbles.projection)
 }

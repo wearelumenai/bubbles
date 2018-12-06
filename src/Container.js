@@ -4,11 +4,11 @@ import * as d3 from 'd3'
 import ScaleHelper from './ScaleHelper'
 
 export default class Container {
-  constructor (containerSelector, listeners, document) {
+  constructor (containerSelector, listeners, document, rect) {
     this.containerSelector = containerSelector
     this._containerElement = this._makeContainer(document)
     this._applyListeners(listeners)
-    this.resize()
+    this.resize(rect)
   }
 
   _makeContainer (document) {
@@ -98,8 +98,11 @@ export default class Container {
     }
   }
 
-  resize () {
-    this._chartBoundingRect = this._chartElement.node().getBoundingClientRect()
+  resize (rect) {
+    if (typeof rect === 'undefined') {
+      rect = this._chartElement.node().getBoundingClientRect()
+    }
+    this._chartBoundingRect = rect
     this.scaleHelper = new ScaleHelper(this._chartBoundingRect)
   }
 

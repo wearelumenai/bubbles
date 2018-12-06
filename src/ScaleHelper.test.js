@@ -1,11 +1,6 @@
 const d3 = require('d3')
 const ScaleHelper = require('./ScaleHelper.js').default
-
-const X = [3, 12, 7]
-const Y = [14, 12, 9]
-const Areas = [160, 490, 250]
-const Colors = [3, 8, 12]
-const Rect = { width: 957, height: 319 }
+const common = require('./common-test')
 
 test('get indices of min and max', () => {
   const scaleHelper = getScaleHelper()
@@ -29,9 +24,9 @@ test('container bounding rectangle', () => {
 
 test('ensure positive area unchanged', () => {
   const scaleHelper = getScaleHelper()
-  const { domain, positiveArea } = scaleHelper._ensurePositiveArea(Areas)
-  expect(domain).toEqual([160, 490])
-  expect(positiveArea).toEqual(Areas)
+  const { domain, positiveArea } = scaleHelper._ensurePositiveArea(common.Areas)
+  expect(domain).toEqual([16, 49])
+  expect(positiveArea).toEqual(common.Areas)
 })
 
 test('ensure positive area becomes positive', () => {
@@ -47,48 +42,48 @@ test('ensure positive area becomes positive', () => {
 
 test('area ratio', () => {
   const scaleHelper = getScaleHelper()
-  const ratio = scaleHelper._getAreaRatio(Areas)
-  expect(ratio).toBeGreaterThan(10)
-  expect(ratio).toBeLessThan(250)
+  const ratio = scaleHelper._getAreaRatio(common.Areas)
+  expect(ratio).toBeGreaterThan(100)
+  expect(ratio).toBeLessThan(1000)
 })
 
 test('radius scale', () => {
   const scaleHelper = getScaleHelper()
-  const radiusScale = scaleHelper._getRadiusScale(Areas)
+  const radiusScale = scaleHelper._getRadiusScale(common.Areas)
   assertRadiusScale(radiusScale)
 })
 
 test('radius of lower and upper clusters', () => {
   const scaleHelper = getScaleHelper()
-  const radiusScale = scaleHelper._getRadiusScale(Areas)
-  const { lowerRadius, upperRadius } = scaleHelper.constructor._getBoundRadius(X, radiusScale)
+  const radiusScale = scaleHelper._getRadiusScale(common.Areas)
+  const { lowerRadius, upperRadius } = scaleHelper.constructor._getBoundRadius(common.X, radiusScale)
   expect(lowerRadius).toBe(radiusScale(0))
   expect(upperRadius).toBe(radiusScale(1))
 })
 
 test('x scale', () => {
   const scaleHelper = getScaleHelper()
-  const radiusScale = scaleHelper._getRadiusScale(Areas)
-  const xScale = scaleHelper._getXScale(X, radiusScale)
+  const radiusScale = scaleHelper._getRadiusScale(common.Areas)
+  const xScale = scaleHelper._getXScale(common.X, radiusScale)
   assertXScale(xScale)
 })
 
 test('y scale', () => {
   const scaleHelper = getScaleHelper()
-  const radiusScale = scaleHelper._getRadiusScale(Areas)
-  const yScale = scaleHelper._getYScale(Y, radiusScale)
+  const radiusScale = scaleHelper._getRadiusScale(common.Areas)
+  const yScale = scaleHelper._getYScale(common.Y, radiusScale)
   assertYScale(yScale)
 })
 
 test('color scale', () => {
   const scaleHelper = getScaleHelper()
-  const colorScale = scaleHelper._getColorScale(Colors)
+  const colorScale = scaleHelper._getColorScale(common.Colors)
   assertColorScale(colorScale)
 })
 
 test('generate scales', () => {
   const scaleHelper = getScaleHelper()
-  const scales = scaleHelper.generate(X, Y, Areas, Colors)
+  const scales = scaleHelper.generate(common.X, common.Y, common.Areas, common.Colors)
   assertRadiusScale(scales.radiusScale)
   assertXScale(scales.xScale)
   assertYScale(scales.yScale)
@@ -96,22 +91,22 @@ test('generate scales', () => {
 })
 
 function assertRadiusScale (radiusScale) {
-  expect(radiusScale(0)).toBeLessThan(Rect.height / 2)
-  expect(radiusScale(1)).toBeLessThan(Rect.height / 2)
+  expect(radiusScale(0)).toBeLessThan(common.Rect.height / 2)
+  expect(radiusScale(1)).toBeLessThan(common.Rect.height / 2)
   expect(radiusScale(2)).toBeLessThan(radiusScale(1))
   expect(radiusScale(2)).toBeGreaterThan(radiusScale(0))
 }
 
 function assertXScale (xScale) {
-  expect(xScale(0)).toBeLessThan(Rect.width / 2)
-  expect(xScale(1)).toBeGreaterThan(Rect.width / 2)
+  expect(xScale(0)).toBeLessThan(common.Rect.width / 2)
+  expect(xScale(1)).toBeGreaterThan(common.Rect.width / 2)
   expect(xScale(2)).toBeLessThan(xScale(1))
   expect(xScale(2)).toBeGreaterThan(xScale(0))
 }
 
 function assertYScale (yScale) {
-  expect(yScale(0)).toBeLessThan(Rect.height / 2)
-  expect(yScale(2)).toBeGreaterThan(Rect.height / 2)
+  expect(yScale(0)).toBeLessThan(common.Rect.height / 2)
+  expect(yScale(2)).toBeGreaterThan(common.Rect.height / 2)
   expect(yScale(1)).toBeGreaterThan(yScale(0))
   expect(yScale(1)).toBeLessThan(yScale(2))
 }
@@ -124,5 +119,5 @@ function assertColorScale (colorScale) {
 }
 
 function getScaleHelper () {
-  return new ScaleHelper(Rect)
+  return new ScaleHelper(common.Rect)
 }

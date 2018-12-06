@@ -1,23 +1,13 @@
 const NodeBuilder = require('./NodeBuilder').default
-const ScaleHelper = require('./ScaleHelper').default
-
-const X = [3, 12, 7]
-const Y = [14, 12, 9]
-const Areas = [16, 49, 25]
-const Colors = [3, 8, 12]
-const Rect = { width: 957, height: 319 }
-const Projection = [
-  [3, 14, 3, 16],
-  [12, 12, 8, 49],
-  [7, 9, 12, 25]
-]
+const Container = require('./Container').default
+const common = require('./common-test')
 
 test('unzip data', () => {
   const builder = getNodeBuilder()
-  expect(builder.x).toEqual(X)
-  expect(builder.y).toEqual(Y)
-  expect(builder.areas).toEqual(Areas)
-  expect(builder.colors).toEqual(Colors)
+  expect(builder.x).toEqual(common.X)
+  expect(builder.y).toEqual(common.Y)
+  expect(builder.areas).toEqual(common.Areas)
+  expect(builder.colors).toEqual(common.Colors)
 })
 
 test('get nodes in container', () => {
@@ -44,6 +34,6 @@ test('y order', () => {
 })
 
 function getNodeBuilder () {
-  const fakeContainer = { getScales: () => new ScaleHelper(Rect).generate(X, Y, Areas, Colors) }
-  return new NodeBuilder(Projection, fakeContainer)
+  const container = new Container('#bubble-chart', {}, common.document, common.Rect)
+  return new NodeBuilder(common.Projection, container)
 }

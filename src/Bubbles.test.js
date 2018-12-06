@@ -120,20 +120,19 @@ function getXYBetween (n2, n1) {
 function applyScramble (bub) {
   const scrampledProjection = [Projection[0], Projection[2], Projection[1]]
   bub.apply(scrampledProjection)
-  return bub.clusters
+  return new NodeBuilder(scrampledProjection, bub.container).getNodes()
 }
 
 function applyOverlap (bub) {
   const projectionWithOverlap = makeOverlap()
-  const clustersBeforeCollision = new NodeBuilder(projectionWithOverlap, bub.container).getNodes()
   bub.apply(projectionWithOverlap)
-  return clustersBeforeCollision
+  return new NodeBuilder(projectionWithOverlap, bub.container).getNodes()
 }
 
 function makeOverlap () {
-  const projectionWithOverlap = Projection.slice()
-  projectionWithOverlap[1][1] = 10
-  projectionWithOverlap[2][0] = 11
+  const projectionWithOverlap = Projection.map(v => v.slice())
+  projectionWithOverlap[1][1] = 9.01
+  projectionWithOverlap[2][0] = 11.99
   return projectionWithOverlap
 }
 

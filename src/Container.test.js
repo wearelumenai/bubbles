@@ -1,12 +1,5 @@
-const jsdom = require('jsdom')
 const Container = require('./Container').default
-const ScaleHelper = require('./ScaleHelper').default
-
-const X = [3, 12, 7]
-const Y = [14, 12, 9]
-const Areas = [16, 49, 25]
-const Colors = [3, 8, 12]
-const Rect = { width: 957, height: 319 }
+const common = require('./common-test')
 
 test('no dom', () => {
   expect(() => new Container('#bubble-chart')).toThrow(TypeError)
@@ -14,7 +7,7 @@ test('no dom', () => {
 
 test('container provide scale functions', () => {
   const container = getContainer()
-  const scales = container.getScales(X, Y, Areas, Colors)
+  const scales = container.getScales(common.X, common.Y, common.Areas, common.Colors)
   expect(typeof scales.radiusScale === 'function').toBe(true)
   expect(typeof scales.xScale === 'function').toBe(true)
   expect(typeof scales.yScale === 'function').toBe(true)
@@ -148,11 +141,26 @@ test('check listeners', done => {
   expect(clicked).toBe(true)
 })
 
+test('chart interface', () => {
+  const container = getContainer().asChartContainer()
+  container.selectChart('svg')
+  container.boundX({ x: 1, radius: 1 })
+  container.boundY({ y: 1, radius: 1 })
+})
+
+test('axis interface', () => {
+  const container = getContainer().asAxisContainer()
+  container.selectXAxis('svg')
+  container.selectYAxis('svg')
+})
+
+test('tooltip interface', () => {
+  const container = getContainer().asToolTipContainer()
+  container.onMouse((info, x, y) => {}, (info) => {})
+  container.boundX({ x: 1, radius: 1 })
+  container.boundY({ y: 1, radius: 1 })
+})
+
 function getContainer () {
-  const document = new jsdom.JSDOM('<body><div id="bubble-chart"></div></body>').window.document
-  const container = new Container('#bubble-chart', {}, document)
-  // Tweak because JSDOM do not implement getClientBoundingRect
-  container._chartBoundingRect = Rect
-  container.scaleHelper = new ScaleHelper(Rect)
-  return container
+  return new Container('#bubble-chart', {}, common.document, common.Rect)
 }
