@@ -1,18 +1,7 @@
-const d3 = require('d3')
 const jsdom = require('jsdom')
 const bubbles = require('./Bubbles')
 const NodeBuilder = require('./NodeBuilder').default
 const common = require('./common-test')
-
-test('draw clusters', () => {
-  const bub = getBubbles()
-  bub.apply(common.Projection)
-  const labels = bub.labelRender._getLabels()
-  labels.each(function () {
-    const label = d3.select(this)
-    assertLabel(label, bub.clusters)
-  })
-})
 
 test('optimize layout', done => {
   const bub = getBubbles()
@@ -86,16 +75,6 @@ function fakeTransition () {
   tr.each = (cb) => simulate(cb)
   tr.on = (ev, cb) => simulate(cb)
   return tr
-}
-
-function assertLabel (label, clusters) {
-  const i = parseInt(label.text())
-  expect(parseAttr(label, 'x')).toBe(clusters[i].x)
-  expect(parseAttr(label, 'y')).toBe(clusters[i].y)
-}
-
-function parseAttr (element, name) {
-  return parseFloat(element.attr(name))
 }
 
 function getBubbles () {
