@@ -23,13 +23,49 @@ test('hide axis', () => {
   expect(axisRender._getYAxis().style('display')).toBe('none')
 })
 
-test('collide x', () => {
+test('x collide', () => {
   const axisRender = getAxisRender()
   apply(axisRender, common.Projection)
-  axisRender.xClusters.reverse()
-  axisRender.yClusters.reverse()
   axisRender.displayAxis()
+  let xValues = [{ x: 0 }, { x: 5 }, { x: 10 }, { x: 15 }, { x: 20 }]
+  axisRender._collideXAxis(xValues)
+  expect(xValues[1].y).toBe('1em')
+  expect(xValues[3].y).toBe('1em')
+})
+
+test('y collide', () => {
+  const axisRender = getAxisRender()
+  apply(axisRender, common.Projection)
   axisRender.displayAxis()
+  let yValues = [{ y: 20 }, { y: 15 }, { y: 10 }, { y: 5 }, { y: 20 }]
+  axisRender._collideYAxis(yValues)
+  expect(yValues[1]).not.toBe(10)
+  expect(yValues[2]).not.toBe(20)
+  expect(yValues[3]).not.toBe(30)
+})
+
+test('x do not collide', () => {
+  const axisRender = getAxisRender()
+  apply(axisRender, common.Projection)
+  axisRender.displayAxis()
+  let xValues = [{ x: 0 }, { x: 50 }, { x: 100 }, { x: 150 }, { x: 200 }]
+  axisRender._collideXAxis(xValues)
+  expect(xValues[1].y).toBeUndefined()
+  expect(xValues[3].y).toBeUndefined()
+  expect(xValues[1]).not.toBe(50)
+  expect(xValues[2]).not.toBe(100)
+  expect(xValues[3]).not.toBe(150)
+})
+
+test('y do not collide', () => {
+  const axisRender = getAxisRender()
+  apply(axisRender, common.Projection)
+  axisRender.displayAxis()
+  let yValues = [{ y: 200 }, { y: 150 }, { y: 100 }, { y: 50 }, { y: 0 }]
+  axisRender._collideYAxis(yValues)
+  expect(yValues[1]).not.toBe(50)
+  expect(yValues[2]).not.toBe(100)
+  expect(yValues[3]).not.toBe(150)
 })
 
 function assertXAxis (axisRender, axisAtFixedPosition) {

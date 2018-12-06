@@ -30,9 +30,8 @@ export default class AxisRender {
       let fill = i % 2 === 1 ? 'Blue' : (i === 2 ? 'MidnightBlue' : 'DeepSkyBlue')
       return { label, x, y, text, anchor, align, fill }
     })
-    const values = this._getXAxis()
-    this._collideXAxis(values, clusters)
-    this._displayAxisValues(values, clusters)
+    this._collideXAxis(clusters)
+    this._displayAxisValues(this._getXAxis(), clusters)
     this._getXAxis().style('display', 'block')
   }
 
@@ -40,7 +39,8 @@ export default class AxisRender {
     return this.container.selectXAxis('.value')
   }
 
-  _collideXAxis (values, clusters) {
+  _collideXAxis (clusters) {
+    const values = this._getXAxis()
     if (values.size() > 0) {
       const textLengths = values.nodes().map(e => e.getComputedTextLength())
       if (clusters[2].x - textLengths[2] / 2 < clusters[0].x + textLengths[0]) {
@@ -78,9 +78,8 @@ export default class AxisRender {
       let fill = i % 2 === 1 ? 'Blue' : (i === 2 ? 'MidnightBlue' : 'DeepSkyBlue')
       return { label, x, y, text, anchor, align, fill }
     })
-    let values = this._getYAxis()
-    this._collideYAxis(values, clusters)
-    this._displayAxisValues(values, clusters)
+    this._collideYAxis(clusters)
+    this._displayAxisValues(this._getYAxis(), clusters)
     this._getYAxis().style('display', 'block')
   }
 
@@ -88,7 +87,7 @@ export default class AxisRender {
     return this.container.selectYAxis('.value')
   }
 
-  _collideYAxis (values, clusters) {
+  _collideYAxis (clusters) {
     const offset = 16
     if (clusters[1].y < clusters[2].y + offset) {
       clusters[1].y = clusters[2].y + offset
