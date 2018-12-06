@@ -30,3 +30,7 @@ export function makeOverlap () {
 export function makeScramble () {
   return [Projection[0], Projection[2], Projection[1]]
 }
+
+export function parseAttr (element, name) {
+  return parseFloat(element.attr(name))
+}

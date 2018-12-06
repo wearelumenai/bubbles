@@ -1,24 +1,12 @@
 const d3 = require('d3')
 const jsdom = require('jsdom')
 const bubbles = require('./Bubbles')
-const ScaleHelper = require('./ScaleHelper').default
 const NodeBuilder = require('./NodeBuilder').default
-
-const Rect = { width: 957, height: 319 }
-const Projection = [
-  [3, 14, 3, 16],
-  [12, 12, 8, 49],
-  [7, 9, 12, 25]
-]
+const common = require('./common-test')
 
 test('draw clusters', () => {
   const bub = getBubbles()
-  bub.apply(Projection)
-  const circles = bub.circleRender._getCircles()
-  circles.each(function () {
-    const circle = d3.select(this)
-    assertCirdle(circle, bub.clusters)
-  })
+  bub.apply(common.Projection)
   const labels = bub.labelRender._getLabels()
   labels.each(function () {
     const label = d3.select(this)
@@ -28,7 +16,7 @@ test('draw clusters', () => {
 
 test('optimize layout', done => {
   const bub = getBubbles()
-  const clustersBeforeCollision = applyOverlap(bub)
+  const clustersBeforeCollision = applyProjection(bub, common.makeOverlap())
   setTimeout(() => {
     const clustersAfterCollision = bub.clusters
     assertPlacement(clustersBeforeCollision, clustersAfterCollision)
@@ -38,8 +26,8 @@ test('optimize layout', done => {
 
 test('move clusters', done => {
   const bub = getBubbles()
-  const clustersBeforeMove = applyScramble(bub)
-  applyOverlap(bub)
+  const clustersBeforeMove = applyProjection(bub, common.makeScramble())
+  applyProjection(bub, common.makeOverlap())
   setTimeout(() => {
     const clustersAfterMove = bub.clusters
     assertPlacement(clustersBeforeMove, clustersAfterMove)
@@ -54,38 +42,28 @@ test('transition end', () => {
   expect(endReached).toBe(true)
 })
 
-test('two clusters at position', () => {
-  const bub = getBubbles()
-  const projectionWithOverlap = makeOverlap()
-  bub.circleRender.clusters = new NodeBuilder(projectionWithOverlap, bub.container).getNodes()
-  let { x, y } = getXYBetween(bub.circleRender.clusters[2], bub.circleRender.clusters[1])
-  const clusters = bub.getClustersAtPosition(x, y)
-  expect(clusters).toEqual([2, 1])
-})
-
-test('no cluster at position', () => {
-  const bub = getBubbles()
-  const projectionWithOverlap = makeOverlap()
-  bub.circleRender.clusters = new NodeBuilder(projectionWithOverlap, bub.container).getNodes()
-  const clusters = bub.getClustersAtPosition(180, 180)
-  expect(clusters).toEqual([])
-})
-
-test('get position with uninitialized clusters', () => {
-  const bub = getBubbles()
-  const clusters = bub.getClustersAtPosition(180, 180)
-  expect(clusters).toEqual([])
-})
-
 test('resize', () => {
   const bub = getBubbles()
-  bub.apply(Projection)
+  bub.apply(common.Projection)
   bubbles.resize(bub)
   // because jsdom does not have getBoundingClientRect, chart is 0x0
   expect(bub.clusters[0].x).toBeCloseTo(0, 1)
   expect(bub.clusters[1].x).toBeCloseTo(0, 1)
   expect(bub.clusters[2].x).toBeCloseTo(0, 1)
 })
+
+test('cluster position', () => {
+  const bub = getBubbles()
+  bub.apply(common.Projection)
+  const pos0 = bub.getClustersAtPosition(bub.clusters[0].x, bub.clusters[0].y)
+  expect(pos0).toEqual([0])
+})
+
+export function applyProjection (render, projection) {
+  const builder = new NodeBuilder(projection, render.container)
+  render.apply(projection)
+  return builder.getNodes()
+}
 
 function assertPlacement (clustersBefore, clustersAfter) {
   expect(clustersAfter[0].x).toBeCloseTo(clustersBefore[0].x, 1)
@@ -110,40 +88,6 @@ function fakeTransition () {
   return tr
 }
 
-function getXYBetween (n2, n1) {
-  let combine = (v1, v2, r1, r2) => v2 + (v1 - v2) * r2 / (r1 + r2)
-  const x = combine(n2.x, n1.x, n2.radius, n1.radius)
-  const y = combine(n2.y, n1.y, n2.radius, n1.radius)
-  return { x, y }
-}
-
-function applyScramble (bub) {
-  const scrampledProjection = [Projection[0], Projection[2], Projection[1]]
-  bub.apply(scrampledProjection)
-  return new NodeBuilder(scrampledProjection, bub.container).getNodes()
-}
-
-function applyOverlap (bub) {
-  const projectionWithOverlap = makeOverlap()
-  bub.apply(projectionWithOverlap)
-  return new NodeBuilder(projectionWithOverlap, bub.container).getNodes()
-}
-
-function makeOverlap () {
-  const projectionWithOverlap = Projection.map(v => v.slice())
-  projectionWithOverlap[1][1] = 9.01
-  projectionWithOverlap[2][0] = 11.99
-  return projectionWithOverlap
-}
-
-function assertCirdle (circle, clusters) {
-  const i = parseAttr(circle, 'data-label')
-  expect(parseAttr(circle, 'cx')).toBe(clusters[i].x)
-  expect(parseAttr(circle, 'cy')).toBe(clusters[i].y)
-  expect(parseAttr(circle, 'r')).toBe(clusters[i].radius)
-  expect(circle.attr('fill')).toBe(clusters[i].color)
-}
-
 function assertLabel (label, clusters) {
   const i = parseInt(label.text())
   expect(parseAttr(label, 'x')).toBe(clusters[i].x)
@@ -156,10 +100,7 @@ function parseAttr (element, name) {
 
 function getBubbles () {
   const document = new jsdom.JSDOM('<body><div id="bubble-chart"></div></body>').window.document
-  const bub = bubbles.create('#bubble-chart', {}, document)
-  // Tweak because JSDOM do not implement getBoundingClientRect
-  bub.container._chartBoundingRect = Rect
-  bub.container.scaleHelper = new ScaleHelper(Rect)
+  const bub = bubbles.create('#bubble-chart', {}, document, common.Rect)
   bub.axisRender.displayAxis = () => {} // TODO: separate render tests
   return bub
 }

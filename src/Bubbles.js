@@ -52,7 +52,7 @@ class Bubbles {
     const collisionForce = this._getCollisionForce()
     const { xForce, yForce } = this._getPositionForces()
     this._collideSimulation = d3.forceSimulation()
-      .alphaTarget(0.001) // runs forever
+      .alphaTarget(0.0005) // runs longer
       .nodes(this.clusters)
       .force('collide', collisionForce)
       .force('x', xForce)

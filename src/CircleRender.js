@@ -56,17 +56,17 @@ export default class CircleRender {
       .attr('r', n => n.radius)
       .attr('fill', n => n.color)
       .attr('cx', n => {
-        n.x = this._progressiveBound(n.x, this.container.boundX(n), n.tick, progressiveTimeLine)
+        n.x = CircleRender._progressiveBound(n.x, this.container.boundX(n), n.tick, progressiveTimeLine)
         return n.x
       })
       .attr('cy', n => {
-        n.y = this._progressiveBound(n.y, this.container.boundY(n), n.tick, progressiveTimeLine)
+        n.y = CircleRender._progressiveBound(n.y, this.container.boundY(n), n.tick, progressiveTimeLine)
         return n.y
       })
   }
 
-  _progressiveBound (current, bound, tick, [t0, t1]) {
-    if (tick > t1) {
+  static _progressiveBound (current, bound, tick, [t0, t1]) {
+    if (tick >= t1) {
       return bound
     } else if (tick > t0) {
       return current + (bound - current) / (t1 - t0) * (tick - t0)
