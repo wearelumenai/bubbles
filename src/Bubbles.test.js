@@ -58,7 +58,8 @@ test('two clusters at position', () => {
   const bub = getBubbles()
   const projectionWithOverlap = makeOverlap()
   bub.circleRender.clusters = new NodeBuilder(projectionWithOverlap, bub.container).getNodes()
-  const clusters = bub.getClustersAtPosition(800, 200)
+  let { x, y } = getXYBetween(bub.circleRender.clusters[2], bub.circleRender.clusters[1])
+  const clusters = bub.getClustersAtPosition(x, y)
   expect(clusters).toEqual([2, 1])
 })
 
@@ -107,6 +108,13 @@ function fakeTransition () {
   tr.each = (cb) => simulate(cb)
   tr.on = (ev, cb) => simulate(cb)
   return tr
+}
+
+function getXYBetween (n2, n1) {
+  let combine = (v1, v2, r1, r2) => v2 + (v1 - v2) * r2 / (r1 + r2)
+  const x = combine(n2.x, n1.x, n2.radius, n1.radius)
+  const y = combine(n2.y, n1.y, n2.radius, n1.radius)
+  return { x, y }
 }
 
 function applyScramble (bub) {

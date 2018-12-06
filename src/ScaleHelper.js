@@ -1,6 +1,10 @@
 import * as d3 from 'd3'
 
-const areaRescaleFactor = 20
+const areaRatioTarget = 0.0625
+const totalAreaRatio = 0.1
+const xScaleExponent = 0.5
+const yScaleExponent = 0.5
+
 export default class ScaleHelper {
   constructor (boundingRect) {
     this.boundingRect = boundingRect
@@ -26,14 +30,14 @@ export default class ScaleHelper {
   _getXScale (x, radiusScale) {
     const { lowerRadius, upperRadius } = ScaleHelper._getBoundRadius(x, radiusScale)
     const domain = ScaleHelper._range(x)
-    const scale = d3.scaleLinear().domain(domain).range([lowerRadius, this.boundingRect.width - upperRadius])
+    const scale = d3.scalePow().exponent(xScaleExponent).domain(domain).range([lowerRadius, this.boundingRect.width - upperRadius])
     return (i) => scale(x[i])
   }
 
   _getYScale (y, radiusScale) {
     const { lowerRadius, upperRadius } = ScaleHelper._getBoundRadius(y, radiusScale)
     const domain = ScaleHelper._range(y)
-    const scale = d3.scaleLinear().domain(domain).range([this.boundingRect.height - lowerRadius, upperRadius])
+    const scale = d3.scalePow().exponent(yScaleExponent).domain(domain).range([this.boundingRect.height - lowerRadius, upperRadius])
     return (i) => scale(y[i])
   }
 
@@ -52,7 +56,7 @@ export default class ScaleHelper {
   _ensurePositiveArea (area) {
     let positiveArea = area
     let domain = ScaleHelper._range(area)
-    const minArea = domain[1] / areaRescaleFactor
+    const minArea = domain[1] * areaRatioTarget
     if (domain[0] < minArea) {
       positiveArea = area.map(a => a - domain[0] + minArea)
       domain = [minArea, domain[1] - domain[0] + minArea]
@@ -63,7 +67,7 @@ export default class ScaleHelper {
   _getAreaRatio (area) {
     const boundingRectArea = this.boundingRect.width * this.boundingRect.height
     const totalArea = d3.sum(area)
-    return boundingRectArea / totalArea * 0.3
+    return boundingRectArea / totalArea * totalAreaRatio
   }
 
   static _getBoundRadius (values, radiusScale) {

@@ -15,7 +15,8 @@ const Projection = [
 test('display infos', () => {
   const infoRender = getInfoRender()
   const infoElement = infoRender.container._infoElement
-  infoRender._displayInfo(infoElement, 800, 200)
+  const { x, y } = getXYBetween(infoRender.clusters[2], infoRender.clusters[1])
+  infoRender._displayInfo(infoElement, x, y)
   expect(infoElement.empty()).toBe(false)
   expect(infoElement.style('display')).toBe('block')
 })
@@ -23,14 +24,16 @@ test('display infos', () => {
 test('hide info when no cluster', () => {
   const infoRender = getInfoRender()
   const infoElement = infoRender.container._infoElement
-  infoRender._displayInfo(infoElement, 150, 180)
+  const { x, y } = getXYBetween(infoRender.clusters[0], infoRender.clusters[2])
+  infoRender._displayInfo(infoElement, x, y)
   expect(infoElement.empty()).toBe(false)
   expect(infoElement.style('display')).toBe('none')
 })
 
 test('display infos on mouse move', done => {
   const infoRender = getInfoRender()
-  infoRender.container.getMousePosition = () => [800, 200]
+  const { x, y } = getXYBetween(infoRender.clusters[2], infoRender.clusters[1])
+  infoRender.container.getMousePosition = () => [x, y]
   infoRender.container._chartElement.dispatch('mousemove')
   done()
   const infoElement = infoRender.container._infoElement
@@ -44,6 +47,13 @@ test('hide infos on mouse out', done => {
   const infoElement = infoRender.container._infoElement
   expect(infoElement.style('display')).toBe('none')
 })
+
+function getXYBetween (n2, n1) {
+  let combine = (v1, v2, r1, r2) => v2 + (v1 - v2) * r2 / (r1 + r2)
+  const x = combine(n2.x, n1.x, n2.radius, n1.radius)
+  const y = combine(n2.y, n1.y, n2.radius, n1.radius)
+  return { x, y }
+}
 
 function makeOverlap () {
   const projectionWithOverlap = Projection.slice()

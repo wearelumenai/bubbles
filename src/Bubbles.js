@@ -52,6 +52,7 @@ class Bubbles {
     const collisionForce = this._getCollisionForce()
     const { xForce, yForce } = this._getPositionForces()
     this._collideSimulation = d3.forceSimulation()
+      .alphaTarget(0.001) // runs forever
       .nodes(this.clusters)
       .force('collide', collisionForce)
       .force('x', xForce)
@@ -60,13 +61,13 @@ class Bubbles {
   }
 
   _getCollisionForce () {
-    return d3.forceCollide(n => n.radius * 0.8).strength(0.4)
+    return d3.forceCollide(n => n.radius).strength(0.6)
   }
 
   _getPositionForces () {
     const initialPosition = this.clusters.map(n => [n.x, n.y])
-    const xForce = d3.forceX((_, i) => initialPosition[i][0]).strength(0.1)
-    const yForce = d3.forceY((_, i) => initialPosition[i][1]).strength(0.1)
+    const xForce = d3.forceX((_, i) => initialPosition[i][0]).strength(0.3)
+    const yForce = d3.forceY((_, i) => initialPosition[i][1]).strength(0.3)
     return { xForce, yForce }
   }
 
