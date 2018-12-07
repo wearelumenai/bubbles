@@ -1,4 +1,4 @@
-const NodeBuilder = require('./NodeBuilder').default
+const { XYNodeBuilder } = require('./NodeBuilder')
 const Container = require('./Container').default
 const common = require('./common-test')
 
@@ -35,5 +35,5 @@ test('y order', () => {
 
 function getNodeBuilder () {
   const container = new Container('#bubble-chart', {}, common.document, common.Rect)
-  return new NodeBuilder(common.Projection, container)
+  return new XYNodeBuilder(common.Projection, container)
 }

@@ -1,7 +1,7 @@
 import * as bubbles from './src/Bubbles.js'
-import NodeBuilder from './src/NodeBuilder'
+import builders from './src/NodeBuilder'
 
 export default {
   bubbles,
-  NodeBuilder
+  ...builders
 }

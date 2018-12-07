@@ -1,4 +1,4 @@
-export default class NodeBuilder {
+export class XYNodeBuilder {
   constructor (projection, container) {
     this.container = container
     this.projection = projection
@@ -12,7 +12,7 @@ export default class NodeBuilder {
   }
 
   updateContainer (container) {
-    return new NodeBuilder(this.projection, container)
+    return new XYNodeBuilder(this.projection, container)
   }
 
   _makeNodes () {
@@ -34,11 +34,11 @@ export default class NodeBuilder {
   }
 
   orderX () {
-    return NodeBuilder._order(this.x)
+    return XYNodeBuilder._order(this.x)
   }
 
   orderY () {
-    return NodeBuilder._order(this.y)
+    return XYNodeBuilder._order(this.y)
   }
 
   static _order (array) {
