@@ -1,4 +1,4 @@
-const { XYNodeBuilder } = require('./NodeBuilder')
+const { XYNodeBuilder, XNodeBuilder } = require('./NodeBuilder')
 const Container = require('./Container').default
 const common = require('./common-test')
 
@@ -10,7 +10,7 @@ test('unzip data', () => {
   expect(builder.colors).toEqual(common.Colors)
 })
 
-test('get nodes in container', () => {
+test('get nodes in builder', () => {
   const builder = getNodeBuilder()
   const nodes = builder.getNodes()
   nodes.forEach(element => {
@@ -19,6 +19,20 @@ test('get nodes in container', () => {
     expect(element.y + element.radius).toBeLessThanOrEqual(319)
     expect(element.y - element.radius).toBeGreaterThanOrEqual(0)
   })
+})
+
+test('no Y builder', () => {
+  const container = new Container('#bubble-chart', {}, common.document, common.Rect)
+  const builder = new XNodeBuilder(common.Projection, container)
+  const nodes = builder.getNodes()
+  nodes.forEach(element => {
+    expect(element.fx).toBe(element.x)
+    expect(element.y).toBe(common.Rect.height / 2)
+    expect(element.vy).toBe(1)
+  })
+  expect(builder.orderY()).toEqual([])
+  const other = builder.updateContainer(container)
+  expect(other).toBeInstanceOf(XNodeBuilder)
 })
 
 test('x order', () => {
@@ -31,6 +45,12 @@ test('y order', () => {
   const builder = getNodeBuilder()
   let yOrder = builder.orderY()
   expect(yOrder).toEqual([2, 1, 0])
+})
+
+test('update container', () => {
+  const builder = getNodeBuilder()
+  const other = builder.updateContainer(builder.container)
+  expect(other).toBeInstanceOf(XYNodeBuilder)
 })
 
 function getNodeBuilder () {

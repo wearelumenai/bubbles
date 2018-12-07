@@ -14,6 +14,10 @@ test('container provide scale functions', () => {
   expect(typeof scales.colorScale === 'function').toBe(true)
 })
 
+test('container shape', () => {
+  const container = getContainer()
+  expect(container.getShape()).toEqual(common.Rect)
+})
 test('container has relative position', () => {
   const container = getContainer()
   expect(container._containerElement.style('position')).toBe('relative')
