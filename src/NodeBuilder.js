@@ -11,6 +11,10 @@ export default class NodeBuilder {
     return this._makeNodes()
   }
 
+  updateContainer (container) {
+    return new NodeBuilder(this.projection, container)
+  }
+
   _makeNodes () {
     const scales = this.container.getScales(this.x, this.y, this.areas, this.colors)
     this.nodes = this.projection.map((d, i) => {

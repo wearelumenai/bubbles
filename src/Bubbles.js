@@ -2,7 +2,6 @@
 
 import * as d3 from 'd3'
 import Container from './Container.js'
-import NodeBuilder from './NodeBuilder.js'
 import AxisRender from './AxisRender.js'
 import CircleRender from './CircleRender.js'
 import LabelRender from './LabelRender.js'
@@ -10,17 +9,20 @@ import InfoRender from './InfoRender.js'
 
 class Bubbles {
   constructor (container) {
-    this.container = container
-    this.axisRender = new AxisRender(this.container.asAxisContainer())
-    this.circleRender = new CircleRender(this.container.asChartContainer())
-    this.labelRender = new LabelRender(this.container.asChartContainer())
-    this.infoRender = new InfoRender(this.container.asToolTipContainer(), this.circleRender)
+    this._container = container
+    this.axisRender = new AxisRender(this._container.asAxisContainer())
+    this.circleRender = new CircleRender(this._container.asChartContainer())
+    this.labelRender = new LabelRender(this._container.asChartContainer())
+    this.infoRender = new InfoRender(this._container.asToolTipContainer(), this.circleRender)
     this._doApply = this._applyFirst
   }
 
-  apply (projection) {
-    this.projection = projection
-    const builder = new NodeBuilder(projection, this.container)
+  getContainer () {
+    return this._container
+  }
+
+  apply (builder) {
+    this.builder = builder
     this.clusters = builder.getNodes()
     this._applyRender(builder)
     this._doApply()
@@ -101,6 +103,9 @@ export function create (containerSelector, listeners, document, rect) {
 }
 
 export function resize (bubbles, document, rect) {
-  bubbles.container.resize()
-  bubbles.apply(bubbles.projection)
+  const container = bubbles.getContainer().resize()
+  const builder = bubbles.builder.updateContainer(container)
+  const newBubbles = new Bubbles(container)
+  newBubbles.apply(builder)
+  return newBubbles
 }

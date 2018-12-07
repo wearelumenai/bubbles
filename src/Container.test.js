@@ -161,6 +161,16 @@ test('tooltip interface', () => {
   container.boundY({ y: 1, radius: 1 })
 })
 
+test('copy container', () => {
+  const container = getContainer()
+  const other = new Container(container)
+  expect(other._containerElement).toBe(container._containerElement)
+})
+
+test('unable to build container', () => {
+  expect(() => new Container()).toThrow(TypeError)
+})
+
 function getContainer () {
   return new Container('#bubble-chart', {}, common.document, common.Rect)
 }

@@ -4,26 +4,51 @@ import * as d3 from 'd3'
 import ScaleHelper from './ScaleHelper'
 
 export default class Container {
-  constructor (containerSelector, listeners, document, rect) {
-    this.containerSelector = containerSelector
-    this._containerElement = this._makeContainer(document)
+  constructor (container, listeners, document, rect) {
+    if (typeof container === 'string') {
+      this._initContainer(container, document)
+    } else if (container instanceof Container) {
+      this._copyContainer(container)
+    } else {
+      throw new TypeError('unable to build container')
+    }
     this._applyListeners(listeners)
-    this.resize(rect)
+    this._initScales(rect)
   }
 
-  _makeContainer (document) {
-    let container
+  resize (rect) {
+    return new Container(this, {}, undefined, rect)
+  }
+
+  _initContainer (containerSelector, document) {
+    this.containerSelector = containerSelector
     if (typeof document !== 'undefined') {
-      container = d3.select(document).select(this.containerSelector)
+      this._containerElement = d3.select(document).select(this.containerSelector)
     } else {
-      container = d3.select(this.containerSelector)
+      this._containerElement = d3.select(this.containerSelector)
     }
-    container.style('position', 'relative').style('margin', '0')
-    this._infoElement = this._makeToolTip(container)
-    this._chartElement = this._makeChart(container)
-    this._xAxisElement = this._makeXAxis(container)
-    this._yAxisElement = this._makeYAxis(container)
-    return container
+    this._containerElement.style('position', 'relative').style('margin', '0')
+    this._infoElement = this._makeToolTip(this._containerElement)
+    this._chartElement = this._makeChart(this._containerElement)
+    this._xAxisElement = this._makeXAxis(this._containerElement)
+    this._yAxisElement = this._makeYAxis(this._containerElement)
+  }
+
+  _copyContainer (container) {
+    this.containerSelector = container.containerSelector
+    this._containerElement = container._containerElement
+    this._infoElement = container._infoElement
+    this._chartElement = container._chartElement
+    this._xAxisElement = container._xAxisElement
+    this._yAxisElement = container._yAxisElement
+  }
+
+  _initScales (rect) {
+    if (typeof rect === 'undefined') {
+      rect = this._chartElement.node().getBoundingClientRect()
+    }
+    this._chartBoundingRect = rect
+    this.scaleHelper = new ScaleHelper(this._chartBoundingRect)
   }
 
   _makeToolTip (container) {
@@ -96,14 +121,6 @@ export default class Container {
         }
       )
     }
-  }
-
-  resize (rect) {
-    if (typeof rect === 'undefined') {
-      rect = this._chartElement.node().getBoundingClientRect()
-    }
-    this._chartBoundingRect = rect
-    this.scaleHelper = new ScaleHelper(this._chartBoundingRect)
   }
 
   onMouse (onMove, onOut) {

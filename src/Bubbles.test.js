@@ -1,10 +1,10 @@
 const bubbles = require('./Bubbles')
-const NodeBuilder = require('./NodeBuilder').default
 const common = require('./common-test')
+const apply = require('./apply-test').apply
 
 test('optimize layout', done => {
   const bub = getBubbles()
-  const clustersBeforeCollision = applyProjection(bub, common.makeOverlap())
+  const clustersBeforeCollision = apply(bub, common.makeOverlap())
   setTimeout(() => {
     const clustersAfterCollision = bub.clusters
     assertPlacement(clustersBeforeCollision, clustersAfterCollision)
@@ -14,8 +14,8 @@ test('optimize layout', done => {
 
 test('move clusters', done => {
   const bub = getBubbles()
-  const clustersBeforeMove = applyProjection(bub, common.makeScramble())
-  applyProjection(bub, common.makeOverlap())
+  const clustersBeforeMove = apply(bub, common.makeScramble())
+  apply(bub, common.makeOverlap())
   setTimeout(() => {
     const clustersAfterMove = bub.clusters
     assertPlacement(clustersBeforeMove, clustersAfterMove)
@@ -32,26 +32,20 @@ test('transition end', () => {
 
 test('resize', () => {
   const bub = getBubbles()
-  bub.apply(common.Projection)
-  bubbles.resize(bub)
+  apply(bub, common.Projection)
+  const newBub = bubbles.resize(bub)
   // because jsdom does not have getBoundingClientRect, chart is 0x0
-  expect(bub.clusters[0].x).toBeCloseTo(0, 1)
-  expect(bub.clusters[1].x).toBeCloseTo(0, 1)
-  expect(bub.clusters[2].x).toBeCloseTo(0, 1)
+  expect(newBub.clusters[0].x).toBeCloseTo(0, 1)
+  expect(newBub.clusters[1].x).toBeCloseTo(0, 1)
+  expect(newBub.clusters[2].x).toBeCloseTo(0, 1)
 })
 
 test('cluster position', () => {
   const bub = getBubbles()
-  bub.apply(common.Projection)
+  apply(bub, common.Projection)
   const pos0 = bub.getClustersAtPosition(bub.clusters[0].x, bub.clusters[0].y)
   expect(pos0).toEqual([0])
 })
-
-export function applyProjection (render, projection) {
-  const builder = new NodeBuilder(projection, render.container)
-  render.apply(projection)
-  return builder.getNodes()
-}
 
 function assertPlacement (clustersBefore, clustersAfter) {
   expect(clustersAfter[0].x).toBeCloseTo(clustersBefore[0].x, 1)
