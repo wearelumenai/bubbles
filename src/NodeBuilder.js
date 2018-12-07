@@ -1,4 +1,4 @@
-export class XYNodeBuilder {
+class NodeBuilder {
   constructor (projection, container) {
     this.container = container
     this.projection = projection
@@ -8,25 +8,7 @@ export class XYNodeBuilder {
     this.colors = unzipped[2]
     this.areas = unzipped[3]
 
-    return this._makeNodes()
-  }
-
-  updateContainer (container) {
-    return new XYNodeBuilder(this.projection, container)
-  }
-
-  _makeNodes () {
-    const scales = this.container.getScales(this.x, this.y, this.areas, this.colors)
-    this.nodes = this.projection.map((d, i) => {
-      return {
-        label: i,
-        x: scales.xScale(i),
-        y: scales.yScale(i),
-        radius: scales.radiusScale(i),
-        color: scales.colorScale(i),
-        data: d
-      }
-    })
+    this.nodes = this._makeNodes()
   }
 
   getNodes () {
@@ -34,14 +16,56 @@ export class XYNodeBuilder {
   }
 
   orderX () {
-    return XYNodeBuilder._order(this.x)
+    return NodeBuilder._order(this.x)
   }
 
   orderY () {
-    return XYNodeBuilder._order(this.y)
+    return NodeBuilder._order(this.y)
   }
 
   static _order (array) {
     return array.map((_, i) => i).sort((a, b) => array[a] - array[b])
+  }
+}
+
+export class XYNodeBuilder extends NodeBuilder {
+  updateContainer (container) {
+    return new XYNodeBuilder(this.projection, container)
+  }
+
+  _makeNodes () {
+    const scales = this.container.getScales(this.x, this.y, this.areas, this.colors)
+    return this.projection.map((d, i) => ({
+      label: i,
+      x: scales.xScale(i),
+      y: scales.yScale(i),
+      radius: scales.radiusScale(i),
+      color: scales.colorScale(i),
+      data: d
+    }))
+  }
+}
+
+export class XNodeBuilder extends NodeBuilder {
+  updateContainer (container) {
+    return new XNodeBuilder(this.projection, container)
+  }
+
+  _makeNodes () {
+    const scales = this.container.getScales(this.x, this.y, this.areas, this.colors)
+    return this.projection.map((d, i) => ({
+      label: i,
+      x: scales.xScale(i),
+      fx: scales.xScale(i),
+      y: this.container.getShape().height / 2,
+      vy: 1,
+      radius: scales.radiusScale(i),
+      color: scales.colorScale(i),
+      data: d
+    }))
+  }
+
+  orderY () {
+    return []
   }
 }

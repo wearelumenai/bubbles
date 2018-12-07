@@ -1,7 +1,8 @@
 import * as bubbles from './src/Bubbles.js'
-import builders from './src/NodeBuilder'
+import { XYNodeBuilder, XNodeBuilder } from './src/NodeBuilder'
 
 export default {
   bubbles,
-  ...builders
+  XYNodeBuilder,
+  XNodeBuilder
 }

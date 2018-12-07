@@ -123,6 +123,10 @@ export default class Container {
     }
   }
 
+  getShape () {
+    return this._chartBoundingRect
+  }
+
   onMouse (onMove, onOut) {
     this._applyListeners({
       'mousemove': () => {

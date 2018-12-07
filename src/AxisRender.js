@@ -1,25 +1,22 @@
-export default class AxisRender {
-  constructor (container) {
-    this.container = container
+function getQuartiles (clusters, orederedIndex) {
+  const range = orederedIndex.length - 1
+  const quartiles = [ 0, Math.round(range / 4), Math.round(range / 2), Math.round(3 * range / 4), range ]
+  return quartiles.map(i => clusters[orederedIndex[i]])
+}
+
+class Quantiles {
+  getAxisTicks (values) {
+    return []
+  }
+}
+
+class XQuartiles extends Quantiles {
+  constructor (clusters, order) {
+    super()
+    this.xClusters = getQuartiles(clusters, order)
   }
 
-  apply (builder) {
-    this.clusters = builder.getNodes()
-    this.xClusters = this._getAxisClusters(builder.orderX())
-    this.yClusters = this._getAxisClusters(builder.orderY())
-  }
-
-  hideAxis (builder) {
-    this._getXAxis().style('display', 'none')
-    this._getYAxis().style('display', 'none')
-  }
-
-  displayAxis () {
-    this._displayXAxis()
-    this._displayYAxis()
-  }
-
-  _displayXAxis () {
+  getAxisTicks (values) {
     let clusters = this.xClusters.map((d, i) => {
       let label = d.label
       let x = d.x + (i === 0 ? -1 : i === 4 ? 1 : 0) * d.radius
@@ -30,17 +27,10 @@ export default class AxisRender {
       let fill = i % 2 === 1 ? 'Blue' : (i === 2 ? 'MidnightBlue' : 'DeepSkyBlue')
       return { label, x, y, text, anchor, align, fill }
     })
-    this._collideXAxis(clusters)
-    this._displayAxisValues(this._getXAxis(), clusters)
-    this._getXAxis().style('display', 'block')
+    return this._collideXAxis(values, clusters)
   }
 
-  _getXAxis () {
-    return this.container.selectXAxis('.value')
-  }
-
-  _collideXAxis (clusters) {
-    const values = this._getXAxis()
+  _collideXAxis (values, clusters) {
     if (values.size() > 0) {
       const textLengths = values.nodes().map(e => e.getComputedTextLength())
       if (clusters[2].x - textLengths[2] / 2 < clusters[0].x + textLengths[0]) {
@@ -65,9 +55,17 @@ export default class AxisRender {
         clusters[3].x = clusters[1].x + textLengths[1] / 2 + textLengths[3] / 2
       }
     }
+    return clusters
+  }
+}
+
+class YQuartiles extends Quantiles {
+  constructor (clusters, order) {
+    super()
+    this.yClusters = getQuartiles(clusters, order)
   }
 
-  _displayYAxis () {
+  getAxisTicks (values) {
     let clusters = this.yClusters.map((d, i) => {
       let label = d.label
       let x = '50%'
@@ -78,16 +76,10 @@ export default class AxisRender {
       let fill = i % 2 === 1 ? 'Blue' : (i === 2 ? 'MidnightBlue' : 'DeepSkyBlue')
       return { label, x, y, text, anchor, align, fill }
     })
-    this._collideYAxis(clusters)
-    this._displayAxisValues(this._getYAxis(), clusters)
-    this._getYAxis().style('display', 'block')
+    return this._collideYAxis(values, clusters)
   }
 
-  _getYAxis () {
-    return this.container.selectYAxis('.value')
-  }
-
-  _collideYAxis (clusters) {
+  _collideYAxis (values, clusters) {
     const offset = 16
     if (clusters[1].y < clusters[2].y + offset) {
       clusters[1].y = clusters[2].y + offset
@@ -107,6 +99,59 @@ export default class AxisRender {
     if (clusters[2].y < clusters[3].y + offset) {
       clusters[2].y = clusters[3].y + offset
     }
+    return clusters
+  }
+}
+
+export default class AxisRender {
+  constructor (container) {
+    this.container = container
+  }
+
+  apply (builder) {
+    this.clusters = builder.getNodes()
+    this.xOrder = builder.orderX()
+    this.yOrder = builder.orderY()
+    if (this.xOrder.length > 4) {
+      this._xQuantiles = new XQuartiles(this.clusters, this.xOrder)
+    } else {
+      this._xQuantiles = new Quantiles()
+    }
+    if (this.yOrder.length > 4) {
+      this._yQuantiles = new YQuartiles(this.clusters, this.yOrder)
+    } else {
+      this._yQuantiles = new Quantiles()
+    }
+  }
+
+  hideAxis (builder) {
+    this._getXAxis().style('display', 'none')
+    this._getYAxis().style('display', 'none')
+  }
+
+  displayAxis () {
+    this._displayXAxis()
+    this._displayYAxis()
+  }
+
+  _displayXAxis () {
+    const xClusters = this._xQuantiles.getAxisTicks(this._getXAxis())
+    this._displayAxisValues(this._getXAxis(), xClusters)
+    this._getXAxis().style('display', 'block')
+  }
+
+  _displayYAxis () {
+    const yClusters = this._yQuantiles.getAxisTicks(this._getYAxis())
+    this._displayAxisValues(this._getYAxis(), yClusters)
+    this._getYAxis().style('display', 'block')
+  }
+
+  _getXAxis () {
+    return this.container.selectXAxis('.value')
+  }
+
+  _getYAxis () {
+    return this.container.selectYAxis('.value')
   }
 
   _displayAxisValues (values, clusters) {
@@ -120,11 +165,5 @@ export default class AxisRender {
       .attr('x', d => d.x)
       .attr('y', d => d.y)
       .text(d => d.text)
-  }
-
-  _getAxisClusters (xDistribution) {
-    const range = xDistribution.length - 1
-    const quartiles = [ 0, Math.round(range / 4), Math.round(range / 2), Math.round(3 * range / 4), range ]
-    return quartiles.map(i => this.clusters[xDistribution[i]])
   }
 }

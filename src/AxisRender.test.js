@@ -12,9 +12,17 @@ test('draw axis', () => {
   assertYAxis(axisRender, axisAtFixedPosition)
 })
 
+const dummy = [
+  [1, 2, 3, 4],
+  [1, 2, 3, 4],
+  [1, 2, 3, 4],
+  [1, 2, 3, 4],
+  [1, 2, 3, 4]
+]
+
 test('hide axis', () => {
   const axisRender = getAxisRender()
-  apply(axisRender, common.Projection)
+  apply(axisRender, dummy)
   axisRender.displayAxis()
   expect(axisRender._getXAxis().style('display')).toBe('block')
   expect(axisRender._getYAxis().style('display')).toBe('block')
@@ -25,47 +33,47 @@ test('hide axis', () => {
 
 test('x collide', () => {
   const axisRender = getAxisRender()
-  apply(axisRender, common.Projection)
+  apply(axisRender, dummy)
   axisRender.displayAxis()
-  let xValues = [{ x: 0 }, { x: 5 }, { x: 10 }, { x: 15 }, { x: 20 }]
-  axisRender._collideXAxis(xValues)
-  expect(xValues[1].y).toBe('1em')
-  expect(xValues[3].y).toBe('1em')
+  let xClusters = [{ x: 0 }, { x: 5 }, { x: 10 }, { x: 15 }, { x: 20 }]
+  axisRender._xQuantiles._collideXAxis(axisRender._getXAxis(), xClusters)
+  expect(xClusters[1].y).toBe('1em')
+  expect(xClusters[3].y).toBe('1em')
 })
 
 test('y collide', () => {
   const axisRender = getAxisRender()
-  apply(axisRender, common.Projection)
+  apply(axisRender, dummy)
   axisRender.displayAxis()
-  let yValues = [{ y: 20 }, { y: 15 }, { y: 10 }, { y: 5 }, { y: 20 }]
-  axisRender._collideYAxis(yValues)
-  expect(yValues[1]).not.toBe(10)
-  expect(yValues[2]).not.toBe(20)
-  expect(yValues[3]).not.toBe(30)
+  let yClusters = [{ y: 20 }, { y: 15 }, { y: 10 }, { y: 5 }, { y: 20 }]
+  axisRender._yQuantiles._collideYAxis(axisRender._getYAxis(), yClusters)
+  expect(yClusters[1]).not.toBe(10)
+  expect(yClusters[2]).not.toBe(20)
+  expect(yClusters[3]).not.toBe(30)
 })
 
 test('x do not collide', () => {
   const axisRender = getAxisRender()
-  apply(axisRender, common.Projection)
+  apply(axisRender, dummy)
   axisRender.displayAxis()
-  let xValues = [{ x: 0 }, { x: 50 }, { x: 100 }, { x: 150 }, { x: 200 }]
-  axisRender._collideXAxis(xValues)
-  expect(xValues[1].y).toBeUndefined()
-  expect(xValues[3].y).toBeUndefined()
-  expect(xValues[1]).not.toBe(50)
-  expect(xValues[2]).not.toBe(100)
-  expect(xValues[3]).not.toBe(150)
+  let xClusters = [{ x: 0 }, { x: 50 }, { x: 100 }, { x: 150 }, { x: 200 }]
+  axisRender._xQuantiles._collideXAxis(axisRender._getXAxis(), xClusters)
+  expect(xClusters[1].y).toBeUndefined()
+  expect(xClusters[3].y).toBeUndefined()
+  expect(xClusters[1]).not.toBe(50)
+  expect(xClusters[2]).not.toBe(100)
+  expect(xClusters[3]).not.toBe(150)
 })
 
 test('y do not collide', () => {
   const axisRender = getAxisRender()
-  apply(axisRender, common.Projection)
+  apply(axisRender, dummy)
   axisRender.displayAxis()
-  let yValues = [{ y: 200 }, { y: 150 }, { y: 100 }, { y: 50 }, { y: 0 }]
-  axisRender._collideYAxis(yValues)
-  expect(yValues[1]).not.toBe(50)
-  expect(yValues[2]).not.toBe(100)
-  expect(yValues[3]).not.toBe(150)
+  let yClusters = [{ y: 200 }, { y: 150 }, { y: 100 }, { y: 50 }, { y: 0 }]
+  axisRender._yQuantiles._collideYAxis(axisRender._getYAxis(), yClusters)
+  expect(yClusters[1]).not.toBe(50)
+  expect(yClusters[2]).not.toBe(100)
+  expect(yClusters[3]).not.toBe(150)
 })
 
 function assertXAxis (axisRender, axisAtFixedPosition) {
