@@ -137,6 +137,5 @@ export function create (containerSelector, listeners, document, rect) {
 
 export function resize (bubbles, document, rect) {
   const container = bubbles._container.resize()
-  const updated = Bubbles.apply(bubbles, container, bubbles.builder)
-  return updated
+  return Bubbles.apply(bubbles, container, bubbles.builder)
 }
