@@ -41,18 +41,14 @@ class Bubbles {
   }
 
   apply (builder) {
-    return Bubbles.apply(this, this._container, builder)
+    return Bubbles.apply(this, builder)
   }
 
-  static apply (bubbles, container, builder) {
-    let updated = this
-    if (typeof builder !== 'undefined') {
-      const { updatedContainer, updatedBuilder } = builder.updateContainer(container)
-      const updated = bubbles.updateContainer(updatedContainer)
-      updated.builder = updatedBuilder
-      updated._applyRender()
-      return updated
-    }
+  static apply (bubbles, builder) {
+    const container = builder.getContainer()
+    const updated = bubbles.updateContainer(container)
+    updated.builder = builder
+    updated._applyRender()
     return updated
   }
 
@@ -136,6 +132,9 @@ export function create (containerSelector, listeners, document, rect) {
 }
 
 export function resize (bubbles, document, rect) {
-  const container = bubbles._container.resize()
-  return Bubbles.apply(bubbles, container, bubbles.builder)
+  if (typeof bubbles.builder !== 'undefined') {
+    const container = bubbles._container.resize()
+    const builder = bubbles.builder.updateContainer(container)
+    return Bubbles.apply(bubbles, builder)
+  }
 }
