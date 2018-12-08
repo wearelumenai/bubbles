@@ -1,8 +1,14 @@
 export default class InfoRender {
-  constructor (container, circleRender) {
+  constructor (container, circleRender, infoRender) {
     this.container = container
     this.circleRender = circleRender
     this.container.onMouse((info, x, y) => this._displayInfo(info, x, y), (info) => this._hideInfo(info))
+    if (typeof infoRender !== 'undefined') {
+    }
+  }
+
+  updateContainer (container, circleRender) {
+    return new InfoRender(container, circleRender, this)
   }
 
   apply (builder) {

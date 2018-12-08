@@ -3,8 +3,16 @@ import * as d3 from 'd3'
 const progressiveTimeLine = [10, 290]
 
 export default class CircleRender {
-  constructor (container) {
+  constructor (container, circleRender) {
     this.container = container
+    if (typeof circleRender !== 'undefined') {
+      this.clusters = circleRender.clusters
+      this._circles = circleRender._circles
+    }
+  }
+
+  updateContainer (container) {
+    return new CircleRender(container, this)
   }
 
   apply (builder) {

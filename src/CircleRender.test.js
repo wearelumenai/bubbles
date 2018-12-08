@@ -12,10 +12,10 @@ test('draw circles', () => {
   circles.each(function () {
     const circle = d3.select(this)
     const i = common.parseLabel(circle)
-    expect(common.parseAttr(circle, 'cx')).toBe(clustersAtFixedPosition[i].x)
-    expect(common.parseAttr(circle, 'cy')).toBe(clustersAtFixedPosition[i].y)
-    expect(common.parseAttr(circle, 'r')).toBe(clustersAtFixedPosition[i].radius)
-    expect(circle.attr('fill')).toBe(clustersAtFixedPosition[i].color)
+    expect(common.parseAttr(circle, 'cx')).toBe(clustersAtFixedPosition.nodes[i].x)
+    expect(common.parseAttr(circle, 'cy')).toBe(clustersAtFixedPosition.nodes[i].y)
+    expect(common.parseAttr(circle, 'r')).toBe(clustersAtFixedPosition.nodes[i].radius)
+    expect(circle.attr('fill')).toBe(clustersAtFixedPosition.nodes[i].color)
   })
 })
 
@@ -31,11 +31,11 @@ test('move circles', () => {
       const circle = d3.select(this)
       const i = common.parseLabel(circle)
       if (i !== 0) {
-        expect(common.parseAttr(circle, 'cx')).not.toBe(clustersBeforeMove[i].x)
-        expect(common.parseAttr(circle, 'cy')).not.toBe(clustersBeforeMove[i].y)
+        expect(common.parseAttr(circle, 'cx')).not.toBe(clustersBeforeMove.nodes[i].x)
+        expect(common.parseAttr(circle, 'cy')).not.toBe(clustersBeforeMove.nodes[i].y)
       }
-      expect(common.parseAttr(circle, 'r')).toBe(clustersBeforeMove[i].radius)
-      expect(circle.attr('fill')).toBe(clustersBeforeMove[i].color)
+      expect(common.parseAttr(circle, 'r')).toBe(clustersBeforeMove.nodes[i].radius)
+      expect(circle.attr('fill')).toBe(clustersBeforeMove.nodes[i].color)
     })
   }, 500)
 })

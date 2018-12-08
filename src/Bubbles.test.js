@@ -3,47 +3,49 @@ const common = require('./common-test')
 const apply = require('./apply-test').apply
 
 test('optimize layout', done => {
-  const bub = getBubbles()
-  const clustersBeforeCollision = apply(bub, common.makeOverlap())
+  const chart = getBubbles()
+  const start = apply(chart, common.makeOverlap())
   setTimeout(() => {
-    const clustersAfterCollision = bub.clusters
-    assertPlacement(clustersBeforeCollision, clustersAfterCollision)
+    const clustersAfterCollision = start.updatedChart.clusters
+    assertPlacement(start.nodes, clustersAfterCollision)
     done()
   }, 300)
 })
 
 test('move clusters', done => {
-  const bub = getBubbles()
-  const clustersBeforeMove = apply(bub, common.makeScramble())
-  apply(bub, common.makeOverlap())
+  const chart = getBubbles()
+  const start = apply(chart, common.makeScramble())
+  const move = apply(start.updatedChart, common.makeOverlap())
   setTimeout(() => {
-    const clustersAfterMove = bub.clusters
-    assertPlacement(clustersBeforeMove, clustersAfterMove)
+    assertPlacement(start.nodes, move.updatedChart.clusters)
     done()
   }, 300)
 })
 
 test('transition end', () => {
-  const bub = getBubbles()
+  const chart = getBubbles()
   let endReached = false
-  bub._onLayoutMoved(fakeTransition(), fakeTransition(), () => { endReached = true })
+  chart._onLayoutMoved(fakeTransition(), fakeTransition(), () => { endReached = true })
   expect(endReached).toBe(true)
 })
 
 test('resize', () => {
-  const bub = getBubbles()
-  apply(bub, common.Projection)
-  const newBub = bubbles.resize(bub)
+  const chart = getBubbles()
+  bubbles.resize(chart)
+  const start = apply(chart, common.Projection)
+  const resized = bubbles.resize(start.updatedChart)
   // because jsdom does not have getBoundingClientRect, chart is 0x0
-  expect(newBub.clusters[0].x).toBeCloseTo(0, 1)
-  expect(newBub.clusters[1].x).toBeCloseTo(0, 1)
-  expect(newBub.clusters[2].x).toBeCloseTo(0, 1)
+  expect(resized.clusters[0].x).toBeCloseTo(0, 1)
+  expect(resized.clusters[1].x).toBeCloseTo(0, 1)
+  expect(resized.clusters[2].x).toBeCloseTo(0, 1)
 })
 
 test('cluster position', () => {
-  const bub = getBubbles()
-  apply(bub, common.Projection)
-  const pos0 = bub.getClustersAtPosition(bub.clusters[0].x, bub.clusters[0].y)
+  const chart = getBubbles()
+  const start = apply(chart, common.Projection)
+  const x = start.updatedChart.clusters[0].x
+  const y = start.updatedChart.clusters[0].y
+  const pos0 = start.updatedChart.getClustersAtPosition(x, y)
   expect(pos0).toEqual([0])
 })
 

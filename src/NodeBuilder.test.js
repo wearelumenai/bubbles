@@ -31,8 +31,8 @@ test('no Y builder', () => {
     expect(element.vy).toBe(1)
   })
   expect(builder.orderY()).toEqual([])
-  const other = builder.updateContainer(container)
-  expect(other).toBeInstanceOf(XNodeBuilder)
+  const { updatedBuilder } = builder.updateContainer(container)
+  expect(updatedBuilder).toBeInstanceOf(XNodeBuilder)
 })
 
 test('x order', () => {
@@ -49,8 +49,8 @@ test('y order', () => {
 
 test('update container', () => {
   const builder = getNodeBuilder()
-  const other = builder.updateContainer(builder.container)
-  expect(other).toBeInstanceOf(XYNodeBuilder)
+  const { updatedBuilder } = builder.updateContainer(builder.container)
+  expect(updatedBuilder).toBeInstanceOf(XYNodeBuilder)
 })
 
 function getNodeBuilder () {

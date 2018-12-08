@@ -1,8 +1,16 @@
 import * as d3 from 'd3'
 
 export default class LabelRender {
-  constructor (container) {
+  constructor (container, labelRender) {
     this.container = container
+    if (typeof labelRender !== 'undefined') {
+      this.clusters = labelRender.clusters
+      this._labels = labelRender._labels
+    }
+  }
+
+  updateContainer (container) {
+    return new LabelRender(container, this)
   }
 
   apply (builder) {

@@ -103,25 +103,42 @@ class YQuartiles extends Quantiles {
   }
 }
 
+class QuantileFactory {
+  _getXQuantile (clusters, xOrder) {
+    if (xOrder.length > 4) {
+      return new XQuartiles(clusters, xOrder)
+    } else {
+      return new Quantiles()
+    }
+  }
+
+  _getYQuantile (clusters, yOrder) {
+    if (yOrder.length > 4) {
+      return new YQuartiles(clusters, yOrder)
+    } else {
+      return new Quantiles()
+    }
+  }
+}
+
 export default class AxisRender {
-  constructor (container) {
+  constructor (container, axisRender) {
     this.container = container
+    if (typeof axisRender !== 'undefined') {
+    }
+  }
+
+  updateContainer (container) {
+    return new AxisRender(container, this)
   }
 
   apply (builder) {
     this.clusters = builder.getNodes()
     this.xOrder = builder.orderX()
     this.yOrder = builder.orderY()
-    if (this.xOrder.length > 4) {
-      this._xQuantiles = new XQuartiles(this.clusters, this.xOrder)
-    } else {
-      this._xQuantiles = new Quantiles()
-    }
-    if (this.yOrder.length > 4) {
-      this._yQuantiles = new YQuartiles(this.clusters, this.yOrder)
-    } else {
-      this._yQuantiles = new Quantiles()
-    }
+    const quantileFactory = new QuantileFactory()
+    this._xQuantiles = quantileFactory._getXQuantile(this.clusters, this.xOrder)
+    this._yQuantiles = quantileFactory._getYQuantile(this.clusters, this.yOrder)
   }
 
   hideAxis (builder) {

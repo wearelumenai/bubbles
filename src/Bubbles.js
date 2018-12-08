@@ -8,13 +8,32 @@ import LabelRender from './LabelRender.js'
 import InfoRender from './InfoRender.js'
 
 class Bubbles {
-  constructor (container) {
+  constructor (container, bubbles) {
     this._container = container
+    if (typeof bubbles === 'undefined') {
+      this._init()
+    } else {
+      this._copy(bubbles)
+    }
+  }
+
+  _init () {
     this.axisRender = new AxisRender(this._container.asAxisContainer())
     this.circleRender = new CircleRender(this._container.asChartContainer())
     this.labelRender = new LabelRender(this._container.asChartContainer())
     this.infoRender = new InfoRender(this._container.asToolTipContainer(), this.circleRender)
-    this._doApply = this._applyFirst
+  }
+
+  _copy (bubbles) {
+    this.axisRender = bubbles.axisRender.updateContainer(this._container.asAxisContainer())
+    this.circleRender = bubbles.circleRender.updateContainer(this._container.asChartContainer())
+    this.labelRender = bubbles.labelRender.updateContainer(this._container.asChartContainer())
+    this.infoRender = bubbles.infoRender.updateContainer(this._container.asToolTipContainer(), this.circleRender)
+    this._collideSimulation = bubbles._collideSimulation
+  }
+
+  updateContainer (container) {
+    return new Bubbles(container, this)
   }
 
   getContainer () {
@@ -22,10 +41,19 @@ class Bubbles {
   }
 
   apply (builder) {
-    this.builder = builder
-    this.clusters = builder.getNodes()
-    this._applyRender(builder)
-    this._doApply()
+    return Bubbles.apply(this, this._container, builder)
+  }
+
+  static apply (bubbles, container, builder) {
+    let updated = this
+    if (typeof builder !== 'undefined') {
+      const { updatedContainer, updatedBuilder } = builder.updateContainer(container)
+      const updated = bubbles.updateContainer(updatedContainer)
+      updated.builder = updatedBuilder
+      updated._applyRender()
+      return updated
+    }
+    return updated
   }
 
   getClustersAtPosition (x, y) {
@@ -33,16 +61,21 @@ class Bubbles {
   }
 
   _applyRender (builder) {
-    this.axisRender.apply(builder)
-    this.circleRender.apply(builder)
-    this.labelRender.apply(builder)
-    this.infoRender.apply(builder)
+    this.clusters = this.builder.getNodes()
+    this.axisRender.apply(this.builder)
+    this.circleRender.apply(this.builder)
+    this.labelRender.apply(this.builder)
+    this.infoRender.apply(this.builder)
+    if (typeof this._collideSimulation === 'undefined') {
+      this._applyFirst()
+    } else {
+      this._applyThen()
+    }
   }
 
   _applyFirst () {
     this._drawClusters()
     this._optimizeLayout()
-    this._doApply = this._applyThen
   }
 
   _applyThen () {
@@ -103,9 +136,7 @@ export function create (containerSelector, listeners, document, rect) {
 }
 
 export function resize (bubbles, document, rect) {
-  const container = bubbles.getContainer().resize()
-  const builder = bubbles.builder.updateContainer(container)
-  const newBubbles = new Bubbles(container)
-  newBubbles.apply(builder)
-  return newBubbles
+  const container = bubbles._container.resize()
+  const updated = Bubbles.apply(bubbles, container, bubbles.builder)
+  return updated
 }

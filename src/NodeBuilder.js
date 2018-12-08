@@ -30,7 +30,9 @@ class NodeBuilder {
 
 export class XYNodeBuilder extends NodeBuilder {
   updateContainer (container) {
-    return new XYNodeBuilder(this.projection, container)
+    const updatedContainer = container
+    const updatedBuilder = new XYNodeBuilder(this.projection, updatedContainer)
+    return { updatedContainer, updatedBuilder }
   }
 
   _makeNodes () {
@@ -48,7 +50,9 @@ export class XYNodeBuilder extends NodeBuilder {
 
 export class XNodeBuilder extends NodeBuilder {
   updateContainer (container) {
-    return new XNodeBuilder(this.projection, container)
+    const updatedContainer = container
+    const updatedBuilder = new XNodeBuilder(this.projection, updatedContainer)
+    return { updatedContainer, updatedBuilder }
   }
 
   _makeNodes () {

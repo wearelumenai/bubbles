@@ -11,8 +11,8 @@ test('draw clusters', () => {
   labels.each(function () {
     const label = d3.select(this)
     const i = common.parseLabel(label)
-    expect(common.parseAttr(label, 'x')).toBe(labelsAtFixedPosition[i].x)
-    expect(common.parseAttr(label, 'y')).toBe(labelsAtFixedPosition[i].y)
+    expect(common.parseAttr(label, 'x')).toBe(labelsAtFixedPosition.nodes[i].x)
+    expect(common.parseAttr(label, 'y')).toBe(labelsAtFixedPosition.nodes[i].y)
   })
 })
 
@@ -28,8 +28,8 @@ test('move labels', () => {
       const label = d3.select(this)
       const i = common.parseLabel(label)
       if (i !== 0) {
-        expect(common.parseAttr(label, 'x')).not.toBe(labelsBeforeMove[i].x)
-        expect(common.parseAttr(label, 'y')).not.toBe(labelsBeforeMove[i].y)
+        expect(common.parseAttr(label, 'x')).not.toBe(labelsBeforeMove.nodes[i].x)
+        expect(common.parseAttr(label, 'y')).not.toBe(labelsBeforeMove.nodes[i].y)
       }
     })
   }, 500)
