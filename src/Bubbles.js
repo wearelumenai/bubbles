@@ -131,6 +131,6 @@ export function resize (bubbles, document, rect) {
   if (typeof bubbles.builder !== 'undefined') {
     const container = bubbles._container.resize()
     const builder = bubbles.builder.updateContainer(container)
-    return builder.update(builder)
+    return bubbles.update(builder)
   }
 }
