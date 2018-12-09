@@ -41,22 +41,7 @@ class Bubbles {
   }
 
   apply (builder) {
-    return Bubbles.apply(this, builder)
-  }
-
-  static apply (bubbles, builder) {
-    const container = builder.getContainer()
-    const updated = bubbles.updateContainer(container)
-    updated.builder = builder
-    updated._applyRender()
-    return updated
-  }
-
-  getClustersAtPosition (x, y) {
-    return this.circleRender.getClustersAtPosition(x, y)
-  }
-
-  _applyRender (builder) {
+    this.builder = builder
     this.clusters = this.builder.getNodes()
     this.axisRender.apply(this.builder)
     this.circleRender.apply(this.builder)
@@ -67,6 +52,10 @@ class Bubbles {
     } else {
       this._applyThen()
     }
+  }
+
+  getClustersAtPosition (x, y) {
+    return this.circleRender.getClustersAtPosition(x, y)
   }
 
   _applyFirst () {
@@ -131,10 +120,17 @@ export function create (containerSelector, listeners, document, rect) {
   return new Bubbles(container)
 }
 
+export function apply (bubbles, builder) {
+  const container = builder.getContainer()
+  const updated = bubbles.updateContainer(container)
+  updated.apply(builder)
+  return updated
+}
+
 export function resize (bubbles, document, rect) {
   if (typeof bubbles.builder !== 'undefined') {
     const container = bubbles._container.resize()
     const builder = bubbles.builder.updateContainer(container)
-    return Bubbles.apply(bubbles, builder)
+    return apply(bubbles, builder)
   }
 }

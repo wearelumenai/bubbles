@@ -8,8 +8,8 @@ test('draw axis', () => {
   const axisRender = getAxisRender()
   const axisAtFixedPosition = apply(axisRender, common.Projection)
   axisRender.displayAxis()
-  assertXAxis(axisRender, axisAtFixedPosition.nodes)
-  assertYAxis(axisRender, axisAtFixedPosition.nodes)
+  assertXAxis(axisRender, axisAtFixedPosition)
+  assertYAxis(axisRender, axisAtFixedPosition)
 })
 
 const dummy = [

@@ -6,8 +6,8 @@ test('optimize layout', done => {
   const chart = getBubbles()
   const start = apply(chart, common.makeOverlap())
   setTimeout(() => {
-    const clustersAfterCollision = start.updatedChart.clusters
-    assertPlacement(start.nodes, clustersAfterCollision)
+    const collided = chart.clusters
+    assertPlacement(start, collided)
     done()
   }, 300)
 })
@@ -15,9 +15,10 @@ test('optimize layout', done => {
 test('move clusters', done => {
   const chart = getBubbles()
   const start = apply(chart, common.makeScramble())
-  const move = apply(start.updatedChart, common.makeOverlap())
+  apply(chart, common.makeOverlap())
   setTimeout(() => {
-    assertPlacement(start.nodes, move.updatedChart.clusters)
+    const moved = chart.clusters
+    assertPlacement(start, moved)
     done()
   }, 300)
 })
@@ -32,8 +33,8 @@ test('transition end', () => {
 test('resize', () => {
   const chart = getBubbles()
   bubbles.resize(chart)
-  const start = apply(chart, common.Projection)
-  const resized = bubbles.resize(start.updatedChart)
+  apply(chart, common.Projection)
+  const resized = bubbles.resize(chart)
   // because jsdom does not have getBoundingClientRect, chart is 0x0
   expect(resized.clusters[0].x).toBeCloseTo(0, 1)
   expect(resized.clusters[1].x).toBeCloseTo(0, 1)
@@ -42,10 +43,10 @@ test('resize', () => {
 
 test('cluster position', () => {
   const chart = getBubbles()
-  const start = apply(chart, common.Projection)
-  const x = start.updatedChart.clusters[0].x
-  const y = start.updatedChart.clusters[0].y
-  const pos0 = start.updatedChart.getClustersAtPosition(x, y)
+  apply(chart, common.Projection)
+  const x = chart.clusters[0].x
+  const y = chart.clusters[0].y
+  const pos0 = chart.getClustersAtPosition(x, y)
   expect(pos0).toEqual([0])
 })
 
