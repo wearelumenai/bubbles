@@ -8,12 +8,15 @@ import LabelRender from './LabelRender.js'
 import InfoRender from './InfoRender.js'
 
 class Bubbles {
-  constructor (container, bubbles) {
+  constructor (container, builder, bubbles) {
     this._container = container
     if (typeof bubbles === 'undefined') {
       this._init()
     } else {
       this._copy(bubbles)
+    }
+    if (typeof builder !== 'undefined') {
+      this._apply(builder)
     }
   }
 
@@ -32,26 +35,29 @@ class Bubbles {
     this._collideSimulation = bubbles._collideSimulation
   }
 
-  updateContainer (container) {
-    return new Bubbles(container, this)
-  }
-
-  getContainer () {
-    return this._container
-  }
-
-  apply (builder) {
+  _apply (builder) {
     this.builder = builder
     this.clusters = this.builder.getNodes()
-    this.axisRender.apply(this.builder)
-    this.circleRender.apply(this.builder)
-    this.labelRender.apply(this.builder)
-    this.infoRender.apply(this.builder)
+    this.axisRender._apply(this.builder)
+    this.circleRender._apply(this.builder)
+    this.labelRender._apply(this.builder)
+    this.infoRender._apply(this.builder)
     if (typeof this._collideSimulation === 'undefined') {
       this._applyFirst()
     } else {
       this._applyThen()
     }
+  }
+
+  update (builder, container) {
+    if (typeof container === 'undefined') {
+      container = this._container
+    }
+    return new Bubbles(container, builder, this)
+  }
+
+  getContainer () {
+    return this._container
   }
 
   getClustersAtPosition (x, y) {
@@ -69,7 +75,7 @@ class Bubbles {
   }
 
   _optimizeLayout () {
-    const collisionForce = this._getCollisionForce()
+    const collisionForce = Bubbles._getCollisionForce()
     const { xForce, yForce } = this._getPositionForces()
     this._collideSimulation = d3.forceSimulation()
       .alphaTarget(0.0005) // runs longer
@@ -80,7 +86,7 @@ class Bubbles {
       .on('tick', () => this._drawClusters())
   }
 
-  _getCollisionForce () {
+  static _getCollisionForce () {
     return d3.forceCollide(n => n.radius).strength(0.6)
   }
 
@@ -121,10 +127,7 @@ export function create (containerSelector, listeners, document, rect) {
 }
 
 export function apply (bubbles, builder) {
-  const container = builder.getContainer()
-  const updated = bubbles.updateContainer(container)
-  updated.apply(builder)
-  return updated
+  return bubbles.update(builder)
 }
 
 export function resize (bubbles, document, rect) {

@@ -13,7 +13,7 @@ export default class LabelRender {
     return new LabelRender(container, this)
   }
 
-  apply (builder) {
+  _apply (builder) {
     this.clusters = builder.getNodes()
   }
 

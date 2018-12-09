@@ -132,7 +132,7 @@ export default class AxisRender {
     return new AxisRender(container, this)
   }
 
-  apply (builder) {
+  _apply (builder) {
     this.clusters = builder.getNodes()
     this.xOrder = builder.orderX()
     this.yOrder = builder.orderY()
@@ -141,7 +141,7 @@ export default class AxisRender {
     this._yQuantiles = quantileFactory._getYQuantile(this.clusters, this.yOrder)
   }
 
-  hideAxis (builder) {
+  hideAxis () {
     this._getXAxis().style('display', 'none')
     this._getYAxis().style('display', 'none')
   }

@@ -11,7 +11,7 @@ export default class InfoRender {
     return new InfoRender(container, circleRender, this)
   }
 
-  apply (builder) {
+  _apply (builder) {
     this.clusters = builder.getNodes()
   }
 
