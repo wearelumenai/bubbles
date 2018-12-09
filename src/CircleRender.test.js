@@ -19,7 +19,7 @@ test('draw circles', () => {
   })
 })
 
-test('move circles', () => {
+test('move circles', done => {
   const circleRender = getCircleRender()
   const clustersBeforeMove = apply(circleRender, common.Projection)
   circleRender.drawCircles()
@@ -33,10 +33,11 @@ test('move circles', () => {
       if (i !== 0) {
         expect(common.parseAttr(circle, 'cx')).not.toBe(clustersBeforeMove[i].x)
         expect(common.parseAttr(circle, 'cy')).not.toBe(clustersBeforeMove[i].y)
+        expect(common.parseAttr(circle, 'r')).not.toBe(clustersBeforeMove[i].radius)
+        expect(circle.attr('fill')).not.toBe(clustersBeforeMove[i].color)
       }
-      expect(common.parseAttr(circle, 'r')).toBe(clustersBeforeMove[i].radius)
-      expect(circle.attr('fill')).toBe(clustersBeforeMove[i].color)
     })
+    done()
   }, 500)
 })
 

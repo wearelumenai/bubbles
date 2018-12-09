@@ -26,6 +26,7 @@ export default class LabelRender {
       .attr('class', 'label')
       .attr('text-anchor', 'middle')
       .attr('alignment-baseline', 'central')
+      .attr('data-label', n => n.label)
       .text(i => i.label)
     LabelRender._updateLabels(newLabels.merge(labels))
   }

@@ -7,6 +7,7 @@ const apply = require('./apply-test').apply
 test('draw clusters', () => {
   const labelRender = getLabelRender()
   const labelsAtFixedPosition = apply(labelRender, common.Projection)
+  labelRender.displayLabels()
   const labels = labelRender._getLabels()
   labels.each(function () {
     const label = d3.select(this)
@@ -16,7 +17,7 @@ test('draw clusters', () => {
   })
 })
 
-test('move labels', () => {
+test('move labels', done => {
   const labelRender = getLabelRender()
   const labelsBeforeMove = apply(labelRender, common.Projection)
   labelRender.displayLabels()
@@ -32,6 +33,7 @@ test('move labels', () => {
         expect(common.parseAttr(label, 'y')).not.toBe(labelsBeforeMove[i].y)
       }
     })
+    done()
   }, 500)
 })
 
