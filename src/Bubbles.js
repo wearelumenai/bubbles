@@ -49,11 +49,8 @@ class Bubbles {
     }
   }
 
-  update (builder, container) {
-    if (typeof container === 'undefined') {
-      container = this._container
-    }
-    return new Bubbles(container, builder, this)
+  update (builder) {
+    return new Bubbles(builder.getContainer(), builder, this)
   }
 
   getContainer () {
@@ -134,6 +131,6 @@ export function resize (bubbles, document, rect) {
   if (typeof bubbles.builder !== 'undefined') {
     const container = bubbles._container.resize()
     const builder = bubbles.builder.updateContainer(container)
-    return apply(bubbles, builder)
+    return builder.update(builder)
   }
 }
