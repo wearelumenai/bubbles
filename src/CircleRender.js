@@ -3,16 +3,18 @@ import * as d3 from 'd3'
 const progressiveTimeLine = [10, 290]
 
 export default class CircleRender {
-  constructor (container, circleRender) {
+  constructor (container, builder, circleRender) {
     this.container = container
     if (typeof circleRender !== 'undefined') {
       this.clusters = circleRender.clusters
-      this._circles = circleRender._circles
+    }
+    if (typeof builder !== 'undefined') {
+      this._apply(builder)
     }
   }
 
-  updateContainer (container) {
-    return new CircleRender(container, this)
+  update (builder, container) {
+    return new CircleRender(container, builder, this)
   }
 
   _apply (builder) {
@@ -30,8 +32,7 @@ export default class CircleRender {
   }
 
   drawCircles () {
-    this._circles = this._getCircles()
-    const circles = this._circles.data(this.clusters)
+    const circles = this._getCircles().data(this.clusters)
     let newCircles = circles.enter()
       .append('circle')
       .style('pointer-events', 'none')
@@ -41,7 +42,7 @@ export default class CircleRender {
   }
 
   moveCircles () {
-    const circles = this._circles.data(this.clusters)
+    const circles = this._getCircles().data(this.clusters)
     circles.exit().remove()
     const circleTransition = CircleRender._makeTransition(circles)
     this._updateCircles(circleTransition)

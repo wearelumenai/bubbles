@@ -2,39 +2,39 @@ const d3 = require('d3')
 const Container = require('./Container').default
 const CircleRender = require('./CircleRender').default
 const common = require('./common-test')
-const apply = require('./apply-test').apply
+const update = require('./apply-test').update
 
 test('draw circles', () => {
   const circleRender = getCircleRender()
-  const clustersAtFixedPosition = apply(circleRender, common.Projection)
-  circleRender.drawCircles()
-  const circles = circleRender._getCircles()
+  const start = update(circleRender, common.Projection)
+  start.updated.drawCircles()
+  const circles = start.updated._getCircles()
   circles.each(function () {
     const circle = d3.select(this)
     const i = common.parseLabel(circle)
-    expect(common.parseAttr(circle, 'cx')).toBe(clustersAtFixedPosition[i].x)
-    expect(common.parseAttr(circle, 'cy')).toBe(clustersAtFixedPosition[i].y)
-    expect(common.parseAttr(circle, 'r')).toBe(clustersAtFixedPosition[i].radius)
-    expect(circle.attr('fill')).toBe(clustersAtFixedPosition[i].color)
+    expect(common.parseAttr(circle, 'cx')).toBe(start.nodes[i].x)
+    expect(common.parseAttr(circle, 'cy')).toBe(start.nodes[i].y)
+    expect(common.parseAttr(circle, 'r')).toBe(start.nodes[i].radius)
+    expect(circle.attr('fill')).toBe(start.nodes[i].color)
   })
 })
 
 test('move circles', done => {
   const circleRender = getCircleRender()
-  const clustersBeforeMove = apply(circleRender, common.Projection)
-  circleRender.drawCircles()
-  apply(circleRender, common.makeScramble())
-  circleRender.moveCircles()
+  const start = update(circleRender, common.Projection)
+  start.updated.drawCircles()
+  const moved = update(start.updated, common.makeScramble())
+  moved.updated.moveCircles()
   setTimeout(() => {
-    const circles = circleRender._getCircles()
+    const circles = moved.updated._getCircles()
     circles.each(function () {
       const circle = d3.select(this)
       const i = common.parseLabel(circle)
       if (i !== 0) {
-        expect(common.parseAttr(circle, 'cx')).not.toBe(clustersBeforeMove[i].x)
-        expect(common.parseAttr(circle, 'cy')).not.toBe(clustersBeforeMove[i].y)
-        expect(common.parseAttr(circle, 'r')).not.toBe(clustersBeforeMove[i].radius)
-        expect(circle.attr('fill')).not.toBe(clustersBeforeMove[i].color)
+        expect(common.parseAttr(circle, 'cx')).not.toBe(start.nodes[i].x)
+        expect(common.parseAttr(circle, 'cy')).not.toBe(start.nodes[i].y)
+        expect(common.parseAttr(circle, 'r')).not.toBe(start.nodes[i].radius)
+        expect(circle.attr('fill')).not.toBe(start.nodes[i].color)
       }
     })
     done()
@@ -52,17 +52,17 @@ test('progressive bound to rect', () => {
 
 test('two clusters at position', () => {
   const circleRender = getCircleRender()
-  apply(circleRender, common.makeOverlap())
-  let { x, y } = common.getXYBetween(circleRender.clusters[2], circleRender.clusters[1])
-  const clusters = circleRender.getClustersAtPosition(x, y)
+  const start = update(circleRender, common.makeOverlap())
+  let { x, y } = common.getXYBetween(start.updated.clusters[2], start.updated.clusters[1])
+  const clusters = start.updated.getClustersAtPosition(x, y)
   expect(clusters).toEqual([2, 1])
 })
 
 test('no cluster at position', () => {
   const circleRender = getCircleRender()
-  apply(circleRender, common.makeOverlap())
-  let { x, y } = common.getXYBetween(circleRender.clusters[2], circleRender.clusters[0])
-  const clusters = circleRender.getClustersAtPosition(x, y)
+  const start = update(circleRender, common.makeOverlap())
+  let { x, y } = common.getXYBetween(start.updated.clusters[2], start.updated.clusters[0])
+  const clusters = start.updated.getClustersAtPosition(x, y)
   expect(clusters).toEqual([])
 })
 

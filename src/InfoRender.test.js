@@ -2,7 +2,7 @@ const Container = require('./Container').default
 const CircleRender = require('./CircleRender').default
 const InfoRender = require('./InfoRender').default
 const common = require('./common-test')
-const apply = require('./apply-test').apply
+const update = require('./apply-test').update
 
 test('display infos', () => {
   const infoRender = getInfoRender()
@@ -44,7 +44,6 @@ function getInfoRender () {
   const container = new Container('#bubble-chart', {}, common.document, common.Rect)
   const circleRender = new CircleRender(container)
   const infoRender = new InfoRender(container, circleRender)
-  apply(circleRender, common.makeOverlap())
-  apply(infoRender, common.makeOverlap())
-  return infoRender
+  const circleStart = update(circleRender, common.makeOverlap())
+  return update(infoRender, common.makeOverlap(), circleStart.updated).updated
 }

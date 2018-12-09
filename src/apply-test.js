@@ -1,8 +1,9 @@
 const { XYNodeBuilder } = require('./NodeBuilder')
 
-export function apply (render, projection) {
+export function update (render, projection, ...params) {
   const container = render.container || render.getContainer()
-  const builder = new XYNodeBuilder(projection, container)
-  render._apply(builder)
-  return new XYNodeBuilder(projection, container).getNodes()
+  return {
+    nodes: new XYNodeBuilder(projection, container).getNodes(),
+    updated: render.update(new XYNodeBuilder(projection, container), container, ...params)
+  }
 }

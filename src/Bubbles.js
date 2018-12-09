@@ -13,7 +13,7 @@ class Bubbles {
     if (typeof bubbles === 'undefined') {
       this._init()
     } else {
-      this._copy(bubbles)
+      this._copy(bubbles, builder)
     }
     if (typeof builder !== 'undefined') {
       this._apply(builder)
@@ -27,21 +27,19 @@ class Bubbles {
     this.infoRender = new InfoRender(this._container.asToolTipContainer(), this.circleRender)
   }
 
-  _copy (bubbles) {
-    this.axisRender = bubbles.axisRender.updateContainer(this._container.asAxisContainer())
-    this.circleRender = bubbles.circleRender.updateContainer(this._container.asChartContainer())
-    this.labelRender = bubbles.labelRender.updateContainer(this._container.asChartContainer())
-    this.infoRender = bubbles.infoRender.updateContainer(this._container.asToolTipContainer(), this.circleRender)
+  _copy (bubbles, builder) {
+    this.axisRender = bubbles.axisRender.update(builder, this._container.asAxisContainer())
+    this.circleRender = bubbles.circleRender.update(builder, this._container.asChartContainer())
+    this.labelRender = bubbles.labelRender.update(builder, this._container.asChartContainer())
+    this.infoRender = bubbles.infoRender.update(builder, this._container.asToolTipContainer(), this.circleRender)
     this._collideSimulation = bubbles._collideSimulation
   }
 
   _apply (builder) {
     this.builder = builder
     this.clusters = this.builder.getNodes()
-    this.axisRender._apply(this.builder)
     this.circleRender._apply(this.builder)
     this.labelRender._apply(this.builder)
-    this.infoRender._apply(this.builder)
     if (typeof this._collideSimulation === 'undefined') {
       this._applyFirst()
     } else {

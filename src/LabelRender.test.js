@@ -2,35 +2,35 @@ const d3 = require('d3')
 const Container = require('./Container').default
 const LabelRender = require('./LabelRender').default
 const common = require('./common-test')
-const apply = require('./apply-test').apply
+const update = require('./apply-test').update
 
 test('draw clusters', () => {
   const labelRender = getLabelRender()
-  const labelsAtFixedPosition = apply(labelRender, common.Projection)
-  labelRender.displayLabels()
-  const labels = labelRender._getLabels()
+  const start = update(labelRender, common.Projection)
+  start.updated.displayLabels()
+  const labels = start.updated._getLabels()
   labels.each(function () {
     const label = d3.select(this)
     const i = common.parseLabel(label)
-    expect(common.parseAttr(label, 'x')).toBe(labelsAtFixedPosition[i].x)
-    expect(common.parseAttr(label, 'y')).toBe(labelsAtFixedPosition[i].y)
+    expect(common.parseAttr(label, 'x')).toBe(start.nodes[i].x)
+    expect(common.parseAttr(label, 'y')).toBe(start.nodes[i].y)
   })
 })
 
 test('move labels', done => {
   const labelRender = getLabelRender()
-  const labelsBeforeMove = apply(labelRender, common.Projection)
-  labelRender.displayLabels()
-  apply(labelRender, common.makeScramble())
-  labelRender.moveLabels()
+  const start = update(labelRender, common.Projection)
+  start.updated.displayLabels()
+  const moved = update(start.updated, common.makeScramble())
+  moved.updated.moveLabels()
   setTimeout(() => {
-    const circles = labelRender._getLabels()
+    const circles = moved.updated._getLabels()
     circles.each(function () {
       const label = d3.select(this)
       const i = common.parseLabel(label)
       if (i !== 0) {
-        expect(common.parseAttr(label, 'x')).not.toBe(labelsBeforeMove[i].x)
-        expect(common.parseAttr(label, 'y')).not.toBe(labelsBeforeMove[i].y)
+        expect(common.parseAttr(label, 'x')).not.toBe(start.nodes[i].x)
+        expect(common.parseAttr(label, 'y')).not.toBe(start.nodes[i].y)
       }
     })
     done()

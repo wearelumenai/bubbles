@@ -1,16 +1,18 @@
 import * as d3 from 'd3'
 
 export default class LabelRender {
-  constructor (container, labelRender) {
+  constructor (container, builder, labelRender) {
     this.container = container
     if (typeof labelRender !== 'undefined') {
       this.clusters = labelRender.clusters
-      this._labels = labelRender._labels
+    }
+    if (typeof builder !== 'undefined') {
+      this._apply(builder)
     }
   }
 
-  updateContainer (container) {
-    return new LabelRender(container, this)
+  update (builder, container) {
+    return new LabelRender(container, builder, this)
   }
 
   _apply (builder) {
@@ -18,8 +20,7 @@ export default class LabelRender {
   }
 
   displayLabels () {
-    this._labels = this._getLabels()
-    const labels = this._labels.data(this.clusters)
+    const labels = this._getLabels().data(this.clusters)
     let newLabels = labels.enter()
       .append('text')
       .style('pointer-events', 'none')
@@ -32,7 +33,7 @@ export default class LabelRender {
   }
 
   moveLabels () {
-    const labels = this._labels.data(this.clusters)
+    const labels = this._getLabels().data(this.clusters)
     labels.exit().remove()
     const labelTransition = LabelRender._makeTransition(labels)
     LabelRender._updateLabels(labelTransition)

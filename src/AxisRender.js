@@ -1,6 +1,6 @@
 function getQuartiles (clusters, orederedIndex) {
   const range = orederedIndex.length - 1
-  const quartiles = [ 0, Math.round(range / 4), Math.round(range / 2), Math.round(3 * range / 4), range ]
+  const quartiles = [0, Math.round(range / 4), Math.round(range / 2), Math.round(3 * range / 4), range]
   return quartiles.map(i => clusters[orederedIndex[i]])
 }
 
@@ -122,14 +122,18 @@ class QuantileFactory {
 }
 
 export default class AxisRender {
-  constructor (container, axisRender) {
+  constructor (container, builder, axisRender) {
     this.container = container
     if (typeof axisRender !== 'undefined') {
     }
+
+    if (typeof builder !== 'undefined') {
+      this._apply(builder)
+    }
   }
 
-  updateContainer (container) {
-    return new AxisRender(container, this)
+  update (builder, container) {
+    return new AxisRender(container, builder, this)
   }
 
   _apply (builder) {
