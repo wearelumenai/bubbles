@@ -1,3 +1,5 @@
+import { XYNodeBuilder } from './NodeBuilder'
+
 const bubbles = require('./Bubbles')
 const common = require('./common-test')
 const update = require('./apply-test').update
@@ -48,6 +50,12 @@ test('cluster position', () => {
   const y = start.updated.clusters[0].y
   const pos0 = start.updated.getClustersAtPosition(x, y)
   expect(pos0).toEqual([0])
+})
+
+test('apply', () => {
+  const chart = getBubbles()
+  const updated = bubbles.apply(chart, new XYNodeBuilder(common.Projection, chart.getContainer()))
+  expect(updated).not.toBe(chart)
 })
 
 function assertPlacement (clustersBefore, clustersAfter) {
