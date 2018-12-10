@@ -55,7 +55,7 @@ test('container element is svg', () => {
 test('select sub elements', () => {
   const container = getContainer()
   const element = container._containerElement
-  const rect = element.append('rect').attr('class', 'selectme').node()
+  const rect = element.append('rect').classed('selectme', true).node()
   const sel = element.selectAll('.selectme').node()
   expect(rect).toEqual(sel)
 })
@@ -63,7 +63,7 @@ test('select sub elements', () => {
 test('select element in svg', () => {
   const container = getContainer()
   const element = container._containerElement.select('svg')
-  const rect = element.append('rect').attr('class', 'selectme').node()
+  const rect = element.append('rect').classed('selectme', true).node()
   const sel = container.selectChart('.selectme').node()
   expect(rect).toEqual(sel)
 })

@@ -24,7 +24,7 @@ export default class LabelRender {
     let newLabels = labels.enter()
       .append('text')
       .style('pointer-events', 'none')
-      .attr('class', 'label')
+      .classed('label', true)
       .attr('text-anchor', 'middle')
       .attr('alignment-baseline', 'central')
       .attr('data-label', n => n.label)

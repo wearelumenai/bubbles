@@ -22,16 +22,21 @@ class Container {
 
   _initContainer (containerSelector, document) {
     this.containerSelector = containerSelector
-    if (typeof document !== 'undefined') {
-      this._containerElement = d3.select(document).select(this.containerSelector)
-    } else {
-      this._containerElement = d3.select(this.containerSelector)
-    }
-    this._containerElement.style('position', 'relative').style('margin', '0')
+    this._containerElement = this._setupContainer(containerSelector, document)
     this._infoElement = this._makeToolTip(this._containerElement)
     this._chartElement = this._makeChart(this._containerElement, this._getYAxisWidth())
     this._xAxisElement = this._makeXAxis(this._containerElement)
     this._yAxisElement = this._makeYAxis(this._containerElement, this._getYAxisWidth())
+  }
+
+  _setupContainer (containerSelector, document) {
+    let element
+    if (typeof document !== 'undefined') {
+      element = d3.select(document).select(containerSelector)
+    } else {
+      element = d3.select(containerSelector)
+    }
+    return element.style('position', 'relative').style('margin', '0')
   }
 
   _copyContainer (container) {
@@ -54,7 +59,7 @@ class Container {
 
   _setupTooltip (tooltip) {
     return tooltip
-      .attr('class', 'info')
+      .classed('info', true)
       .style('position', 'absolute')
       .style('width', '1em')
       .style('margin-left', '7em')
@@ -66,7 +71,7 @@ class Container {
   _makeChart (container, left) {
     let chart = this._setupChart(container.append('div'), left)
     chart.append('svg')
-      .attr('class', 'chart')
+      .classed('chart', true)
       .style('position', 'absolute')
       .style('top', '0')
       .style('left', '0')
@@ -77,7 +82,7 @@ class Container {
 
   _setupChart (chart, left) {
     return chart
-      .attr('class', 'chart')
+      .classed('chart', true)
       .style('position', 'absolute')
       .style('top', '0')
       .style('bottom', '2em')
@@ -88,7 +93,7 @@ class Container {
   _makeXAxis (container) {
     let xAxis = this._setupXAxis(container.append('div'))
     xAxis.append('svg')
-      .attr('class', 'x-axis')
+      .classed('x-axis', true)
       .style('position', 'absolute')
       .style('top', '0')
       .style('left', '0')
@@ -99,7 +104,7 @@ class Container {
 
   _setupXAxis (xAxis) {
     return xAxis
-      .attr('class', 'x-axis')
+      .classed('x-axis', true)
       .style('position', 'absolute')
       .style('height', '2em')
       .style('bottom', '0')
@@ -110,7 +115,7 @@ class Container {
   _makeYAxis (container, width) {
     let yAxis = this._setupYAxis(container.append('div'), width)
     yAxis.append('svg')
-      .attr('class', 'y-axis')
+      .classed('y-axis', true)
       .style('position', 'absolute')
       .style('top', '0')
       .style('left', '0')
@@ -121,7 +126,7 @@ class Container {
 
   _setupYAxis (yAxis, width) {
     return yAxis
-      .attr('class', 'y-axis')
+      .classed('y-axis', true)
       .style('position', 'absolute')
       .style('top', '0')
       .style('bottom', '2em')

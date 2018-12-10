@@ -178,7 +178,7 @@ export default class AxisRender {
   _displayAxisValues (values, clusters) {
     values.data(clusters).enter().append('text')
       .attr('data-label', d => d.label)
-      .attr('class', 'value')
+      .classed('value', true)
       .attr('text-anchor', d => d.anchor)
       .attr('fill', d => d.fill)
       .attr('alignment-baseline', d => d.align)

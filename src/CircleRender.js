@@ -36,7 +36,7 @@ export default class CircleRender {
     let newCircles = circles.enter()
       .append('circle')
       .style('pointer-events', 'none')
-      .attr('class', 'cluster')
+      .classed('cluster', true)
       .attr('data-label', n => n.label)
     this._updateCircles(newCircles.merge(circles))
   }
