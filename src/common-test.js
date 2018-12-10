@@ -1,4 +1,5 @@
 const jsdom = require('jsdom')
+const d3 = require('d3')
 
 export const X = [3, 12, 7]
 export const Y = [14, 12, 9]
@@ -13,6 +14,15 @@ export const Projection = [
 
 export const document = new jsdom.JSDOM('<body><div id="bubble-chart"></div></body>', {
   beforeParse (window) {
+    window.Element.prototype.getBoundingClientRect = function () {
+      const content = d3.select(this)
+      if (content.classed('chart')) {
+        return Rect
+      }
+      if (content.classed('info')) {
+        return { width: 32, height: 32 }
+      }
+    }
     window.Element.prototype.getComputedTextLength = function () {
       return 20
     }

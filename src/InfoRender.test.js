@@ -41,7 +41,7 @@ test('hide infos on mouse out', done => {
 })
 
 function getInfoRender () {
-  const container = new containers.XYContainer('#bubble-chart', {}, common.document, common.Rect)
+  const container = new containers.XYContainer('#bubble-chart', {}, common.document)
   const circleRender = new CircleRender(container)
   const infoRender = new InfoRender(container, circleRender)
   const circleStart = update(circleRender, common.makeOverlap())

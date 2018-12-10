@@ -25,12 +25,12 @@ test('container has relative position', () => {
 
 test('container element has svg components', () => {
   const container = getContainer()
-  const chartElement = container._containerElement.select('.chart')
-  expect(chartElement.node().tagName.toLowerCase()).toBe('svg')
-  const xAxisElement = container._containerElement.select('.x-axis')
-  expect(xAxisElement.node().tagName.toLowerCase()).toBe('svg')
-  const yAxisElement = container._containerElement.select('.y-axis')
-  expect(yAxisElement.node().tagName.toLowerCase()).toBe('svg')
+  const chartElement = container._containerElement.select('svg.chart')
+  expect(chartElement.size()).toBeGreaterThan(0)
+  const xAxisElement = container._containerElement.select('svg.x-axis')
+  expect(xAxisElement.size()).toBeGreaterThan(0)
+  const yAxisElement = container._containerElement.select('svg.y-axis')
+  expect(yAxisElement.size()).toBeGreaterThan(0)
 })
 
 test('container element has p', () => {
@@ -185,5 +185,5 @@ test('unable to build container', () => {
 })
 
 function getContainer () {
-  return new containers.XYContainer('#bubble-chart', {}, common.document, common.Rect)
+  return new containers.XYContainer('#bubble-chart', {}, common.document)
 }

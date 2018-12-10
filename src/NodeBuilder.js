@@ -1,3 +1,5 @@
+import { XYContainer, XContainer } from './Container'
+
 class NodeBuilder {
   constructor (projection, container) {
     this.container = container
@@ -33,6 +35,10 @@ class NodeBuilder {
 }
 
 export class XYNodeBuilder extends NodeBuilder {
+  constructor (projection, container) {
+    super(projection, new XYContainer(container))
+  }
+
   updateContainer (container) {
     return new XYNodeBuilder(this.projection, container)
   }
@@ -51,6 +57,10 @@ export class XYNodeBuilder extends NodeBuilder {
 }
 
 export class XNodeBuilder extends NodeBuilder {
+  constructor (projection, container) {
+    super(projection, new XContainer(container))
+  }
+
   updateContainer (container) {
     return new XNodeBuilder(this.projection, container)
   }

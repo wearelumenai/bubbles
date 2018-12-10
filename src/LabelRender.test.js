@@ -38,6 +38,6 @@ test('move labels', done => {
 })
 
 function getLabelRender () {
-  const container = new containers.XYContainer('#bubble-chart', {}, common.document, common.Rect)
+  const container = new containers.XYContainer('#bubble-chart', {}, common.document)
   return new LabelRender(container)
 }

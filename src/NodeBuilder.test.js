@@ -22,7 +22,7 @@ test('get nodes in builder', () => {
 })
 
 test('no Y builder', () => {
-  const container = new containers.XYContainer('#bubble-chart', {}, common.document, common.Rect)
+  const container = new containers.XYContainer('#bubble-chart', {}, common.document)
   const builder = new XNodeBuilder(common.Projection, container)
   const nodes = builder.getNodes()
   nodes.forEach(element => {
@@ -31,8 +31,26 @@ test('no Y builder', () => {
     expect(element.vy).toBe(1)
   })
   expect(builder.orderY()).toEqual([])
-  const updatedBuilder = builder.updateContainer(container)
-  expect(updatedBuilder).toBeInstanceOf(XNodeBuilder)
+})
+
+test('container update', () => {
+  const container = new containers.XYContainer('#bubble-chart', {}, common.document)
+  const xyBuilder = new XYNodeBuilder(common.Projection, container)
+  const updatedXYBuilder = xyBuilder.updateContainer(container)
+  expect(updatedXYBuilder).toBeInstanceOf(XYNodeBuilder)
+  const xBuilder = new XNodeBuilder(common.Projection, container)
+  const updatedXBuilder = xBuilder.updateContainer(container)
+  expect(updatedXBuilder).toBeInstanceOf(XNodeBuilder)
+})
+
+test('container type changes', () => {
+  const container = new containers.XYContainer('#bubble-chart', {}, common.document)
+  const xBuilder = new XNodeBuilder(common.Projection, container)
+  const xContainer = xBuilder.getContainer()
+  expect(xContainer).toBeInstanceOf(containers.XContainer)
+  const xyBuilder = new XYNodeBuilder(common.Projection, xContainer)
+  const xyContainer = xyBuilder.getContainer()
+  expect(xyContainer).toBeInstanceOf(containers.XYContainer)
 })
 
 test('x order', () => {
@@ -60,6 +78,6 @@ test('get container', () => {
 })
 
 function getNodeBuilder () {
-  const container = new containers.XYContainer('#bubble-chart', {}, common.document, common.Rect)
+  const container = new containers.XYContainer('#bubble-chart', {}, common.document)
   return new XYNodeBuilder(common.Projection, container)
 }

@@ -115,6 +115,6 @@ function assertYAxis (axisRender, axisAtFixedPosition) {
 }
 
 function getAxisRender () {
-  const container = new containers.XYContainer('#bubble-chart', {}, common.document, common.Rect)
+  const container = new containers.XYContainer('#bubble-chart', {}, common.document)
   return new AxisRender(container)
 }

@@ -116,8 +116,8 @@ class Bubbles {
   }
 }
 
-export function create (containerSelector, listeners, document, rect) {
-  const container = new containers.XYContainer(containerSelector, listeners, document, rect)
+export function create (containerSelector, listeners, document) {
+  const container = new containers.XYContainer(containerSelector, listeners, document)
   return new Bubbles(container)
 }
 
@@ -125,7 +125,7 @@ export function apply (bubbles, builder) {
   return bubbles.update(builder)
 }
 
-export function resize (bubbles, document, rect) {
+export function resize (bubbles) {
   if (typeof bubbles.builder !== 'undefined') {
     const container = bubbles._container.resize()
     const builder = bubbles.builder.updateContainer(container)

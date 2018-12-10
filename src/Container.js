@@ -4,20 +4,20 @@ import * as d3 from 'd3'
 import ScaleHelper from './ScaleHelper'
 
 class Container {
-  constructor (container, listeners, document, rect) {
+  constructor (container, listeners, document) {
     if (typeof container === 'string') {
       this._initContainer(container, document)
-    } else if (container instanceof XYContainer) {
+    } else if (container instanceof Container) {
       this._copyContainer(container)
     } else {
       throw new TypeError('unable to build container')
     }
     this._applyListeners(listeners)
-    this._initScales(rect)
+    this._initScales()
   }
 
-  resize (rect) {
-    return new XYContainer(this, {}, undefined, rect)
+  resize () {
+    return new XYContainer(this, {}, undefined)
   }
 
   _initContainer (containerSelector, document) {
@@ -43,11 +43,8 @@ class Container {
     this._yAxisElement = this._setupYAxis(container._yAxisElement, this._getYAxisWidth())
   }
 
-  _initScales (rect) {
-    if (typeof rect === 'undefined') {
-      rect = this._chartElement.node().getBoundingClientRect()
-    }
-    this._chartBoundingRect = rect
+  _initScales () {
+    this._chartBoundingRect = this._chartElement.node().getBoundingClientRect()
     this.scaleHelper = new ScaleHelper(this._chartBoundingRect)
   }
 
@@ -80,6 +77,7 @@ class Container {
 
   _setupChart (chart, left) {
     return chart
+      .attr('class', 'chart')
       .style('position', 'absolute')
       .style('top', '0')
       .style('bottom', '2em')
@@ -101,6 +99,7 @@ class Container {
 
   _setupXAxis (xAxis) {
     return xAxis
+      .attr('class', 'x-axis')
       .style('position', 'absolute')
       .style('height', '2em')
       .style('bottom', '0')
@@ -122,6 +121,7 @@ class Container {
 
   _setupYAxis (yAxis, width) {
     return yAxis
+      .attr('class', 'y-axis')
       .style('position', 'absolute')
       .style('top', '0')
       .style('bottom', '2em')
@@ -214,10 +214,6 @@ class Container {
       selectXAxis: (selector) => this.selectXAxis(selector),
       selectYAxis: (selector) => this.selectYAxis(selector)
     }
-  }
-
-  _getYAxisWidth () {
-    return undefined
   }
 }
 
