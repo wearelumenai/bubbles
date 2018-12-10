@@ -1,5 +1,5 @@
 const d3 = require('d3')
-const Container = require('./Container').default
+const containers = require('./Container')
 const LabelRender = require('./LabelRender').default
 const common = require('./common-test')
 const update = require('./apply-test').update
@@ -38,6 +38,6 @@ test('move labels', done => {
 })
 
 function getLabelRender () {
-  const container = new Container('#bubble-chart', {}, common.document, common.Rect)
+  const container = new containers.XYContainer('#bubble-chart', {}, common.document, common.Rect)
   return new LabelRender(container)
 }

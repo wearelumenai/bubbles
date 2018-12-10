@@ -1,5 +1,5 @@
 const d3 = require('d3')
-const Container = require('./Container').default
+const containers = require('./Container')
 const AxisRender = require('./AxisRender').default
 const common = require('./common-test')
 const update = require('./apply-test').update
@@ -115,6 +115,6 @@ function assertYAxis (axisRender, axisAtFixedPosition) {
 }
 
 function getAxisRender () {
-  const container = new Container('#bubble-chart', {}, common.document, common.Rect)
+  const container = new containers.XYContainer('#bubble-chart', {}, common.document, common.Rect)
   return new AxisRender(container)
 }

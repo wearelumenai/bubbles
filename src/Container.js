@@ -3,11 +3,11 @@
 import * as d3 from 'd3'
 import ScaleHelper from './ScaleHelper'
 
-export default class Container {
+class Container {
   constructor (container, listeners, document, rect) {
     if (typeof container === 'string') {
       this._initContainer(container, document)
-    } else if (container instanceof Container) {
+    } else if (container instanceof XYContainer) {
       this._copyContainer(container)
     } else {
       throw new TypeError('unable to build container')
@@ -17,7 +17,7 @@ export default class Container {
   }
 
   resize (rect) {
-    return new Container(this, {}, undefined, rect)
+    return new XYContainer(this, {}, undefined, rect)
   }
 
   _initContainer (containerSelector, document) {
@@ -199,4 +199,8 @@ export default class Container {
       selectYAxis: (selector) => this.selectYAxis(selector)
     }
   }
+}
+
+export class XYContainer extends Container {
+
 }

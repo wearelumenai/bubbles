@@ -1,7 +1,7 @@
 'use strict'
 
 import * as d3 from 'd3'
-import Container from './Container.js'
+import * as containers from './Container.js'
 import AxisRender from './AxisRender.js'
 import CircleRender from './CircleRender.js'
 import LabelRender from './LabelRender.js'
@@ -117,7 +117,7 @@ class Bubbles {
 }
 
 export function create (containerSelector, listeners, document, rect) {
-  const container = new Container(containerSelector, listeners, document, rect)
+  const container = new containers.XYContainer(containerSelector, listeners, document, rect)
   return new Bubbles(container)
 }
 

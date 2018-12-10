@@ -1,5 +1,5 @@
 const d3 = require('d3')
-const Container = require('./Container').default
+const containers = require('./Container')
 const CircleRender = require('./CircleRender').default
 const common = require('./common-test')
 const update = require('./apply-test').update
@@ -73,6 +73,6 @@ test('get position with uninitialized clusters', () => {
 })
 
 function getCircleRender () {
-  const container = new Container('#bubble-chart', {}, common.document, common.Rect)
+  const container = new containers.XYContainer('#bubble-chart', {}, common.document, common.Rect)
   return new CircleRender(container)
 }

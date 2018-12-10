@@ -1,5 +1,5 @@
 const { XYNodeBuilder, XNodeBuilder } = require('./NodeBuilder')
-const Container = require('./Container').default
+const containers = require('./Container')
 const common = require('./common-test')
 
 test('unzip data', () => {
@@ -22,7 +22,7 @@ test('get nodes in builder', () => {
 })
 
 test('no Y builder', () => {
-  const container = new Container('#bubble-chart', {}, common.document, common.Rect)
+  const container = new containers.XYContainer('#bubble-chart', {}, common.document, common.Rect)
   const builder = new XNodeBuilder(common.Projection, container)
   const nodes = builder.getNodes()
   nodes.forEach(element => {
@@ -56,10 +56,10 @@ test('XY container', () => {
 test('get container', () => {
   const builder = getNodeBuilder()
   const container = builder.getContainer()
-  expect(container).toBeInstanceOf(Container)
+  expect(container).toBeInstanceOf(containers.XYContainer)
 })
 
 function getNodeBuilder () {
-  const container = new Container('#bubble-chart', {}, common.document, common.Rect)
+  const container = new containers.XYContainer('#bubble-chart', {}, common.document, common.Rect)
   return new XYNodeBuilder(common.Projection, container)
 }

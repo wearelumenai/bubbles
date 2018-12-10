@@ -1,4 +1,4 @@
-const Container = require('./Container').default
+const containers = require('./Container')
 const CircleRender = require('./CircleRender').default
 const InfoRender = require('./InfoRender').default
 const common = require('./common-test')
@@ -41,7 +41,7 @@ test('hide infos on mouse out', done => {
 })
 
 function getInfoRender () {
-  const container = new Container('#bubble-chart', {}, common.document, common.Rect)
+  const container = new containers.XYContainer('#bubble-chart', {}, common.document, common.Rect)
   const circleRender = new CircleRender(container)
   const infoRender = new InfoRender(container, circleRender)
   const circleStart = update(circleRender, common.makeOverlap())
