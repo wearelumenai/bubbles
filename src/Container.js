@@ -29,18 +29,18 @@ class Container {
     }
     this._containerElement.style('position', 'relative').style('margin', '0')
     this._infoElement = this._makeToolTip(this._containerElement)
-    this._chartElement = this._makeChart(this._containerElement)
+    this._chartElement = this._makeChart(this._containerElement, this._getYAxisWidth())
     this._xAxisElement = this._makeXAxis(this._containerElement)
-    this._yAxisElement = this._makeYAxis(this._containerElement)
+    this._yAxisElement = this._makeYAxis(this._containerElement, this._getYAxisWidth())
   }
 
   _copyContainer (container) {
     this.containerSelector = container.containerSelector
     this._containerElement = container._containerElement
-    this._infoElement = container._infoElement
-    this._chartElement = container._chartElement
-    this._xAxisElement = container._xAxisElement
-    this._yAxisElement = container._yAxisElement
+    this._infoElement = this._setupTooltip(container._infoElement)
+    this._chartElement = this._setupChart(container._chartElement, this._getYAxisWidth())
+    this._xAxisElement = this._setupXAxis(container._xAxisElement)
+    this._yAxisElement = this._setupYAxis(container._yAxisElement, this._getYAxisWidth())
   }
 
   _initScales (rect) {
@@ -52,7 +52,11 @@ class Container {
   }
 
   _makeToolTip (container) {
-    return container.append('p')
+    return this._setupTooltip(container.append('p'))
+  }
+
+  _setupTooltip (tooltip) {
+    return tooltip
       .attr('class', 'info')
       .style('position', 'absolute')
       .style('width', '1em')
@@ -62,13 +66,8 @@ class Container {
       .style('pointer-events', 'none')
   }
 
-  _makeChart (container) {
-    let chart = container.append('div')
-      .style('position', 'absolute')
-      .style('top', '0')
-      .style('bottom', '2em')
-      .style('left', '7em')
-      .style('right', '0')
+  _makeChart (container, left) {
+    let chart = this._setupChart(container.append('div'), left)
     chart.append('svg')
       .attr('class', 'chart')
       .style('position', 'absolute')
@@ -79,13 +78,17 @@ class Container {
     return chart
   }
 
-  _makeXAxis (container) {
-    let xAxis = container.append('div')
+  _setupChart (chart, left) {
+    return chart
       .style('position', 'absolute')
-      .style('height', '2em')
-      .style('bottom', '0')
-      .style('left', '7em')
+      .style('top', '0')
+      .style('bottom', '2em')
+      .style('left', left)
       .style('right', '0')
+  }
+
+  _makeXAxis (container) {
+    let xAxis = this._setupXAxis(container.append('div'))
     xAxis.append('svg')
       .attr('class', 'x-axis')
       .style('position', 'absolute')
@@ -96,13 +99,17 @@ class Container {
     return xAxis
   }
 
-  _makeYAxis (container) {
-    let yAxis = container.append('div')
+  _setupXAxis (xAxis) {
+    return xAxis
       .style('position', 'absolute')
-      .style('top', '0')
-      .style('bottom', '2em')
-      .style('left', '0')
-      .style('width', '7em')
+      .style('height', '2em')
+      .style('bottom', '0')
+      .style('left', '7em')
+      .style('right', '0')
+  }
+
+  _makeYAxis (container, width) {
+    let yAxis = this._setupYAxis(container.append('div'), width)
     yAxis.append('svg')
       .attr('class', 'y-axis')
       .style('position', 'absolute')
@@ -111,6 +118,15 @@ class Container {
       .style('height', '100%')
       .style('width', '100%')
     return yAxis
+  }
+
+  _setupYAxis (yAxis, width) {
+    return yAxis
+      .style('position', 'absolute')
+      .style('top', '0')
+      .style('bottom', '2em')
+      .style('left', '0')
+      .style('width', width)
   }
 
   _applyListeners (listeners) {
@@ -199,8 +215,20 @@ class Container {
       selectYAxis: (selector) => this.selectYAxis(selector)
     }
   }
+
+  _getYAxisWidth () {
+    return undefined
+  }
 }
 
 export class XYContainer extends Container {
+  _getYAxisWidth () {
+    return '7em'
+  }
+}
 
+export class XContainer extends Container {
+  _getYAxisWidth () {
+    return '0'
+  }
 }

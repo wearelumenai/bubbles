@@ -118,11 +118,10 @@ test('check mouse events', done => {
   const container = getContainer()
   let mouseMoved = false
   let mouseOut = false
-  container.onMouse((info, x, y) => {
-    mouseMoved = true
-  }, () => {
-    mouseOut = true
-  })
+  container.onMouse(
+    () => { mouseMoved = true },
+    () => { mouseOut = true }
+  )
   container._chartElement.dispatch('mousemove')
   container._chartElement.dispatch('mouseout')
   done()
@@ -165,10 +164,20 @@ test('tooltip interface', () => {
   container.boundY({ y: 1, radius: 1 })
 })
 
-test('copy container', () => {
+test('copy container in XYContainer', () => {
   const container = getContainer()
   const other = new containers.XYContainer(container)
   expect(other._containerElement).toBe(container._containerElement)
+  expect(parseInt(other._chartElement.style('left'))).toBeGreaterThan(0)
+  expect(parseInt(other._yAxisElement.style('width'))).toBeGreaterThan(0)
+})
+
+test('copy container in XContainer', () => {
+  const container = getContainer()
+  const other = new containers.XContainer(container)
+  expect(other._containerElement).toBe(container._containerElement)
+  expect(parseInt(other._chartElement.style('left'))).toBe(0)
+  expect(parseInt(other._yAxisElement.style('width'))).toBe(0)
 })
 
 test('unable to build container', () => {
