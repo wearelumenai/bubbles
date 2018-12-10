@@ -44,7 +44,7 @@ class Container {
     this._containerElement = container._containerElement
     this._infoElement = this._setupTooltip(container._infoElement)
     this._chartElement = this._setupChart(container._chartElement, this._getYAxisWidth())
-    this._xAxisElement = this._setupXAxis(container._xAxisElement)
+    this._xAxisElement = this._setupXAxis(container._xAxisElement, this._getYAxisWidth())
     this._yAxisElement = this._setupYAxis(container._yAxisElement, this._getYAxisWidth())
   }
 
@@ -90,8 +90,8 @@ class Container {
       .style('right', '0')
   }
 
-  _makeXAxis (container) {
-    let xAxis = this._setupXAxis(container.append('div'))
+  _makeXAxis (container, left) {
+    let xAxis = this._setupXAxis(container.append('div'), left)
     xAxis.append('svg')
       .classed('x-axis', true)
       .style('position', 'absolute')
@@ -102,13 +102,13 @@ class Container {
     return xAxis
   }
 
-  _setupXAxis (xAxis) {
+  _setupXAxis (xAxis, left) {
     return xAxis
       .classed('x-axis', true)
       .style('position', 'absolute')
       .style('height', '2em')
       .style('bottom', '0')
-      .style('left', '7em')
+      .style('left', left)
       .style('right', '0')
   }
 

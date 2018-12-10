@@ -168,16 +168,18 @@ test('copy container in XYContainer', () => {
   const container = getContainer()
   const other = new containers.XYContainer(container)
   expect(other._containerElement).toBe(container._containerElement)
-  expect(parseInt(other._chartElement.style('left'))).toBeGreaterThan(0)
   expect(parseInt(other._yAxisElement.style('width'))).toBeGreaterThan(0)
+  expect(parseInt(other._chartElement.style('left'))).toBeGreaterThan(0)
+  expect(parseInt(other._xAxisElement.style('left'))).toBeGreaterThan(0)
 })
 
 test('copy container in XContainer', () => {
   const container = getContainer()
   const other = new containers.XContainer(container)
   expect(other._containerElement).toBe(container._containerElement)
-  expect(parseInt(other._chartElement.style('left'))).toBe(0)
   expect(parseInt(other._yAxisElement.style('width'))).toBe(0)
+  expect(parseInt(other._chartElement.style('left'))).toBe(0)
+  expect(parseInt(other._xAxisElement.style('left'))).toBe(0)
 })
 
 test('unable to build container', () => {
