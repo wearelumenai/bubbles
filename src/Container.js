@@ -23,9 +23,9 @@ class Container {
   _initContainer (containerSelector, document) {
     this.containerSelector = containerSelector
     this._containerElement = this._setupContainer(containerSelector, document)
-    this._infoElement = this._makeToolTip(this._containerElement)
+    this._infoElement = this._makeToolTip(this._containerElement, this._getYAxisWidth())
     this._chartElement = this._makeChart(this._containerElement, this._getYAxisWidth())
-    this._xAxisElement = this._makeXAxis(this._containerElement)
+    this._xAxisElement = this._makeXAxis(this._containerElement, this._getYAxisWidth())
     this._yAxisElement = this._makeYAxis(this._containerElement, this._getYAxisWidth())
   }
 
@@ -42,7 +42,7 @@ class Container {
   _copyContainer (container) {
     this.containerSelector = container.containerSelector
     this._containerElement = container._containerElement
-    this._infoElement = this._setupTooltip(container._infoElement)
+    this._infoElement = this._setupTooltip(container._infoElement, this._getYAxisWidth())
     this._chartElement = this._setupChart(container._chartElement, this._getYAxisWidth())
     this._xAxisElement = this._setupXAxis(container._xAxisElement, this._getYAxisWidth())
     this._yAxisElement = this._setupYAxis(container._yAxisElement, this._getYAxisWidth())
@@ -53,16 +53,16 @@ class Container {
     this.scaleHelper = new ScaleHelper(this._chartBoundingRect)
   }
 
-  _makeToolTip (container) {
-    return this._setupTooltip(container.append('p'))
+  _makeToolTip (container, marginLeft) {
+    return this._setupTooltip(container.append('p'), marginLeft)
   }
 
-  _setupTooltip (tooltip) {
+  _setupTooltip (tooltip, marginLeft) {
     return tooltip
       .classed('info', true)
       .style('position', 'absolute')
       .style('width', '1em')
-      .style('margin-left', '7em')
+      .style('padding-left', marginLeft)
       .style('margin-bottom', '2em')
       .style('z-index', '100')
       .style('pointer-events', 'none')
@@ -183,7 +183,7 @@ class Container {
       return Math.max(node.radius, Math.min(this._chartBoundingRect.width - node.radius, node.x))
     }
     if ('width' in node) {
-      return Math.min(this._chartBoundingRect.width - node.width, node.left)
+      return Math.max(0, Math.min(this._chartBoundingRect.width + this._chartBoundingRect.left - node.width, node.left))
     }
     throw new TypeError('unable to bound node')
   }
@@ -193,7 +193,7 @@ class Container {
       return Math.max(node.radius, Math.min(this._chartBoundingRect.height - node.radius, node.y))
     }
     if ('height' in node) {
-      return Math.min(this._chartBoundingRect.height - node.height, node.top)
+      return Math.max(0, Math.min(this._chartBoundingRect.height - node.height, node.top))
     }
     throw new TypeError('unable to bound node')
   }
@@ -224,7 +224,7 @@ class Container {
 
 export class XYContainer extends Container {
   _getYAxisWidth () {
-    return '7em'
+    return '84px'
   }
 }
 

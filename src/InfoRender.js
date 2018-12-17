@@ -39,7 +39,7 @@ export default class InfoRender {
 
   _setPosition (info, x, y) {
     const boundingRect = info.node().getBoundingClientRect()
-    const left = this.container.boundX({ left: x - 15, width: boundingRect.width })
+    const left = this.container.boundX({ left: x - 40, width: boundingRect.width })
     const top = this.container.boundY({ top: y, height: boundingRect.height })
     info.style('left', left + 'px')
     info.style('top', top + 'px')
