@@ -5,7 +5,7 @@ export const X = [3, 12, 7]
 export const Y = [14, 12, 9]
 export const Areas = [16, 49, 25]
 export const Colors = [3, 8, 12]
-export const Rect = { width: 957, height: 319 }
+export const Rect = { width: 957, height: 319, left: 0 }
 export const Projection = [
   [3, 14, 3, 16],
   [12, 12, 8, 49],
@@ -20,7 +20,7 @@ export const document = new jsdom.JSDOM('<body><div id="bubble-chart"></div></bo
         return Rect
       }
       if (content.classed('info')) {
-        return { width: 32, height: 32 }
+        return { width: 32, height: 32, left: 0 }
       }
     }
     window.Element.prototype.getComputedTextLength = function () {
