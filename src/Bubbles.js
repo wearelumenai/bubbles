@@ -2,7 +2,7 @@
 
 import * as d3 from 'd3'
 import * as containers from './Container.js'
-import {AxisRender} from './AxisRender.js'
+import { AxisRender } from './AxisRender.js'
 import CircleRender from './CircleRender.js'
 import LabelRender from './LabelRender.js'
 import InfoRender from './InfoRender.js'
@@ -71,7 +71,7 @@ class Bubbles {
 
   _optimizeLayout () {
     const collisionForce = Bubbles._getCollisionForce()
-    const { xForce, yForce } = this._getPositionForces()
+    const {xForce, yForce} = this._getPositionForces()
     this._collideSimulation = d3.forceSimulation()
       .alphaTarget(0.0005) // runs longer
       .nodes(this.clusters)
@@ -89,7 +89,7 @@ class Bubbles {
     const initialPosition = this.clusters.map(n => [n.x, n.y])
     const xForce = d3.forceX((_, i) => initialPosition[i][0]).strength(0.3)
     const yForce = d3.forceY((_, i) => initialPosition[i][1]).strength(0.3)
-    return { xForce, yForce }
+    return {xForce, yForce}
   }
 
   _drawClusters () {
@@ -103,7 +103,7 @@ class Bubbles {
     const circleTransition = this.circleRender.moveCircles()
     const labelTransition = this.labelRender.moveLabels()
     const then = (callback) => this._onLayoutMoved(circleTransition, labelTransition, callback)
-    return { then }
+    return {then}
   }
 
   _onLayoutMoved (circleTransition, labelTransition, callback) {

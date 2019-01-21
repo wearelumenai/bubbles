@@ -1,12 +1,32 @@
+const AxisWidth = 7
+
+function getXEndPoints (clusters, orderedIndexes) {
+  return getRange(clusters, orderedIndexes).map((d) => {
+    return d.x
+  })
+}
+
+function getYEndPoints (clusters, orderedIndexes) {
+  return getRange(clusters, orderedIndexes).map((d) => {
+    return d.y
+  })
+}
+
 function getRange (clusters, orderedIndex) {
-  const range = orderedIndex.length - 1
-  const quartiles = [0, range]
-  return quartiles.map(i => clusters[orderedIndex[i]])
+  if (orderedIndex.length === 0) {
+    return []
+  }
+  const last = orderedIndex.length - 1
+  const range = [0, last]
+  return range.map(i => clusters[orderedIndex[i]])
 }
 
 function getQuartiles (clusters, orderedIndex) {
-  const range = orderedIndex.length - 1
-  const quartiles = [0, Math.round(range / 4), Math.round(range / 2), Math.round(3 * range / 4), range]
+  if (orderedIndex.length === 0) {
+    return []
+  }
+  const last = orderedIndex.length - 1
+  const quartiles = [0, Math.round(last / 4), Math.round(last / 2), Math.round(3 * last / 4), last]
   return quartiles.map(i => clusters[orderedIndex[i]])
 }
 
@@ -26,12 +46,12 @@ class XRange extends Quantiles {
     return this.xClusters.map((d, i) => {
       let label = d.label
       let x = d.x + (i === 0 ? -1 : 1) * d.radius
-      let y = 0
+      let y = AxisWidth
       let text = `${Math.round(d.data[0] * 100) / 100}(${d.label})`
       let anchor = i === 0 ? 'start' : 'end'
       let align = 'text-before-edge'
       let fill = 'DeepSkyBlue'
-      return {label, x, y, text, anchor, align, fill}
+      return { label, x, y, text, anchor, align, fill }
     })
   }
 }
@@ -46,12 +66,12 @@ class XQuartiles extends Quantiles {
     let clusters = this.xClusters.map((d, i) => {
       let label = d.label
       let x = d.x + (i === 0 ? -1 : i === 4 ? 1 : 0) * d.radius
-      let y = 0
+      let y = AxisWidth
       let text = `${Math.round(d.data[0] * 100) / 100}(${d.label})`
       let anchor = i === 0 ? 'start' : i === 4 ? 'end' : 'middle'
       let align = 'text-before-edge'
       let fill = i % 2 === 1 ? 'Blue' : (i === 2 ? 'MidnightBlue' : 'DeepSkyBlue')
-      return {label, x, y, text, anchor, align, fill}
+      return { label, x, y, text, anchor, align, fill }
     })
     return this._collideXAxis(values, clusters)
   }
@@ -100,7 +120,7 @@ class YRange extends Quantiles {
       let anchor = 'middle'
       let align = i === 0 ? 'alphabetical' : 'hanging'
       let fill = 'DeepSkyBlue'
-      return {label, x, y, text, anchor, align, fill}
+      return { label, x, y, text, anchor, align, fill }
     })
     return clusters
   }
@@ -121,7 +141,7 @@ class YQuartiles extends Quantiles {
       let anchor = 'middle'
       let align = i === 0 ? 'alphabetical' : i === 4 ? 'hanging' : 'central'
       let fill = i % 2 === 1 ? 'Blue' : (i === 2 ? 'MidnightBlue' : 'DeepSkyBlue')
-      return {label, x, y, text, anchor, align, fill}
+      return { label, x, y, text, anchor, align, fill }
     })
     return this._collideYAxis(values, clusters)
   }
@@ -150,9 +170,13 @@ class YQuartiles extends Quantiles {
   }
 }
 
-class QuantileFactory {
+export class QuantileFactory {
   constructor (quartiles) {
-    this.quartiles = typeof quartiles !== 'undefined'
+    if (typeof quartiles === 'undefined') {
+      this.quartiles = false
+    } else {
+      this.quartiles = quartiles
+    }
   }
 
   _getXQuantile (clusters, xOrder) {
@@ -176,7 +200,7 @@ class QuantileFactory {
   }
 }
 
-class AxisRender {
+export class AxisRender {
   constructor (container, quantileFactory, builder, axisRender) {
     this.container = container
     this.quantileFactory = quantileFactory || new QuantileFactory(false)
@@ -201,8 +225,8 @@ class AxisRender {
   }
 
   hideAxis () {
-    this._getXAxis().style('display', 'none')
-    this._getYAxis().style('display', 'none')
+    this.container.selectXAxis('*').style('display', 'none')
+    this.container.selectYAxis('*').style('display', 'none')
   }
 
   displayAxis () {
@@ -211,23 +235,43 @@ class AxisRender {
   }
 
   _displayXAxis () {
-    const xClusters = this._xQuantiles.getAxisTicks(this._getXAxis())
-    this._displayAxisValues(this._getXAxis(), xClusters)
-    this._getXAxis().style('display', 'block')
+    const xLabels = this._xQuantiles.getAxisTicks(this._getXLabels())
+    if (xLabels.length > 0) {
+      this._displayAxisValues(this._getXLabels(), xLabels)
+    }
+    const xEndPoints = getXEndPoints(this.clusters, this.xOrder)
+    if (xEndPoints.length > 0) {
+      this._displayAxisLine(this._getXAxis(), { x: xEndPoints })
+    }
+    this.container.selectXAxis('*').style('display', 'block')
   }
 
   _displayYAxis () {
-    const yClusters = this._yQuantiles.getAxisTicks(this._getYAxis())
-    this._displayAxisValues(this._getYAxis(), yClusters)
-    this._getYAxis().style('display', 'block')
+    const yLabels = this._yQuantiles.getAxisTicks(this._getYLabels())
+    if (yLabels.length > 0) {
+      this._displayAxisValues(this._getYLabels(), yLabels)
+    }
+    const yEndPoints = getYEndPoints(this.clusters, this.yOrder)
+    if (yEndPoints.length > 0) {
+      this._displayAxisLine(this._getYAxis(), { y: yEndPoints })
+    }
+    this.container.selectYAxis('*').style('display', 'block')
   }
 
-  _getXAxis () {
+  _getXLabels () {
     return this.container.selectXAxis('.value')
   }
 
-  _getYAxis () {
+  _getXAxis () {
+    return this.container.selectXAxis('.axis')
+  }
+
+  _getYLabels () {
     return this.container.selectYAxis('.value')
+  }
+
+  _getYAxis () {
+    return this.container.selectYAxis('.axis')
   }
 
   _displayAxisValues (values, clusters) {
@@ -242,9 +286,19 @@ class AxisRender {
       .attr('y', d => d.y)
       .text(d => d.text)
   }
-}
 
-export default {
-  QuantileFactory,
-  AxisRender
+  _displayAxisLine (values, endPoints) {
+    values = values.data([endPoints]).enter().append('path')
+      .classed('axis', true)
+      .attr('fill', 'none')
+      .attr('stroke', 'black')
+      .attr('stroke-width', '3')
+      .merge(values)
+    values.attr('d', (ep) => {
+      let yAxisWidth = this.container.getYAxisWidth()
+      return ep.hasOwnProperty('x')
+        ? `M ${ep.x[0]} ${AxisWidth} V 0 H ${ep.x[1]} V 7`
+        : `M ${yAxisWidth - 7} ${ep.y[0]} H ${yAxisWidth} V ${ep.y[1]} H ${yAxisWidth - 7}`
+    })
+  }
 }

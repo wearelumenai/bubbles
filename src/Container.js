@@ -217,7 +217,8 @@ class Container {
   asAxisContainer () {
     return {
       selectXAxis: (selector) => this.selectXAxis(selector),
-      selectYAxis: (selector) => this.selectYAxis(selector)
+      selectYAxis: (selector) => this.selectYAxis(selector),
+      getYAxisWidth: () => this._yAxisElement.node().getBoundingClientRect().width
     }
   }
 }
