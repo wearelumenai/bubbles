@@ -1,6 +1,6 @@
 const d3 = require('d3')
 const containers = require('./Container')
-const AxisRender = require('./AxisRender').default
+const axis = require('./AxisRender').default
 const common = require('./common-test')
 const update = require('./apply-test').update
 
@@ -81,16 +81,13 @@ function assertXAxis (axisRender, axisAtFixedPosition) {
   xAxis.each(function (_, i) {
     const value = d3.select(this)
     const label = common.parseLabel(value)
-    let expectedLabel = i === 0 ? 0 : i < 3 ? 2 : 1
+    let expectedLabel = i === 0 ? 0 : 1
     expect(label).toBe(expectedLabel)
     let x = common.parseAttr(value, 'x')
     if (i === 0) {
       expect(x).toBe(0)
-    } else if (i === 4) {
-      expect(x).toBe(common.Rect.width)
     } else {
-      expect(x).toBeGreaterThanOrEqual(axisAtFixedPosition[0].x)
-      expect(x).toBeLessThanOrEqual(axisAtFixedPosition[1].x)
+      expect(x).toBe(common.Rect.width)
     }
   })
 }
@@ -100,21 +97,18 @@ function assertYAxis (axisRender, axisAtFixedPosition) {
   yAxis.each(function (_, i) {
     const value = d3.select(this)
     const label = common.parseLabel(value)
-    let expectedLabel = i === 0 ? 2 : i < 3 ? 1 : 0
+    let expectedLabel = i === 0 ? 2 : 0
     expect(label).toBe(expectedLabel)
     let y = common.parseAttr(value, 'y')
-    if (i === 4) {
+    if (i === 1) {
       expect(y).toBe(0)
-    } else if (i === 0) {
-      expect(y).toBe(common.Rect.height)
     } else {
-      expect(y).toBeLessThanOrEqual(axisAtFixedPosition[2].y)
-      expect(y).toBeGreaterThanOrEqual(axisAtFixedPosition[0].y)
+      expect(y).toBe(common.Rect.height)
     }
   })
 }
 
 function getAxisRender () {
   const container = new containers.XYContainer('#bubble-chart', {}, common.document)
-  return new AxisRender(container)
+  return new axis.AxisRender(container, new axis.QuantileFactory(true))
 }

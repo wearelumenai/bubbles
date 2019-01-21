@@ -2,7 +2,7 @@
 
 import * as d3 from 'd3'
 import * as containers from './Container.js'
-import AxisRender from './AxisRender.js'
+import {AxisRender} from './AxisRender.js'
 import CircleRender from './CircleRender.js'
 import LabelRender from './LabelRender.js'
 import InfoRender from './InfoRender.js'
