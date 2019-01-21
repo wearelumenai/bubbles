@@ -31,7 +31,7 @@ class XRange extends Quantiles {
       let anchor = i === 0 ? 'start' : 'end'
       let align = 'text-before-edge'
       let fill = 'DeepSkyBlue'
-      return { label, x, y, text, anchor, align, fill }
+      return {label, x, y, text, anchor, align, fill}
     })
   }
 }
@@ -51,7 +51,7 @@ class XQuartiles extends Quantiles {
       let anchor = i === 0 ? 'start' : i === 4 ? 'end' : 'middle'
       let align = 'text-before-edge'
       let fill = i % 2 === 1 ? 'Blue' : (i === 2 ? 'MidnightBlue' : 'DeepSkyBlue')
-      return { label, x, y, text, anchor, align, fill }
+      return {label, x, y, text, anchor, align, fill}
     })
     return this._collideXAxis(values, clusters)
   }
@@ -100,7 +100,7 @@ class YRange extends Quantiles {
       let anchor = 'middle'
       let align = i === 0 ? 'alphabetical' : 'hanging'
       let fill = 'DeepSkyBlue'
-      return { label, x, y, text, anchor, align, fill }
+      return {label, x, y, text, anchor, align, fill}
     })
     return clusters
   }
@@ -121,7 +121,7 @@ class YQuartiles extends Quantiles {
       let anchor = 'middle'
       let align = i === 0 ? 'alphabetical' : i === 4 ? 'hanging' : 'central'
       let fill = i % 2 === 1 ? 'Blue' : (i === 2 ? 'MidnightBlue' : 'DeepSkyBlue')
-      return { label, x, y, text, anchor, align, fill }
+      return {label, x, y, text, anchor, align, fill}
     })
     return this._collideYAxis(values, clusters)
   }
@@ -152,7 +152,7 @@ class YQuartiles extends Quantiles {
 
 class QuantileFactory {
   constructor (quartiles) {
-    this.quartiles = quartiles || false
+    this.quartiles = typeof quartiles !== 'undefined'
   }
 
   _getXQuantile (clusters, xOrder) {
