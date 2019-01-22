@@ -198,6 +198,12 @@ class Container {
     throw new TypeError('unable to bound node')
   }
 
+  getYAxisWidth () {
+    const yRect = this._yAxisElement.node().getBoundingClientRect()
+    return typeof yRect !== 'undefined' ? yRect.width : 0
+
+  }
+
   asChartContainer () {
     return {
       selectChart: (selector) => this.selectChart(selector),
@@ -218,7 +224,7 @@ class Container {
     return {
       selectXAxis: (selector) => this.selectXAxis(selector),
       selectYAxis: (selector) => this.selectYAxis(selector),
-      getYAxisWidth: () => this._yAxisElement.node().getBoundingClientRect().width
+      getYAxisWidth: () => this.getYAxisWidth()
     }
   }
 }
