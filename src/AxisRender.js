@@ -46,12 +46,12 @@ class XRange extends Quantiles {
     return this.xClusters.map((d, i) => {
       let label = d.label
       let x = d.x + (i === 0 ? -1 : 1) * d.radius
-      let y = AxisWidth
+      let y = '1em'
       let text = `${Math.round(d.data[0] * 100) / 100}(${d.label})`
       let anchor = i === 0 ? 'start' : 'end'
-      let align = 'text-before-edge'
+      let verticalShift = AxisWidth
       let fill = 'DeepSkyBlue'
-      return { label, x, y, text, anchor, align, fill }
+      return { label, x, y, text, anchor, verticalShift, fill }
     })
   }
 }
@@ -66,12 +66,12 @@ class XQuartiles extends Quantiles {
     let clusters = this.xClusters.map((d, i) => {
       let label = d.label
       let x = d.x + (i === 0 ? -1 : i === 4 ? 1 : 0) * d.radius
-      let y = AxisWidth
+      let y = '1em'
       let text = `${Math.round(d.data[0] * 100) / 100}(${d.label})`
       let anchor = i === 0 ? 'start' : i === 4 ? 'end' : 'middle'
-      let align = 'text-before-edge'
+      let verticalShift = AxisWidth
       let fill = i % 2 === 1 ? 'Blue' : (i === 2 ? 'MidnightBlue' : 'DeepSkyBlue')
-      return { label, x, y, text, anchor, align, fill }
+      return { label, x, y, text, anchor, verticalShift, fill }
     })
     return this._collideXAxis(values, clusters)
   }
@@ -118,9 +118,9 @@ class YRange extends Quantiles {
       let y = d.y + (i === 0 ? 1 : -1) * d.radius
       let text = `${Math.round(d.data[1] * 100) / 100}(${d.label})`
       let anchor = 'middle'
-      let align = i === 0 ? 'alphabetical' : 'hanging'
+      let verticalShift = i === 0 ? '-0.2em' : '0.8em'
       let fill = 'DeepSkyBlue'
-      return { label, x, y, text, anchor, align, fill }
+      return { label, x, y, text, anchor, verticalShift, fill }
     })
     return clusters
   }
@@ -139,9 +139,9 @@ class YQuartiles extends Quantiles {
       let y = d.y + (i === 0 ? 1 : i === 4 ? -1 : 0) * d.radius
       let text = `${Math.round(d.data[1] * 100) / 100}(${d.label})`
       let anchor = 'middle'
-      let align = i === 0 ? 'alphabetical' : i === 4 ? 'hanging' : 'central'
+      let verticalShift = i === 0 ? '-0.2em' : i === 4 ? '0.8em' : '0.5em'
       let fill = i % 2 === 1 ? 'Blue' : (i === 2 ? 'MidnightBlue' : 'DeepSkyBlue')
-      return { label, x, y, text, anchor, align, fill }
+      return { label, x, y, text, anchor, verticalShift, fill }
     })
     return this._collideYAxis(values, clusters)
   }
@@ -280,7 +280,7 @@ export class AxisRender {
       .classed('value', true)
       .attr('text-anchor', d => d.anchor)
       .attr('fill', d => d.fill)
-      .attr('alignment-baseline', d => d.align)
+      .attr('dy', d => d.verticalShift)
       .merge(values)
       .attr('x', d => d.x)
       .attr('y', d => d.y)

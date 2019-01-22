@@ -201,7 +201,6 @@ class Container {
   getYAxisWidth () {
     const yRect = this._yAxisElement.node().getBoundingClientRect()
     return typeof yRect !== 'undefined' ? yRect.width : 0
-
   }
 
   asChartContainer () {
