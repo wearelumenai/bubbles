@@ -26,7 +26,7 @@ export default class LabelRender {
       .style('pointer-events', 'none')
       .classed('label', true)
       .attr('text-anchor', 'middle')
-      .attr('dy', '0.5em')
+      .attr('dy', '0.4em')
       .attr('data-label', n => n.label)
       .text(i => i.label)
     LabelRender._updateLabels(newLabels.merge(labels))
