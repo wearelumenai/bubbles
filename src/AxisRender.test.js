@@ -37,7 +37,7 @@ test('x collide', () => {
   const start = update(axisRender, dummy)
   start.updated.displayAxis()
   let xClusters = [{ x: 0 }, { x: 5 }, { x: 10 }, { x: 15 }, { x: 20 }]
-  start.updated._xQuantiles._collideXAxis(start.updated._getXLabels(), xClusters)
+  start.updated._xPercentiles._collideXAxis(start.updated._getXLabels(), xClusters)
   expect(xClusters[1].y).toBe('1em')
   expect(xClusters[3].y).toBe('1em')
 })
@@ -47,7 +47,7 @@ test('y collide', () => {
   const start = update(axisRender, dummy)
   start.updated.displayAxis()
   let yClusters = [{ y: 20 }, { y: 15 }, { y: 10 }, { y: 5 }, { y: 20 }]
-  start.updated._yQuantiles._collideYAxis(start.updated._getYLabels(), yClusters)
+  start.updated._yPercentiles._collideYAxis(start.updated._getYLabels(), yClusters)
   expect(yClusters[1]).not.toBe(10)
   expect(yClusters[2]).not.toBe(20)
   expect(yClusters[3]).not.toBe(30)
@@ -58,7 +58,7 @@ test('x do not collide', () => {
   const start = update(axisRender, dummy)
   start.updated.displayAxis()
   let xClusters = [{ x: 0 }, { x: 50 }, { x: 100 }, { x: 150 }, { x: 200 }]
-  start.updated._xQuantiles._collideXAxis(start.updated._getXLabels(), xClusters)
+  start.updated._xPercentiles._collideXAxis(start.updated._getXLabels(), xClusters)
   expect(xClusters[1].y).toBeUndefined()
   expect(xClusters[3].y).toBeUndefined()
   expect(xClusters[1]).not.toBe(50)
@@ -71,7 +71,7 @@ test('y do not collide', () => {
   const start = update(axisRender, dummy)
   start.updated.displayAxis()
   let yClusters = [{ y: 200 }, { y: 150 }, { y: 100 }, { y: 50 }, { y: 0 }]
-  start.updated._yQuantiles._collideYAxis(start.updated._getYLabels(), yClusters)
+  start.updated._yPercentiles._collideYAxis(start.updated._getYLabels(), yClusters)
   expect(yClusters[1]).not.toBe(50)
   expect(yClusters[2]).not.toBe(100)
   expect(yClusters[3]).not.toBe(150)

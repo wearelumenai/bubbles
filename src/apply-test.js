@@ -6,6 +6,15 @@ export function update (render, projection, ...params) {
   const container = new containers.XYContainer('#bubble-chart', {}, common.document)
   return {
     nodes: new XYNodeBuilder(projection, container).getNodes(),
-    updated: render.update(new XYNodeBuilder(projection, container), container, ...params)
+    updated: doUpdate(render, projection, container, ...params)
+  }
+}
+
+function doUpdate (render, projection, container, ...params) {
+  const xyNodeBuilder = new XYNodeBuilder(projection, container)
+  if (typeof render.updateBuilder === 'function') {
+    return render.updateBuilder(xyNodeBuilder)
+  } else {
+    return render.update(xyNodeBuilder, container, ...params)
   }
 }

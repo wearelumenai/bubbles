@@ -21,15 +21,15 @@ class Bubbles {
   }
 
   _init () {
-    this.axisRender = new AxisRender(this._container.asAxisContainer())
-    this.circleRender = new CircleRender(this._container.asChartContainer())
+    this.axisRender = AxisRender.create(this._container)
+    this.circleRender = CircleRender.create(this._container)
     this.labelRender = new LabelRender(this._container.asChartContainer())
     this.infoRender = new InfoRender(this._container.asToolTipContainer(), this.circleRender)
   }
 
   _copy (bubbles, builder) {
-    this.axisRender = bubbles.axisRender.update(builder, this._container.asAxisContainer())
-    this.circleRender = bubbles.circleRender.update(builder, this._container.asChartContainer())
+    this.axisRender = bubbles.axisRender.updateBuilder(builder)
+    this.circleRender = bubbles.circleRender.updateBuilder(builder)
     this.labelRender = bubbles.labelRender.update(builder, this._container.asChartContainer())
     this.infoRender = bubbles.infoRender.update(builder, this._container.asToolTipContainer(), this.circleRender)
     this._collideSimulation = bubbles._collideSimulation
@@ -70,7 +70,7 @@ class Bubbles {
 
   _optimizeLayout () {
     const collisionForce = Bubbles._getCollisionForce()
-    const {xForce, yForce} = this._getPositionForces()
+    const { xForce, yForce } = this._getPositionForces()
     this._collideSimulation = d3.forceSimulation()
       .alphaTarget(0.0005) // runs longer
       .nodes(this.clusters)
@@ -88,7 +88,7 @@ class Bubbles {
     const initialPosition = this.clusters.map(n => [n.x, n.y])
     const xForce = d3.forceX((_, i) => initialPosition[i][0]).strength(0.3)
     const yForce = d3.forceY((_, i) => initialPosition[i][1]).strength(0.3)
-    return {xForce, yForce}
+    return { xForce, yForce }
   }
 
   _drawClusters () {
@@ -102,7 +102,7 @@ class Bubbles {
     const circleTransition = this.circleRender.moveCircles()
     const labelTransition = this.labelRender.moveLabels()
     const then = (callback) => this._onLayoutMoved(circleTransition, labelTransition, callback)
-    return {then}
+    return { then }
   }
 
   _onLayoutMoved (circleTransition, labelTransition, callback) {
