@@ -9,15 +9,28 @@ class NodeBuilder {
     this.y = unzipped[1]
     this.colors = unzipped[2]
     this.areas = unzipped[3]
-
-    this.nodes = this._makeNodes()
   }
 
   getContainer () {
     return this.container
   }
 
+  updateColors (builder) {
+    const otherNodes = builder.getNodes()
+    const thisNodes = this.getNodes()
+    for (let i = 0; i < thisNodes.length; i++) {
+      thisNodes[i].color = otherNodes[i].color
+      thisNodes[i].xTarget = thisNodes[i].x
+      thisNodes[i].yTarget = thisNodes[i].y
+      thisNodes[i].data = otherNodes[i].data
+    }
+    return this
+  }
+
   getNodes () {
+    if (typeof this.nodes === 'undefined') {
+      this.nodes = this._makeNodes()
+    }
     return this.nodes
   }
 
@@ -39,8 +52,36 @@ export class XYNodeBuilder extends NodeBuilder {
     super(projection, new XYContainer(container))
   }
 
+  updateScales (builder) {
+    if (!(builder instanceof XYNodeBuilder)) {
+      return builder
+    }
+    const otherNodes = builder.getNodes()
+    const thisNodes = this.getNodes()
+    const heightRatio = builder.container.getShape().height / this.container.getShape().height
+    const widthRatio = builder.container.getShape().width / this.container.getShape().width
+    for (let i = 0; i < thisNodes.length; i++) {
+      otherNodes[i].x = thisNodes[i].x * widthRatio
+      otherNodes[i].y = thisNodes[i].y * heightRatio
+    }
+    return builder
+  }
+
   updateContainer (container) {
     return new XYNodeBuilder(this.projection, container)
+  }
+
+  samePosition (builder) {
+    if (typeof builder === 'undefined' ||
+      builder.x.length !== this.x.length) {
+      return false
+    }
+    for (let i = 0; i < this.x.length; i++) {
+      if (builder.x[i] !== this.x[i] || builder.y[i] !== this.y[i] || builder.areas[i] !== this.areas[i]) {
+        return false
+      }
+    }
+    return true
   }
 
   _makeNodes () {
@@ -48,7 +89,9 @@ export class XYNodeBuilder extends NodeBuilder {
     return this.projection.map((d, i) => ({
       label: i,
       x: scales.xScale(i),
+      xTarget: scales.xScale(i),
       y: scales.yScale(i),
+      yTarget: scales.yScale(i),
       radius: scales.radiusScale(i),
       color: scales.colorScale(i),
       data: d,
@@ -67,8 +110,34 @@ export class XNodeBuilder extends NodeBuilder {
     super(projection, new XContainer(container))
   }
 
+  updateScales (builder) {
+    if (!(builder instanceof XNodeBuilder)) {
+      return builder
+    }
+    const otherNodes = builder.getNodes()
+    const thisNodes = this.getNodes()
+    const heightRatio = builder.container.getShape().height / this.container.getShape().height
+    for (let i = 0; i < thisNodes.length; i++) {
+      otherNodes[i].y = thisNodes[i].y * heightRatio
+    }
+    return builder
+  }
+
   updateContainer (container) {
     return new XNodeBuilder(this.projection, container)
+  }
+
+  samePosition (builder) {
+    if (typeof builder === 'undefined' ||
+      builder.x.length !== this.x.length) {
+      return false
+    }
+    for (let i = 0; i < this.x.length; i++) {
+      if (builder.x[i] !== this.x[i] || builder.areas[i] !== this.areas[i]) {
+        return false
+      }
+    }
+    return true
   }
 
   _makeNodes () {
@@ -76,8 +145,10 @@ export class XNodeBuilder extends NodeBuilder {
     return this.projection.map((d, i) => ({
       label: i,
       x: scales.xScale(i),
+      xTarget: scales.xScale(i),
       fx: scales.xScale(i),
       y: this.container.getShape().height / 2,
+      yTarget: this.container.getShape().height / 2,
       vy: 1,
       radius: scales.radiusScale(i),
       color: scales.colorScale(i),

@@ -77,6 +77,26 @@ test('get container', () => {
   expect(container).toBeInstanceOf(containers.XYContainer)
 })
 
+test('initial position are identical', () => {
+  const builder0 = getNodeBuilder()
+  const builder1 = getNodeBuilder()
+  builder1.colors[0] = 'rgb(0, 0, 0)'
+  expect(builder0.samePosition(builder1)).toBe(true)
+  expect(builder1.samePosition(builder0)).toBe(true)
+  builder1.x[0] = 333
+  expect(builder0.samePosition(builder1)).toBe(false)
+  expect(builder1.samePosition(builder0)).toBe(false)
+})
+
+test('update colors', () => {
+  const black = 'rgb(0, 0, 0)'
+  const builder0 = getNodeBuilder()
+  const builder1 = getNodeBuilder()
+  builder1.getNodes()[0].color = black
+  const builder2 = builder0.updateColors(builder1)
+  expect(builder2.nodes[0].color).toBe(black)
+})
+
 function getNodeBuilder () {
   const container = new containers.XYContainer('#bubble-chart', {}, common.document)
   return new XYNodeBuilder(common.Projection, container)

@@ -14,10 +14,6 @@ class Container {
     this._initScales()
   }
 
-  resize () {
-    return new XYContainer(this, {}, undefined)
-  }
-
   _initContainer (containerSelector, document) {
     this.containerSelector = containerSelector
     this._containerElement = this._setupContainer(containerSelector, document)
@@ -224,15 +220,38 @@ class Container {
       getYAxisWidth: () => this.getYAxisWidth()
     }
   }
+
+  sameBoundingRect (container) {
+    return container._chartBoundingRect.x === this._chartBoundingRect.x &&
+      container._chartBoundingRect.y === this._chartBoundingRect.y &&
+      container._chartBoundingRect.width === this._chartBoundingRect.width &&
+      container._chartBoundingRect.height === this._chartBoundingRect.height
+  }
 }
 
 export class XYContainer extends Container {
+  resize () {
+    return new XYContainer(this, {}, undefined)
+  }
+
+  same (container) {
+    return container instanceof XYContainer && this.sameBoundingRect(container)
+  }
+
   _getYAxisWidth () {
     return '84px'
   }
 }
 
 export class XContainer extends Container {
+  resize () {
+    return new XContainer(this, {}, undefined)
+  }
+
+  same (container) {
+    return container instanceof XContainer && this.sameBoundingRect(container)
+  }
+
   _getYAxisWidth () {
     return '0'
   }
