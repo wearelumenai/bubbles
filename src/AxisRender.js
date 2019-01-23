@@ -34,6 +34,10 @@ class Quantiles {
   getAxisTicks (values) {
     return []
   }
+
+  static canHandle (order) {
+    return true
+  }
 }
 
 class XRange extends Quantiles {
@@ -53,6 +57,10 @@ class XRange extends Quantiles {
       let fill = 'DeepSkyBlue'
       return { label, x, y, text, anchor, verticalShift, fill }
     })
+  }
+
+  static canHandle (order) {
+    return order >= 2
   }
 }
 
@@ -103,6 +111,10 @@ class XQuartiles extends Quantiles {
     }
     return clusters
   }
+
+  static canHandle (order) {
+    return order >= 4
+  }
 }
 
 class YRange extends Quantiles {
@@ -123,6 +135,10 @@ class YRange extends Quantiles {
       return { label, x, y, text, anchor, verticalShift, fill }
     })
     return clusters
+  }
+
+  static canHandle (order) {
+    return order >= 2
   }
 }
 

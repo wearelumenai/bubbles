@@ -119,5 +119,5 @@ function assertYLabels (axisRender) {
 
 function getAxisRender () {
   const container = new containers.XYContainer('#bubble-chart', {}, common.document)
-  return new axis.AxisRender(container, new axis.QuantileFactory(true))
+  return new axis.AxisRender(container, axis.factoryWithQuartiles())
 }
