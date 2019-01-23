@@ -1,6 +1,6 @@
 import { AxisRender } from './AxisRender'
 import { CircleRender } from './CircleRender'
-import LabelRender from './LabelRender'
+import { LabelRender } from './LabelRender'
 import { InfoRender } from './InfoRender'
 import * as bubbles from './Bubbles'
 
@@ -24,7 +24,7 @@ function doUpdate (render, projection, ...params) {
   } else if (render instanceof CircleRender) {
     return new CircleRender(container, builder)
   } else if (render instanceof LabelRender) {
-    return render.update(builder, container)
+    return new LabelRender(container, builder)
   } else if (render instanceof InfoRender) {
     return new InfoRender(container, params[0], builder)
   } else {

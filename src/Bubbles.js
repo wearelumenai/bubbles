@@ -4,7 +4,7 @@ import * as d3 from 'd3'
 import * as containers from './Container.js'
 import { AxisRender, factoryWithRange } from './AxisRender.js'
 import { CircleRender } from './CircleRender.js'
-import LabelRender from './LabelRender.js'
+import { LabelRender } from './LabelRender.js'
 import { InfoRender } from './InfoRender.js'
 
 class Bubbles {
@@ -30,7 +30,7 @@ class Bubbles {
   _copy (bubbles, builder) {
     this.axisRender = new AxisRender(this._container.asAxisContainer(), bubbles.axisRender.percentileFactory, builder)
     this.circleRender = new CircleRender(this._container.asChartContainer(), builder)
-    this.labelRender = bubbles.labelRender.update(builder, this._container.asChartContainer())
+    this.labelRender = new LabelRender(this._container.asChartContainer(), builder)
     this.infoRender = new InfoRender(this._container.asToolTipContainer(), this.circleRender, builder)
     this._collideSimulation = bubbles._collideSimulation
   }
@@ -38,7 +38,6 @@ class Bubbles {
   _apply (builder) {
     this.builder = builder
     this.clusters = this.builder.getNodes()
-    this.labelRender._apply(this.builder)
     if (typeof this._collideSimulation === 'undefined') {
       this._applyFirst()
     } else {

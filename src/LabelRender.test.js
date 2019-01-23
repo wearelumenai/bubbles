@@ -1,6 +1,6 @@
 const d3 = require('d3')
 const containers = require('./Container')
-const LabelRender = require('./LabelRender').default
+const { LabelRender } = require('./LabelRender')
 const common = require('./common-test')
 const update = require('./apply-test').update
 
