@@ -2,10 +2,10 @@
 
 import * as d3 from 'd3'
 import * as containers from './Container.js'
-import { AxisRender } from './AxisRender.js'
+import { AxisRender, factoryWithRange } from './AxisRender.js'
 import { CircleRender } from './CircleRender.js'
 import LabelRender from './LabelRender.js'
-import InfoRender from './InfoRender.js'
+import { InfoRender } from './InfoRender.js'
 
 class Bubbles {
   constructor (container, builder, bubbles) {
@@ -21,17 +21,17 @@ class Bubbles {
   }
 
   _init () {
-    this.axisRender = AxisRender.create(this._container)
-    this.circleRender = CircleRender.create(this._container)
+    this.axisRender = new AxisRender(this._container.asAxisContainer(), factoryWithRange())
+    this.circleRender = new CircleRender(this._container.asChartContainer())
     this.labelRender = new LabelRender(this._container.asChartContainer())
     this.infoRender = new InfoRender(this._container.asToolTipContainer(), this.circleRender)
   }
 
   _copy (bubbles, builder) {
-    this.axisRender = bubbles.axisRender.updateBuilder(builder)
-    this.circleRender = bubbles.circleRender.updateBuilder(builder)
+    this.axisRender = new AxisRender(this._container.asAxisContainer(), bubbles.axisRender.percentileFactory, builder)
+    this.circleRender = new CircleRender(this._container.asChartContainer(), builder)
     this.labelRender = bubbles.labelRender.update(builder, this._container.asChartContainer())
-    this.infoRender = bubbles.infoRender.update(builder, this._container.asToolTipContainer(), this.circleRender)
+    this.infoRender = new InfoRender(this._container.asToolTipContainer(), this.circleRender, builder)
     this._collideSimulation = bubbles._collideSimulation
   }
 

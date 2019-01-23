@@ -1,20 +1,33 @@
+import { AxisRender } from './AxisRender'
+import { CircleRender } from './CircleRender'
+import LabelRender from './LabelRender'
+import { InfoRender } from './InfoRender'
+import * as bubbles from './Bubbles'
+
 const { XYNodeBuilder } = require('./NodeBuilder')
 const containers = require('./Container')
 const common = require('./common-test')
 
+const container = new containers.XYContainer('#bubble-chart', {}, common.document)
+
 export function update (render, projection, ...params) {
-  const container = new containers.XYContainer('#bubble-chart', {}, common.document)
   return {
     nodes: new XYNodeBuilder(projection, container).getNodes(),
-    updated: doUpdate(render, projection, container, ...params)
+    updated: doUpdate(render, projection, ...params)
   }
 }
 
-function doUpdate (render, projection, container, ...params) {
-  const xyNodeBuilder = new XYNodeBuilder(projection, container)
-  if (typeof render.updateBuilder === 'function') {
-    return render.updateBuilder(xyNodeBuilder)
+function doUpdate (render, projection, ...params) {
+  const builder = new XYNodeBuilder(projection, container)
+  if (render instanceof AxisRender) {
+    return new AxisRender(container, render.percentileFactory, builder)
+  } else if (render instanceof CircleRender) {
+    return new CircleRender(container, builder)
+  } else if (render instanceof LabelRender) {
+    return render.update(builder, container)
+  } else if (render instanceof InfoRender) {
+    return new InfoRender(container, params[0], builder)
   } else {
-    return render.update(xyNodeBuilder, container, ...params)
+    return bubbles.apply(render, builder)
   }
 }

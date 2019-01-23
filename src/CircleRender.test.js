@@ -74,5 +74,5 @@ test('get position with uninitialized clusters', () => {
 
 function getCircleRender () {
   const container = new containers.XYContainer('#bubble-chart', {}, common.document)
-  return CircleRender.create(container)
+  return new CircleRender(container)
 }

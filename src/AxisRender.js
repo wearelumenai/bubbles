@@ -215,8 +215,8 @@ class PercentileFactory {
 
 export class AxisRender {
   constructor (container, percentileFactory, builder) {
-    this.container = container.asAxisContainer()
-    this.percentileFactory = percentileFactory
+    this.container = container
+    this.percentileFactory = percentileFactory || factoryWithRange()
     this.builder = builder
     if (typeof builder !== 'undefined') {
       this.clusters = builder.getNodes()
@@ -225,25 +225,6 @@ export class AxisRender {
       this._xPercentiles = this.percentileFactory._getXPercentile(this.clusters, this.xOrder)
       this._yPercentiles = this.percentileFactory._getYPercentile(this.clusters, this.yOrder)
     }
-  }
-
-  static create (container) {
-    return new AxisRender(container, factoryWithRange())
-  }
-
-  updateBuilder (builder) {
-    return new AxisRender(builder.getContainer(), this.percentileFactory, builder)
-  }
-
-  updatePercentileFactory (percentileFactory) {
-    return new AxisRender(this.container, percentileFactory, this.builder)
-  }
-
-  updateContainer (container) {
-    return new AxisRender(container, this.percentileFactory, this.builder)
-  }
-
-  _apply (builder) {
   }
 
   hideAxis () {
