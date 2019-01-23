@@ -3,8 +3,6 @@ export class InfoRender {
     this.container = container
     this.circleRender = circleRender
     this.container.onMouse((info, x, y) => this._displayInfo(info, x, y), (info) => this._hideInfo(info))
-    if (typeof infoRender !== 'undefined') {
-    }
     if (typeof builder !== 'undefined') {
       this.clusters = builder.getNodes()
     }

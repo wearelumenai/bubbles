@@ -5,7 +5,6 @@ const progressiveTimeLine = [10, 290]
 export class CircleRender {
   constructor (container, builder) {
     this.container = container
-    this.builder = builder
     if (typeof builder !== 'undefined') {
       this.clusters = builder.getNodes()
     }

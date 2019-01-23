@@ -8,40 +8,15 @@ import { LabelRender } from './LabelRender.js'
 import { InfoRender } from './InfoRender.js'
 
 class Bubbles {
-  constructor (container, builder, bubbles) {
+  constructor (container, axisRender, circleRender, labelRender, infoRender, builder) {
     this._container = container
-    if (typeof bubbles === 'undefined') {
-      this._init()
-    } else {
-      this._copy(bubbles, builder)
-    }
-    if (typeof builder !== 'undefined') {
-      this._apply(builder)
-    }
-  }
-
-  _init () {
-    this.axisRender = new AxisRender(this._container.asAxisContainer(), factoryWithRange())
-    this.circleRender = new CircleRender(this._container.asChartContainer())
-    this.labelRender = new LabelRender(this._container.asChartContainer())
-    this.infoRender = new InfoRender(this._container.asToolTipContainer(), this.circleRender)
-  }
-
-  _copy (bubbles, builder) {
-    this.axisRender = new AxisRender(this._container.asAxisContainer(), bubbles.axisRender.percentileFactory, builder)
-    this.circleRender = new CircleRender(this._container.asChartContainer(), builder)
-    this.labelRender = new LabelRender(this._container.asChartContainer(), builder)
-    this.infoRender = new InfoRender(this._container.asToolTipContainer(), this.circleRender, builder)
-    this._collideSimulation = bubbles._collideSimulation
-  }
-
-  _apply (builder) {
+    this.axisRender = axisRender
+    this.circleRender = circleRender
+    this.labelRender = labelRender
+    this.infoRender = infoRender
     this.builder = builder
-    this.clusters = this.builder.getNodes()
-    if (typeof this._collideSimulation === 'undefined') {
-      this._applyFirst()
-    } else {
-      this._applyThen()
+    if (typeof builder !== 'undefined') {
+      this.clusters = builder.getNodes()
     }
   }
 
@@ -57,14 +32,24 @@ class Bubbles {
     return this.circleRender.getClustersAtPosition(x, y)
   }
 
-  _applyFirst () {
-    this._drawClusters()
-    this._optimizeLayout()
+  stopIfSimulation () {
+    if (typeof this._collideSimulation !== 'undefined') {
+      this._collideSimulation.stop()
+      return true
+    } else {
+      return false
+    }
   }
 
-  _applyThen () {
-    this._collideSimulation.stop()
+  drawThenOptimize () {
+    this._drawClusters()
+    this._optimizeLayout()
+    return this
+  }
+
+  moveThenOptimize () {
     this._moveLayout().then(this._optimizeLayout)
+    return this
   }
 
   _optimizeLayout () {
@@ -116,17 +101,32 @@ class Bubbles {
 
 export function create (containerSelector, listeners, document) {
   const container = new containers.XYContainer(containerSelector, listeners, document)
-  return new Bubbles(container)
+  const axisRender = new AxisRender(container.asAxisContainer(), factoryWithRange())
+  const circleRender = new CircleRender(container.asChartContainer())
+  const labelRender = new LabelRender(container.asChartContainer())
+  const infoRender = new InfoRender(container.asToolTipContainer(), circleRender)
+  return new Bubbles(container, axisRender, circleRender, labelRender, infoRender)
 }
 
 export function apply (bubbles, builder) {
-  return bubbles.update(builder)
+  const container = builder.getContainer()
+  const axisRender = new AxisRender(container.asAxisContainer(), bubbles.axisRender.percentileFactory, builder)
+  const circleRender = new CircleRender(container.asChartContainer(), builder)
+  const labelRender = new LabelRender(container.asChartContainer(), builder)
+  const infoRender = new InfoRender(container.asToolTipContainer(), circleRender, builder)
+  const updated = new Bubbles(container, axisRender, circleRender, labelRender, infoRender, builder)
+  updated._collideSimulation = bubbles._collideSimulation
+  if (bubbles.stopIfSimulation()) {
+    return updated.moveThenOptimize()
+  } else {
+    return updated.drawThenOptimize()
+  }
 }
 
 export function resize (bubbles) {
   if (typeof bubbles.builder !== 'undefined') {
     const container = bubbles._container.resize()
     const builder = bubbles.builder.updateContainer(container)
-    return bubbles.update(builder)
+    return apply(bubbles, builder)
   }
 }

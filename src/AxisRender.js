@@ -217,7 +217,6 @@ export class AxisRender {
   constructor (container, percentileFactory, builder) {
     this.container = container
     this.percentileFactory = percentileFactory || factoryWithRange()
-    this.builder = builder
     if (typeof builder !== 'undefined') {
       this.clusters = builder.getNodes()
       this.xOrder = builder.orderX()
