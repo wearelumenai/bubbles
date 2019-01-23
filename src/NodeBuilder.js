@@ -51,7 +51,13 @@ export class XYNodeBuilder extends NodeBuilder {
       y: scales.yScale(i),
       radius: scales.radiusScale(i),
       color: scales.colorScale(i),
-      data: d
+      data: d,
+      info: function () {
+        return `x=${_round2(this.data[0])} y=${_round2(this.data[1])}`
+      },
+      infoWithArea: function () {
+        return `${this.info()} a=${this.data[3]}`
+      }
     }))
   }
 }
@@ -75,11 +81,21 @@ export class XNodeBuilder extends NodeBuilder {
       vy: 1,
       radius: scales.radiusScale(i),
       color: scales.colorScale(i),
-      data: d
+      data: d,
+      info: function () {
+        return `${_round2(this.data[0])}`
+      },
+      infoWithArea: function () {
+        return `${this.info()} a=${this.data[3]}`
+      }
     }))
   }
 
   orderY () {
     return []
   }
+}
+
+function _round2 (number) {
+  return Math.round(number * 100) / 100
 }

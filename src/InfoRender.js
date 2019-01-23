@@ -1,7 +1,8 @@
 export class InfoRender {
-  constructor (container, circleRender, builder) {
+  constructor (container, circleRender, getInfoText, builder) {
     this.container = container
     this.circleRender = circleRender
+    this.getInfoText = getInfoText
     this.container.onMouse((info, x, y) => this._displayInfo(info, x, y), (info) => this._hideInfo(info))
     if (typeof builder !== 'undefined') {
       this.clusters = builder.getNodes()
@@ -21,9 +22,7 @@ export class InfoRender {
   }
 
   _setText (cluster, info) {
-    const infoText = `${cluster.label}: x=${this._round2(cluster.data[0])}; ` +
-      `y=${this._round2(cluster.data[1])}; ` +
-      `a=${this._round2(cluster.data[3])}`
+    const infoText = this.getInfoText(cluster)
     info.text(infoText)
   }
 
@@ -35,11 +34,15 @@ export class InfoRender {
     info.style('top', top + 'px')
   }
 
-  _round2 (number) {
-    return Math.round(number * 100) / 100
-  }
-
   _hideInfo (info) {
     info.style('display', 'none')
   }
+}
+
+export function simpleInfoText (cluster) {
+  return `${cluster.info()}`
+}
+
+export function advancedInfoText (cluster) {
+  return `${cluster.infoWithArea()}`
 }

@@ -5,7 +5,7 @@ import * as containers from './Container.js'
 import { AxisRender, factoryWithRange } from './AxisRender.js'
 import { CircleRender } from './CircleRender.js'
 import { LabelRender } from './LabelRender.js'
-import { InfoRender } from './InfoRender.js'
+import { InfoRender, simpleInfoText } from './InfoRender.js'
 
 class Bubbles {
   constructor (container, axisRender, circleRender, labelRender, infoRender, builder) {
@@ -104,7 +104,7 @@ export function create (containerSelector, listeners, document) {
   const axisRender = new AxisRender(container.asAxisContainer(), factoryWithRange())
   const circleRender = new CircleRender(container.asChartContainer())
   const labelRender = new LabelRender(container.asChartContainer())
-  const infoRender = new InfoRender(container.asToolTipContainer(), circleRender)
+  const infoRender = new InfoRender(container.asToolTipContainer(), circleRender, simpleInfoText)
   return new Bubbles(container, axisRender, circleRender, labelRender, infoRender)
 }
 
@@ -113,7 +113,7 @@ export function apply (bubbles, builder) {
   const axisRender = new AxisRender(container.asAxisContainer(), bubbles.axisRender.percentileFactory, builder)
   const circleRender = new CircleRender(container.asChartContainer(), builder)
   const labelRender = new LabelRender(container.asChartContainer(), builder)
-  const infoRender = new InfoRender(container.asToolTipContainer(), circleRender, builder)
+  const infoRender = new InfoRender(container.asToolTipContainer(), circleRender, bubbles.infoRender.getInfoText, builder)
   const updated = new Bubbles(container, axisRender, circleRender, labelRender, infoRender, builder)
   updated._collideSimulation = bubbles._collideSimulation
   if (bubbles.stopIfSimulation()) {
