@@ -4,7 +4,7 @@ const bubbles = require('./Bubbles')
 const common = require('./common-test')
 const update = require('./apply-test').update
 
-test('optimize layout', done => {
+test('drawThenOptimize layout', done => {
   const chart = getBubbles()
   const start = update(chart, common.makeOverlap())
   setTimeout(() => {

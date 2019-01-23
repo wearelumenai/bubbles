@@ -30,13 +30,17 @@ function getQuartiles (clusters, orderedIndex) {
   return quartiles.map(i => clusters[orderedIndex[i]])
 }
 
-class Quantiles {
+class Percentiles {
   getAxisTicks (values) {
     return []
   }
+
+  static canHandle (order) {
+    return true
+  }
 }
 
-class XRange extends Quantiles {
+class XRange extends Percentiles {
   constructor (clusters, order) {
     super()
     this.xClusters = getRange(clusters, order)
@@ -54,9 +58,13 @@ class XRange extends Quantiles {
       return { label, x, y, text, anchor, verticalShift, fill }
     })
   }
+
+  static canHandle (order) {
+    return order >= 2
+  }
 }
 
-class XQuartiles extends Quantiles {
+class XQuartiles extends Percentiles {
   constructor (clusters, order) {
     super()
     this.xClusters = getQuartiles(clusters, order)
@@ -103,9 +111,13 @@ class XQuartiles extends Quantiles {
     }
     return clusters
   }
+
+  static canHandle (order) {
+    return order >= 4
+  }
 }
 
-class YRange extends Quantiles {
+class YRange extends Percentiles {
   constructor (clusters, order) {
     super()
     this.yClusters = getRange(clusters, order)
@@ -124,9 +136,13 @@ class YRange extends Quantiles {
     })
     return clusters
   }
+
+  static canHandle (order) {
+    return order >= 2
+  }
 }
 
-class YQuartiles extends Quantiles {
+class YQuartiles extends Percentiles {
   constructor (clusters, order) {
     super()
     this.yClusters = getQuartiles(clusters, order)
@@ -168,60 +184,46 @@ class YQuartiles extends Quantiles {
     }
     return clusters
   }
+
+  static canHandle (order) {
+    return order >= 4
+  }
 }
 
-export class QuantileFactory {
-  constructor (quartiles) {
-    if (typeof quartiles === 'undefined') {
-      this.quartiles = false
-    } else {
-      this.quartiles = quartiles
+class PercentileFactory {
+  constructor (xPercentiles, yPercentiles) {
+    this.xPercentiles = xPercentiles
+    this.yPercentiles = yPercentiles
+  }
+
+  _getXPercentile (clusters, xOrder) {
+    for (var i = 0; i < this.xPercentiles.length; i++) {
+      if (this.xPercentiles[i].canHandle(xOrder.length)) {
+        return new (this.xPercentiles[i])(clusters, xOrder)
+      }
     }
   }
 
-  _getXQuantile (clusters, xOrder) {
-    if (xOrder.length >= 4 && this.quartiles) {
-      return new XQuartiles(clusters, xOrder)
-    } else if (xOrder.length >= 2) {
-      return new XRange(clusters, xOrder)
-    } else {
-      return new Quantiles()
-    }
-  }
-
-  _getYQuantile (clusters, yOrder) {
-    if (yOrder.length >= 4 && this.quartiles) {
-      return new YQuartiles(clusters, yOrder)
-    } else if (yOrder.length >= 2) {
-      return new YRange(clusters, yOrder)
-    } else {
-      return new Quantiles()
+  _getYPercentile (clusters, yOrder) {
+    for (var i = 0; i < this.yPercentiles.length; i++) {
+      if (this.yPercentiles[i].canHandle(yOrder.length)) {
+        return new (this.yPercentiles[i])(clusters, yOrder)
+      }
     }
   }
 }
 
 export class AxisRender {
-  constructor (container, quantileFactory, builder, axisRender) {
+  constructor (container, percentileFactory, builder) {
     this.container = container
-    this.quantileFactory = quantileFactory || new QuantileFactory(false)
-    if (typeof axisRender !== 'undefined') {
-    }
-
+    this.percentileFactory = percentileFactory || factoryWithRange()
     if (typeof builder !== 'undefined') {
-      this._apply(builder)
+      this.clusters = builder.getNodes()
+      this.xOrder = builder.orderX()
+      this.yOrder = builder.orderY()
+      this._xPercentiles = this.percentileFactory._getXPercentile(this.clusters, this.xOrder)
+      this._yPercentiles = this.percentileFactory._getYPercentile(this.clusters, this.yOrder)
     }
-  }
-
-  update (builder, container) {
-    return new AxisRender(container, this.quantileFactory, builder, this)
-  }
-
-  _apply (builder) {
-    this.clusters = builder.getNodes()
-    this.xOrder = builder.orderX()
-    this.yOrder = builder.orderY()
-    this._xQuantiles = this.quantileFactory._getXQuantile(this.clusters, this.xOrder)
-    this._yQuantiles = this.quantileFactory._getYQuantile(this.clusters, this.yOrder)
   }
 
   hideAxis () {
@@ -235,7 +237,7 @@ export class AxisRender {
   }
 
   _displayXAxis () {
-    const xLabels = this._xQuantiles.getAxisTicks(this._getXLabels())
+    const xLabels = this._xPercentiles.getAxisTicks(this._getXLabels())
     if (xLabels.length > 0) {
       this._displayAxisValues(this._getXLabels(), xLabels)
     }
@@ -247,7 +249,7 @@ export class AxisRender {
   }
 
   _displayYAxis () {
-    const yLabels = this._yQuantiles.getAxisTicks(this._getYLabels())
+    const yLabels = this._yPercentiles.getAxisTicks(this._getYLabels())
     if (yLabels.length > 0) {
       this._displayAxisValues(this._getYLabels(), yLabels)
     }
@@ -301,4 +303,12 @@ export class AxisRender {
         : `M ${yAxisWidth - 7} ${ep.y[0]} H ${yAxisWidth} V ${ep.y[1]} H ${yAxisWidth - 7}`
     })
   }
+}
+
+export function factoryWithQuartiles () {
+  return new PercentileFactory([XQuartiles, Percentiles], [YQuartiles, Percentiles])
+}
+
+export function factoryWithRange () {
+  return new PercentileFactory([XRange, Percentiles], [YRange, Percentiles])
 }

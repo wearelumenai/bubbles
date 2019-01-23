@@ -1,6 +1,6 @@
 const containers = require('./Container')
-const CircleRender = require('./CircleRender').default
-const InfoRender = require('./InfoRender').default
+const { CircleRender } = require('./CircleRender')
+const { InfoRender } = require('./InfoRender')
 const common = require('./common-test')
 const update = require('./apply-test').update
 

@@ -1,6 +1,6 @@
 const d3 = require('d3')
 const containers = require('./Container')
-const CircleRender = require('./CircleRender').default
+const { CircleRender } = require('./CircleRender')
 const common = require('./common-test')
 const update = require('./apply-test').update
 
