@@ -6,7 +6,7 @@ import ScaleHelper from './ScaleHelper'
 class Container {
   constructor (container, listeners, document) {
     if (typeof container === 'string') {
-      this._initContainer(container, document)
+      this._initContainer(container, listeners, document)
     } else {
       this._copyContainer(container)
     }
@@ -14,9 +14,10 @@ class Container {
     this._initScales()
   }
 
-  _initContainer (containerSelector, document) {
+  _initContainer (containerSelector, listeners, document) {
     this.containerSelector = containerSelector
     this._containerElement = this._setupContainer(containerSelector, document)
+    this._listeners = listeners
     this._infoElement = this._makeToolTip(this._containerElement, this._getYAxisWidth())
     this._chartElement = this._makeChart(this._containerElement, this._getYAxisWidth())
     this._xAxisElement = this._makeXAxis(this._containerElement, this._getYAxisWidth())
@@ -36,6 +37,7 @@ class Container {
   _copyContainer (container) {
     this.containerSelector = container.containerSelector
     this._containerElement = container._containerElement
+    this._listeners = container._listeners
     this._infoElement = this._setupTooltip(container._infoElement, this._getYAxisWidth())
     this._chartElement = this._setupChart(container._chartElement, this._getYAxisWidth())
     this._xAxisElement = this._setupXAxis(container._xAxisElement, this._getYAxisWidth())
@@ -142,13 +144,24 @@ class Container {
     return this._chartBoundingRect
   }
 
+  onClick (action) {
+    const parentAction = this._listeners['click']
+    this._applyListeners({
+      'click': () => {
+        const [x, y] = this.getMousePosition()
+        action(x, y)
+        parentAction(x, y)
+      }
+    })
+  }
+
   onMouse (onMove, onOut) {
     this._applyListeners({
       'mousemove': () => {
         const [x, y] = this.getMousePosition()
-        onMove(this._infoElement, x, y)
+        onMove(x, y)
       },
-      'mouseout': () => onOut(this._infoElement)
+      'mouseout': () => onOut()
     })
   }
 
@@ -170,6 +183,10 @@ class Container {
 
   selectYAxis (selector) {
     return this._yAxisElement.select('.y-axis').selectAll(selector)
+  }
+
+  getInfo () {
+    return this._infoElement
   }
 
   boundX (node) {
@@ -199,6 +216,7 @@ class Container {
 
   asChartContainer () {
     return {
+      onClick: (action) => this.onClick(action),
       selectChart: (selector) => this.selectChart(selector),
       boundX: (selector) => this.boundX(selector),
       boundY: (selector) => this.boundY(selector)
@@ -209,7 +227,8 @@ class Container {
     return {
       onMouse: (onMove, onOut) => this.onMouse(onMove, onOut),
       boundX: (selector) => this.boundX(selector),
-      boundY: (selector) => this.boundY(selector)
+      boundY: (selector) => this.boundY(selector),
+      getInfo: () => this.getInfo()
     }
   }
 

@@ -3,13 +3,14 @@ export class InfoRender {
     this.container = container
     this.circleRender = circleRender
     this.getInfoText = getInfoText
-    this.container.onMouse((info, x, y) => this._displayInfo(info, x, y), (info) => this._hideInfo(info))
+    this.container.onMouse((x, y) => this._displayInfo(x, y), () => this._hideInfo())
     if (typeof builder !== 'undefined') {
       this.clusters = builder.getNodes()
     }
   }
 
-  _displayInfo (info, x, y) {
+  _displayInfo (x, y) {
+    const info = this.container.getInfo()
     let [label] = this.circleRender.getClustersAtPosition(x, y)
     if (typeof label !== 'undefined') {
       const cluster = this.clusters[label]
@@ -34,8 +35,8 @@ export class InfoRender {
     info.style('top', top + 'px')
   }
 
-  _hideInfo (info) {
-    info.style('display', 'none')
+  _hideInfo () {
+    this.container.getInfo().style('display', 'none')
   }
 }
 

@@ -5,6 +5,7 @@ const progressiveTimeLine = [10, 290]
 export class CircleRender {
   constructor (container, builder) {
     this.container = container
+    this.container.onClick((x, y) => this._emphasis(x, y))
     if (typeof builder !== 'undefined') {
       this.clusters = builder.getNodes()
     }
@@ -61,6 +62,14 @@ export class CircleRender {
         n.y = CircleRender._progressiveBound(n.y, this.container.boundY(n), n.tick, progressiveTimeLine)
         return n.y
       })
+  }
+
+  _emphasis (x, y) {
+    if (this.clusters) {
+      const [sel] = this.getClustersAtPosition(x, y)
+      const circles = this._getCircles()
+      circles.classed('emphasis', d => d.label === sel)
+    }
   }
 
   static _progressiveBound (current, bound, tick, [t0, t1]) {

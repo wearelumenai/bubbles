@@ -133,7 +133,7 @@ test('check mouse events', done => {
   expect(mouseOut).toBe(true)
 })
 
-test('check listeners', done => {
+test('check _listeners', done => {
   const container = getContainer()
   container._applyListeners()
   let clicked = false
