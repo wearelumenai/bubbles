@@ -3,7 +3,7 @@
 import * as d3 from 'd3'
 import * as containers from './Container.js'
 import { AxisRender } from './AxisRender.js'
-import CircleRender from './CircleRender.js'
+import { CircleRender } from './CircleRender.js'
 import LabelRender from './LabelRender.js'
 import InfoRender from './InfoRender.js'
 
@@ -38,7 +38,6 @@ class Bubbles {
   _apply (builder) {
     this.builder = builder
     this.clusters = this.builder.getNodes()
-    this.circleRender._apply(this.builder)
     this.labelRender._apply(this.builder)
     if (typeof this._collideSimulation === 'undefined') {
       this._applyFirst()

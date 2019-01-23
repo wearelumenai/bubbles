@@ -7,10 +7,8 @@ class Container {
   constructor (container, listeners, document) {
     if (typeof container === 'string') {
       this._initContainer(container, document)
-    } else if (container instanceof Container) {
-      this._copyContainer(container)
     } else {
-      throw new TypeError('unable to build container')
+      this._copyContainer(container)
     }
     this._applyListeners(listeners)
     this._initScales()
