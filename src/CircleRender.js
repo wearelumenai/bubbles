@@ -2,23 +2,13 @@ import * as d3 from 'd3'
 
 const progressiveTimeLine = [10, 290]
 
-export default class CircleRender {
-  constructor (container, builder, circleRender) {
+export class CircleRender {
+  constructor (container, builder) {
     this.container = container
-    if (typeof circleRender !== 'undefined') {
-      this.clusters = circleRender.clusters
-    }
+    this.container.onClick((x, y) => this._emphasis(x, y))
     if (typeof builder !== 'undefined') {
-      this._apply(builder)
+      this.clusters = builder.getNodes()
     }
-  }
-
-  update (builder, container) {
-    return new CircleRender(container, builder, this)
-  }
-
-  _apply (builder) {
-    this.clusters = builder.getNodes()
   }
 
   getClustersAtPosition (x, y) {
@@ -72,6 +62,14 @@ export default class CircleRender {
         n.y = CircleRender._progressiveBound(n.y, this.container.boundY(n), n.tick, progressiveTimeLine)
         return n.y
       })
+  }
+
+  _emphasis (x, y) {
+    if (this.clusters) {
+      const [sel] = this.getClustersAtPosition(x, y)
+      const circles = this._getCircles()
+      circles.classed('emphasis', d => d.label === sel)
+    }
   }
 
   static _progressiveBound (current, bound, tick, [t0, t1]) {

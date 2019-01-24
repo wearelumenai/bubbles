@@ -1,22 +1,11 @@
 import * as d3 from 'd3'
 
-export default class LabelRender {
-  constructor (container, builder, labelRender) {
+export class LabelRender {
+  constructor (container, builder) {
     this.container = container
-    if (typeof labelRender !== 'undefined') {
-      this.clusters = labelRender.clusters
-    }
     if (typeof builder !== 'undefined') {
-      this._apply(builder)
+      this.clusters = builder.getNodes()
     }
-  }
-
-  update (builder, container) {
-    return new LabelRender(container, builder, this)
-  }
-
-  _apply (builder) {
-    this.clusters = builder.getNodes()
   }
 
   displayLabels () {
@@ -26,7 +15,7 @@ export default class LabelRender {
       .style('pointer-events', 'none')
       .classed('label', true)
       .attr('text-anchor', 'middle')
-      .attr('alignment-baseline', 'central')
+      .attr('dy', '0.4em')
       .attr('data-label', n => n.label)
       .text(i => i.label)
     LabelRender._updateLabels(newLabels.merge(labels))

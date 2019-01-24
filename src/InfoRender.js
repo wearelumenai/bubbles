@@ -1,24 +1,16 @@
-export default class InfoRender {
-  constructor (container, circleRender, builder, infoRender) {
+export class InfoRender {
+  constructor (container, circleRender, getInfoText, builder) {
     this.container = container
     this.circleRender = circleRender
-    this.container.onMouse((info, x, y) => this._displayInfo(info, x, y), (info) => this._hideInfo(info))
-    if (typeof infoRender !== 'undefined') {
-    }
+    this.getInfoText = getInfoText
+    this.container.onMouse((x, y) => this._displayInfo(x, y), () => this._hideInfo())
     if (typeof builder !== 'undefined') {
-      this._apply(builder)
+      this.clusters = builder.getNodes()
     }
   }
 
-  update (builder, container, circleRender) {
-    return new InfoRender(container, circleRender, builder, this)
-  }
-
-  _apply (builder) {
-    this.clusters = builder.getNodes()
-  }
-
-  _displayInfo (info, x, y) {
+  _displayInfo (x, y) {
+    const info = this.container.getInfo()
     let [label] = this.circleRender.getClustersAtPosition(x, y)
     if (typeof label !== 'undefined') {
       const cluster = this.clusters[label]
@@ -31,9 +23,7 @@ export default class InfoRender {
   }
 
   _setText (cluster, info) {
-    const infoText = `${cluster.label}: x=${this._round2(cluster.data[0])}; ` +
-      `y=${this._round2(cluster.data[1])}; ` +
-      `a=${this._round2(cluster.data[3])}`
+    const infoText = this.getInfoText(cluster)
     info.text(infoText)
   }
 
@@ -45,11 +35,15 @@ export default class InfoRender {
     info.style('top', top + 'px')
   }
 
-  _round2 (number) {
-    return Math.round(number * 100) / 100
+  _hideInfo () {
+    this.container.getInfo().style('display', 'none')
   }
+}
 
-  _hideInfo (info) {
-    info.style('display', 'none')
-  }
+export function simpleInfoText (cluster) {
+  return `${cluster.info()}`
+}
+
+export function advancedInfoText (cluster) {
+  return `${cluster.infoWithArea()}`
 }
