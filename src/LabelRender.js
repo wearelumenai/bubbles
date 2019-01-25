@@ -1,8 +1,10 @@
 import * as d3 from 'd3'
 
 export class LabelRender {
-  constructor (container, builder) {
+  constructor (container, circleRender, builder) {
     this.container = container
+    this.circleRender = circleRender
+    this.container.onClick((x, y) => this._emphasis(x, y))
     if (typeof builder !== 'undefined') {
       this.clusters = builder.getNodes()
     }
@@ -31,6 +33,16 @@ export class LabelRender {
 
   _getLabels () {
     return this.container.selectChart('.label')
+  }
+
+  _emphasis (x, y) {
+    if (this.clusters) {
+      const [sel] = this.circleRender.getClustersAtPosition(x, y)
+      const labels = this._getLabels()
+      labels
+        .classed('selected', d => typeof sel !== 'undefined' && d.label === sel)
+        .classed('not-selected', d => typeof sel !== 'undefined' && d.label !== sel)
+    }
   }
 
   static _makeTransition (labels) {

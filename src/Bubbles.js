@@ -102,7 +102,7 @@ export function create (containerSelector, listeners, document) {
   const container = new containers.XContainer(containerSelector, listeners, document)
   const axisRender = new AxisRender(container.asAxisContainer(), factoryWithRange())
   const circleRender = new CircleRender(container.asChartContainer())
-  const labelRender = new LabelRender(container.asChartContainer())
+  const labelRender = new LabelRender(container.asChartContainer(), circleRender)
   const infoRender = new InfoRender(container.asToolTipContainer(), circleRender, simpleInfoText)
   return new Bubbles(container, axisRender, circleRender, labelRender, infoRender)
 }
@@ -120,7 +120,7 @@ export function apply (bubbles, builder) {
   }
   const axisRender = new AxisRender(container.asAxisContainer(), bubbles.axisRender.percentileFactory, builder)
   const circleRender = new CircleRender(container.asChartContainer(), builder)
-  const labelRender = new LabelRender(container.asChartContainer(), builder)
+  const labelRender = new LabelRender(container.asChartContainer(), circleRender, builder)
   const infoRender = new InfoRender(container.asToolTipContainer(), circleRender, bubbles.infoRender.getInfoText, builder)
   const updated = new Bubbles(container, axisRender, circleRender, labelRender, infoRender, builder)
   if (!exactlyTheSame && bubbles.stopIfSimulation()) {

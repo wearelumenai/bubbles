@@ -68,7 +68,9 @@ export class CircleRender {
     if (this.clusters) {
       const [sel] = this.getClustersAtPosition(x, y)
       const circles = this._getCircles()
-      circles.classed('emphasis', d => d.label === sel)
+      circles
+        .classed('selected', d => typeof sel !== 'undefined' && d.label === sel)
+        .classed('not-selected', d => typeof sel !== 'undefined' && d.label !== sel)
     }
   }
 

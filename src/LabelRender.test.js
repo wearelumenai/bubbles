@@ -1,12 +1,14 @@
 const d3 = require('d3')
 const containers = require('./Container')
+const { CircleRender } = require('./CircleRender')
 const { LabelRender } = require('./LabelRender')
 const common = require('./common-test')
 const update = require('./apply-test').update
 
 test('draw clusters', () => {
   const labelRender = getLabelRender()
-  const start = update(labelRender, common.Projection)
+  const circleStart = update(labelRender.circleRender, common.makeOverlap())
+  const start = update(labelRender, common.Projection, circleStart.updated)
   start.updated.displayLabels()
   const labels = start.updated._getLabels()
   labels.each(function () {
@@ -19,7 +21,8 @@ test('draw clusters', () => {
 
 test('move labels', done => {
   const labelRender = getLabelRender()
-  const start = update(labelRender, common.Projection)
+  const circleStart = update(labelRender.circleRender, common.makeOverlap())
+  const start = update(labelRender, common.Projection, circleStart.updated)
   start.updated.displayLabels()
   const moved = update(start.updated, common.makeScramble())
   moved.updated.moveLabels()
@@ -39,5 +42,6 @@ test('move labels', done => {
 
 function getLabelRender () {
   const container = new containers.XYContainer('#bubble-chart', {}, common.document)
-  return new LabelRender(container)
+  const circleRender = new CircleRender(container)
+  return new LabelRender(container, circleRender)
 }

@@ -145,12 +145,17 @@ class Container {
   }
 
   onClick (action) {
-    const parentAction = this._listeners['click']
+    if (typeof this._click === 'undefined') {
+      this._click = [this._listeners['click'], action]
+    } else {
+      this._click.push(action)
+    }
     this._applyListeners({
       'click': () => {
         const [x, y] = this.getMousePosition()
-        action(x, y)
-        parentAction(x, y)
+        for (let i = 0; i < this._click.length; i++) {
+          this._click[i](x, y)
+        }
       }
     })
   }

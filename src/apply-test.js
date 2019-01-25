@@ -24,7 +24,7 @@ function doUpdate (render, projection, ...params) {
   } else if (render instanceof CircleRender) {
     return new CircleRender(container, builder)
   } else if (render instanceof LabelRender) {
-    return new LabelRender(container, builder)
+    return new LabelRender(container, params[0], builder)
   } else if (render instanceof InfoRender) {
     return new InfoRender(container, params[0], render.getInfoText, builder)
   } else {
