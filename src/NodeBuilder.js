@@ -15,6 +15,21 @@ class NodeBuilder {
     return this.container
   }
 
+  updateRadiusAndColor (builder) {
+    const otherNodes = builder.getNodes()
+    const thisNodes = this.getNodes()
+    for (let i = 0; i < thisNodes.length; i++) {
+      thisNodes[i].radius = otherNodes[i].radius
+      thisNodes[i].color = otherNodes[i].color
+      thisNodes[i].xTarget = otherNodes[i].x
+      thisNodes[i].yTarget = otherNodes[i].y
+      thisNodes[i].data = otherNodes[i].data
+    }
+    this.colors = builder.colors
+    this.areas = builder.areas
+    return this
+  }
+
   updateColors (builder) {
     const otherNodes = builder.getNodes()
     const thisNodes = this.getNodes()
@@ -24,7 +39,23 @@ class NodeBuilder {
       thisNodes[i].yTarget = thisNodes[i].y
       thisNodes[i].data = otherNodes[i].data
     }
+    this.colors = builder.colors
     return this
+  }
+
+  updateScales (builder) {
+    if (!(builder instanceof XNodeBuilder)) {
+      return builder
+    }
+    const otherNodes = builder.getNodes()
+    const thisNodes = this.getNodes()
+    const heightRatio = builder.container.getShape().height / this.container.getShape().height
+    const widthRatio = builder.container.getShape().width / this.container.getShape().width
+    for (let i = 0; i < thisNodes.length; i++) {
+      otherNodes[i].x = thisNodes[i].x * widthRatio
+      otherNodes[i].y = thisNodes[i].y * heightRatio
+    }
+    return builder
   }
 
   getNodes () {
@@ -32,6 +63,19 @@ class NodeBuilder {
       this.nodes = this._makeNodes()
     }
     return this.nodes
+  }
+
+  sameRadius (builder) {
+    if (typeof builder === 'undefined' ||
+      builder.x.length !== this.x.length) {
+      return false
+    }
+    for (let i = 0; i < this.x.length; i++) {
+      if (builder.areas[i] !== this.areas[i]) {
+        return false
+      }
+    }
+    return true
   }
 
   orderX () {
@@ -52,21 +96,6 @@ export class XYNodeBuilder extends NodeBuilder {
     super(projection, new XYContainer(container))
   }
 
-  updateScales (builder) {
-    if (!(builder instanceof XYNodeBuilder)) {
-      return builder
-    }
-    const otherNodes = builder.getNodes()
-    const thisNodes = this.getNodes()
-    const heightRatio = builder.container.getShape().height / this.container.getShape().height
-    const widthRatio = builder.container.getShape().width / this.container.getShape().width
-    for (let i = 0; i < thisNodes.length; i++) {
-      otherNodes[i].x = thisNodes[i].x * widthRatio
-      otherNodes[i].y = thisNodes[i].y * heightRatio
-    }
-    return builder
-  }
-
   updateContainer (container) {
     return new XYNodeBuilder(this.projection, container)
   }
@@ -77,7 +106,7 @@ export class XYNodeBuilder extends NodeBuilder {
       return false
     }
     for (let i = 0; i < this.x.length; i++) {
-      if (builder.x[i] !== this.x[i] || builder.y[i] !== this.y[i] || builder.areas[i] !== this.areas[i]) {
+      if (builder.x[i] !== this.x[i] || builder.y[i] !== this.y[i]) {
         return false
       }
     }
@@ -110,19 +139,6 @@ export class XNodeBuilder extends NodeBuilder {
     super(projection, new XContainer(container))
   }
 
-  updateScales (builder) {
-    if (!(builder instanceof XNodeBuilder)) {
-      return builder
-    }
-    const otherNodes = builder.getNodes()
-    const thisNodes = this.getNodes()
-    const heightRatio = builder.container.getShape().height / this.container.getShape().height
-    for (let i = 0; i < thisNodes.length; i++) {
-      otherNodes[i].y = thisNodes[i].y * heightRatio
-    }
-    return builder
-  }
-
   updateContainer (container) {
     return new XNodeBuilder(this.projection, container)
   }
@@ -133,7 +149,7 @@ export class XNodeBuilder extends NodeBuilder {
       return false
     }
     for (let i = 0; i < this.x.length; i++) {
-      if (builder.x[i] !== this.x[i] || builder.areas[i] !== this.areas[i]) {
+      if (builder.x[i] !== this.x[i]) {
         return false
       }
     }
