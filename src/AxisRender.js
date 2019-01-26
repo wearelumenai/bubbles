@@ -226,11 +226,6 @@ export class AxisRender {
     }
   }
 
-  hideAxis () {
-    this.container.selectXAxis('*').style('display', 'none')
-    this.container.selectYAxis('*').style('display', 'none')
-  }
-
   displayAxis () {
     this._displayXAxis()
     this._displayYAxis()

@@ -21,17 +21,6 @@ const dummy = [
   [1, 2, 3, 4]
 ]
 
-test('hide axis', () => {
-  const axisRender = getAxisRender()
-  const start = update(axisRender, dummy)
-  start.updated.displayAxis()
-  expect(start.updated._getXLabels().style('display')).toBe('block')
-  expect(start.updated._getYLabels().style('display')).toBe('block')
-  start.updated.hideAxis()
-  expect(start.updated._getXLabels().style('display')).toBe('none')
-  expect(start.updated._getYLabels().style('display')).toBe('none')
-})
-
 test('x collide', () => {
   const axisRender = getAxisRender()
   const start = update(axisRender, dummy)
