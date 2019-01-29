@@ -51,6 +51,12 @@ test('apply', () => {
 function assertPlacement (clustersBefore, clustersAfter) {
   expect(clustersAfter[0].x).toBeCloseTo(clustersBefore[0].x, 1)
   expect(clustersAfter[0].y).toBeCloseTo(clustersBefore[0].y, 1)
+  expect(
+    clustersAfter[1].x !== clustersBefore[1].x ||
+    clustersAfter[1].y !== clustersBefore[1].y ||
+    clustersAfter[2].x !== clustersBefore[2].x ||
+    clustersAfter[2].y !== clustersBefore[2].y
+  ).toBeTruthy()
 }
 
 function fakeTransition () {

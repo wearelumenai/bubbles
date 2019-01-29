@@ -69,22 +69,19 @@ class Bubbles {
   _simulate () {
     const n = Math.ceil(Math.log(this._collideSimulation.alphaMin()) /
       Math.log(1 - this._collideSimulation.alphaDecay()))
-    for (let i = 0; i < n; ++i) {
+    for (let i = 0; i < n; i++) {
       this._collideSimulation.tick()
-      this.clusters.forEach(c => {
-        c.x = CircleRender._progressiveBound(c.x, this.container.boundX(c), i, [10, 290])
-        c.y = CircleRender._progressiveBound(c.y, this.container.boundY(c), i, [10, 290])
-      })
+      this.circleRender.progressiveBound(i)
     }
   }
 
   static _getCollisionForce () {
-    return d3.forceCollide(n => n.radius).strength(0.9)
+    return d3.forceCollide(n => n.radius).strength(0.6)
   }
 
   _getPositionForces () {
-    const xForce = d3.forceX((_, i) => this.clusters[i].xTarget).strength(0.03)
-    const yForce = d3.forceY((_, i) => this.clusters[i].yTarget).strength(0.03)
+    const xForce = d3.forceX((_, i) => this.clusters[i].xTarget).strength(0.01)
+    const yForce = d3.forceY((_, i) => this.clusters[i].yTarget).strength(0.01)
     return { xForce, yForce }
   }
 
@@ -95,9 +92,9 @@ class Bubbles {
   }
 
   _moveLayout () {
-    this.axisRender.hideAxis()
     this.circleRender.moveCircles()
     this.labelRender.moveLabels()
+    this.axisRender.displayAxis()
   }
 }
 
