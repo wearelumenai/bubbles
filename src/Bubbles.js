@@ -71,6 +71,10 @@ class Bubbles {
       Math.log(1 - this._collideSimulation.alphaDecay()))
     for (let i = 0; i < n; ++i) {
       this._collideSimulation.tick()
+      this.clusters.forEach(c => {
+        c.x = CircleRender._progressiveBound(c.x, this.container.boundX(c), i, [10, 290])
+        c.y = CircleRender._progressiveBound(c.y, this.container.boundY(c), i, [10, 290])
+      })
     }
   }
 

@@ -74,6 +74,13 @@ export class CircleRender {
     }
   }
 
+  progressiveBound (tick) {
+    this.clusters.forEach(c => {
+      c.x = CircleRender._progressiveBound(c.x, this.container.boundX(c), tick, [10, 290])
+      c.y = CircleRender._progressiveBound(c.y, this.container.boundY(c), tick, [10, 290])
+    })
+  }
+
   static _progressiveBound (current, bound, tick, [t0, t1]) {
     if (tick >= t1) {
       return bound
