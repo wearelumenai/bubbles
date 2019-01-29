@@ -4,7 +4,7 @@ const bubbles = require('./Bubbles')
 const common = require('./common-test')
 const update = require('./apply-test').update
 
-test('drawThenOptimize layout', done => {
+test('optimizeThenDraw layout', done => {
   const chart = getBubbles()
   const start = update(chart, common.makeOverlap())
   setTimeout(() => {
@@ -23,13 +23,6 @@ test('move clusters', done => {
     assertPlacement(start.nodes, moved)
     done()
   }, 300)
-})
-
-test('transition end', () => {
-  const chart = getBubbles()
-  let endReached = false
-  chart._onLayoutMoved(fakeTransition(), fakeTransition(), () => { endReached = true })
-  expect(endReached).toBe(true)
 })
 
 test('resize', () => {

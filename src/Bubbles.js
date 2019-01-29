@@ -2,10 +2,10 @@
 
 import * as d3 from 'd3'
 import * as containers from './Container.js'
-import {AxisRender, factoryWithRange} from './AxisRender.js'
-import {CircleRender} from './CircleRender.js'
-import {LabelRender} from './LabelRender.js'
-import {InfoRender, simpleInfoText} from './InfoRender.js'
+import { AxisRender, factoryWithRange } from './AxisRender.js'
+import { CircleRender } from './CircleRender.js'
+import { LabelRender } from './LabelRender.js'
+import { InfoRender, simpleInfoText } from './InfoRender.js'
 
 class Bubbles {
   constructor (container, axisRender, circleRender, labelRender, infoRender, builder) {
@@ -41,37 +41,47 @@ class Bubbles {
     }
   }
 
-  drawThenOptimize () {
-    this._drawClusters()
+  optimizeThenDraw () {
     this._optimizeLayout()
+    this._drawClusters()
     return this
   }
 
-  moveThenOptimize () {
-    this._moveLayout().then(this._optimizeLayout)
+  optimizeThenMove () {
+    this._optimizeLayout()
+    this._moveLayout()
     return this
   }
 
   _optimizeLayout () {
     const collisionForce = Bubbles._getCollisionForce()
-    const {xForce, yForce} = this._getPositionForces()
+    const { xForce, yForce } = this._getPositionForces()
     this._collideSimulation = d3.forceSimulation()
       .alphaTarget(0.0005) // runs longer
       .nodes(this.clusters)
       .force('collide', collisionForce)
       .force('x', xForce)
       .force('y', yForce)
-      .on('tick', () => this._drawClusters())
+      .stop()
+    this._simulate()
+  }
+
+  _simulate () {
+    const n = Math.ceil(Math.log(this._collideSimulation.alphaMin()) /
+      Math.log(1 - this._collideSimulation.alphaDecay()))
+    for (let i = 0; i < n; ++i) {
+      this._collideSimulation.tick()
+    }
   }
 
   static _getCollisionForce () {
-    return d3.forceCollide(n => n.radius).strength(0.6)
+    return d3.forceCollide(n => n.radius).strength(0.9)
   }
 
   _getPositionForces () {
-    const xForce = d3.forceX((_, i) => this.clusters[i].xTarget).strength(0.01)
-    const yForce = d3.forceY((_, i) => this.clusters[i].yTarget).strength(0.01)
-    return {xForce, yForce}
+    const xForce = d3.forceX((_, i) => this.clusters[i].xTarget).strength(0.03)
+    const yForce = d3.forceY((_, i) => this.clusters[i].yTarget).strength(0.03)
+    return { xForce, yForce }
   }
 
   _drawClusters () {
@@ -82,19 +92,8 @@ class Bubbles {
 
   _moveLayout () {
     this.axisRender.hideAxis()
-    const circleTransition = this.circleRender.moveCircles()
-    const labelTransition = this.labelRender.moveLabels()
-    const then = (callback) => this._onLayoutMoved(circleTransition, labelTransition, callback)
-    return {then}
-  }
-
-  _onLayoutMoved (circleTransition, labelTransition, callback) {
-    const thisCallback = callback.bind(this)
-    let n = 0
-    const onStart = () => ++n
-    const onEnd = () => --n || thisCallback()
-    circleTransition.each(onStart).on('end', onEnd)
-    labelTransition.each(onStart).on('end', onEnd)
+    this.circleRender.moveCircles()
+    this.labelRender.moveLabels()
   }
 }
 
@@ -124,9 +123,9 @@ export function apply (bubbles, builder) {
   const infoRender = new InfoRender(container.asToolTipContainer(), circleRender, bubbles.infoRender.getInfoText, builder)
   const updated = new Bubbles(container, axisRender, circleRender, labelRender, infoRender, builder)
   if (!exactlyTheSame && bubbles.stopIfSimulation()) {
-    return updated.moveThenOptimize()
+    return updated.optimizeThenMove()
   } else {
-    return updated.drawThenOptimize()
+    return updated.optimizeThenDraw()
   }
 }
 
