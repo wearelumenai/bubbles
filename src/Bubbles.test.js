@@ -4,7 +4,7 @@ const bubbles = require('./Bubbles')
 const common = require('./common-test')
 const update = require('./apply-test').update
 
-test('drawThenOptimize layout', done => {
+test('optimizeThenDraw layout', done => {
   const chart = getBubbles()
   const start = update(chart, common.makeOverlap())
   setTimeout(() => {
@@ -23,13 +23,6 @@ test('move clusters', done => {
     assertPlacement(start.nodes, moved)
     done()
   }, 300)
-})
-
-test('transition end', () => {
-  const chart = getBubbles()
-  let endReached = false
-  chart._onLayoutMoved(fakeTransition(), fakeTransition(), () => { endReached = true })
-  expect(endReached).toBe(true)
 })
 
 test('resize', () => {
@@ -58,10 +51,12 @@ test('apply', () => {
 function assertPlacement (clustersBefore, clustersAfter) {
   expect(clustersAfter[0].x).toBeCloseTo(clustersBefore[0].x, 1)
   expect(clustersAfter[0].y).toBeCloseTo(clustersBefore[0].y, 1)
-  expect(clustersAfter[1].x).not.toBeCloseTo(clustersBefore[1].x, 1)
-  expect(clustersAfter[1].y).not.toBeCloseTo(clustersBefore[1].y, 1)
-  expect(clustersAfter[2].x).not.toBeCloseTo(clustersBefore[2].x, 1)
-  expect(clustersAfter[2].y).not.toBeCloseTo(clustersBefore[2].y, 1)
+  expect(
+    clustersAfter[1].x !== clustersBefore[1].x ||
+    clustersAfter[1].y !== clustersBefore[1].y ||
+    clustersAfter[2].x !== clustersBefore[2].x ||
+    clustersAfter[2].y !== clustersBefore[2].y
+  ).toBeTruthy()
 }
 
 function fakeTransition () {

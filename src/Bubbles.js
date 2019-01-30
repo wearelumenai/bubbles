@@ -41,14 +41,15 @@ class Bubbles {
     }
   }
 
-  drawThenOptimize () {
-    this._drawClusters()
+  optimizeThenDraw () {
     this._optimizeLayout()
+    this._drawClusters()
     return this
   }
 
-  moveThenOptimize () {
-    this._moveLayout().then(this._optimizeLayout)
+  optimizeThenMove () {
+    this._optimizeLayout()
+    this._moveLayout()
     return this
   }
 
@@ -61,7 +62,17 @@ class Bubbles {
       .force('collide', collisionForce)
       .force('x', xForce)
       .force('y', yForce)
-      .on('tick', () => this._drawClusters())
+      .stop()
+    this._simulate()
+  }
+
+  _simulate () {
+    const n = Math.ceil(Math.log(this._collideSimulation.alphaMin()) /
+      Math.log(1 - this._collideSimulation.alphaDecay()))
+    for (let i = 0; i < n; i++) {
+      this._collideSimulation.tick()
+      this.circleRender.progressiveBound(i)
+    }
   }
 
   static _getCollisionForce () {
@@ -81,19 +92,9 @@ class Bubbles {
   }
 
   _moveLayout () {
-    const circleTransition = this.circleRender.moveCircles()
-    const labelTransition = this.labelRender.moveLabels()
-    const then = (callback) => this._onLayoutMoved(circleTransition, labelTransition, callback)
-    return { then }
-  }
-
-  _onLayoutMoved (circleTransition, labelTransition, callback) {
-    const thisCallback = callback.bind(this)
-    let n = 0
-    const onStart = () => ++n
-    const onEnd = () => --n || thisCallback()
-    circleTransition.each(onStart).on('end', onEnd)
-    labelTransition.each(onStart).on('end', onEnd)
+    this.circleRender.moveCircles()
+    this.labelRender.moveLabels()
+    this.axisRender.displayAxis()
   }
 }
 
@@ -106,42 +107,26 @@ export function create (containerSelector, listeners, document) {
   return new Bubbles(container, axisRender, circleRender, labelRender, infoRender)
 }
 
-function uodate (container, bubbles, builder) {
+export function apply (bubbles, builder) {
+  const container = builder.getContainer()
+  let exactlyTheSame = false
+  if (builder.samePosition(bubbles.builder)) {
+    if (container.same(bubbles.container)) {
+      exactlyTheSame = true
+      builder = bubbles.builder.updateColors(builder)
+    } else {
+      builder = bubbles.builder.updateScales(builder)
+    }
+  }
   const axisRender = new AxisRender(container.asAxisContainer(), bubbles.axisRender.percentileFactory, builder)
   const circleRender = new CircleRender(container.asChartContainer(), builder)
   const labelRender = new LabelRender(container.asChartContainer(), circleRender, builder)
   const infoRender = new InfoRender(container.asToolTipContainer(), circleRender, bubbles.infoRender.getInfoText, builder)
   const updated = new Bubbles(container, axisRender, circleRender, labelRender, infoRender, builder)
-  return updated
-}
-
-function tryUpdate (bubbles, builder) {
-  let quiteTheSame = false
-  let currentBuilder = bubbles.builder
-  let updatedBuilder = builder
-  if (builder.samePosition(currentBuilder)) {
-    if (builder.getContainer().same(currentBuilder.getContainer())) {
-      if (builder.sameRadius(currentBuilder)) {
-        quiteTheSame = true
-        updatedBuilder = currentBuilder.updateColors(builder)
-      } else {
-        updatedBuilder = currentBuilder.updateRadiusAndColor(builder)
-      }
-    } else {
-      updatedBuilder = currentBuilder.updateScales(builder)
-    }
-  }
-  return { updatedBuilder, exactlyTheSame: quiteTheSame }
-}
-
-export function apply (bubbles, builder) {
-  const container = builder.getContainer()
-  const { updatedBuilder, exactlyTheSame } = tryUpdate(bubbles, builder)
-  const updated = uodate(container, bubbles, updatedBuilder)
   if (!exactlyTheSame && bubbles.stopIfSimulation()) {
-    return updated.moveThenOptimize()
+    return updated.optimizeThenMove()
   } else {
-    return updated.drawThenOptimize()
+    return updated.optimizeThenDraw()
   }
 }
 
