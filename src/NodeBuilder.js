@@ -21,6 +21,7 @@ class NodeBuilder {
     for (let i = 0; i < thisNodes.length; i++) {
       thisNodes[i].radius = otherNodes[i].radius
       thisNodes[i].color = otherNodes[i].color
+      thisNodes[i].textColor = otherNodes[i].textColor
       thisNodes[i].xTarget = otherNodes[i].x
       thisNodes[i].yTarget = otherNodes[i].y
       thisNodes[i].data = otherNodes[i].data
@@ -35,6 +36,7 @@ class NodeBuilder {
     const thisNodes = this.getNodes()
     for (let i = 0; i < thisNodes.length; i++) {
       thisNodes[i].color = otherNodes[i].color
+      thisNodes[i].textColor = otherNodes[i].textColor
       thisNodes[i].xTarget = thisNodes[i].x
       thisNodes[i].yTarget = thisNodes[i].y
       thisNodes[i].data = otherNodes[i].data
@@ -123,6 +125,7 @@ export class XYNodeBuilder extends NodeBuilder {
       yTarget: scales.yScale(i),
       radius: scales.radiusScale(i),
       color: scales.colorScale(i),
+      textColor: scales.textColorScale(i),
       data: d,
       info: function () {
         return `x=${_round2(this.data[0])} y=${_round2(this.data[1])}`
@@ -168,6 +171,7 @@ export class XNodeBuilder extends NodeBuilder {
       vy: 1,
       radius: scales.radiusScale(i),
       color: scales.colorScale(i),
+      textColor: scales.textColorScale(i),
       data: d,
       info: function () {
         return `${_round2(this.data[0])}`

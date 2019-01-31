@@ -56,5 +56,6 @@ export class LabelRender {
     labels
       .attr('x', n => n.x)
       .attr('y', n => n.y)
+      .attr('fill', n => n.textColor)
   }
 }

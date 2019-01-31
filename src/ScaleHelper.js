@@ -16,7 +16,8 @@ export default class ScaleHelper {
     const xScale = this._getXScale(x, radiusScale)
     const yScale = this._getYScale(y, radiusScale)
     const colorScale = this._getColorScale(color)
-    return { colorScale, xScale, yScale, radiusScale }
+    const textColorScale = this._getTextColorScale(color)
+    return { colorScale, textColorScale, xScale, yScale, radiusScale }
   }
 
   _getRadiusScale (area) {
@@ -47,6 +48,14 @@ export default class ScaleHelper {
     domain = [domain[0], Math.sqrt((Math.pow(domain[0], 2) + Math.pow(domain[1], 2))) / 2, domain[1]]
     const scale = d3.scalePow().exponent(colorScaleExponent).domain(domain).range(['green', 'yellow', 'red'])
     return (i) => scale(color[i])
+  }
+
+  _getTextColorScale (color) {
+    let domain = ScaleHelper._range(color)
+    domain = [domain[0], Math.sqrt((Math.pow(domain[0], 2) + Math.pow(domain[1], 2))) / 2, domain[1]]
+    const preScale = d3.scalePow().exponent(colorScaleExponent).domain(domain).range([0, 0.5, 1])
+    const scale = d3.scaleThreshold().domain([0.25, 0.75]).range(['white', 'black', 'white'])
+    return (i) => scale(preScale(color[i]))
   }
 
   static _range (domainValues) {
