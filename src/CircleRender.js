@@ -50,7 +50,7 @@ export class CircleRender {
   }
 
   static _makeTransition (circles) {
-    return circles.transition().ease(d3.easeLinear).duration(800)
+    return circles.transition().ease(d3.easeExpOut).duration(2000)
   }
 
   _updateCircles (circles) {

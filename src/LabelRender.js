@@ -49,7 +49,7 @@ export class LabelRender {
   }
 
   static _makeTransition (labels) {
-    return labels.transition().ease(d3.easeLinear).duration(800)
+    return labels.transition().ease(d3.easeExpOut).duration(2000)
   }
 
   static _updateLabels (labels) {
