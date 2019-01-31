@@ -19,6 +19,7 @@ export class LabelRender {
       .attr('text-anchor', 'middle')
       .attr('dy', '0.4em')
       .attr('data-label', n => n.label)
+      .attr('id', n => `label${n.label}`)
       .text(i => i.label)
     LabelRender._updateLabels(newLabels.merge(labels))
   }
@@ -32,7 +33,9 @@ export class LabelRender {
   }
 
   _getLabels () {
-    return this.container.selectChart('.label')
+    let group = this.container.selectChart('.labelRender').data([1])
+    group = group.enter().append('g').classed('labelRender', true).merge(group)
+    return group.selectAll('.label')
   }
 
   _emphasis (x, y) {

@@ -196,20 +196,24 @@ class Container {
 
   boundX (node) {
     if ('radius' in node) {
-      return Math.max(node.radius, Math.min(this._chartBoundingRect.width - node.radius, node.x))
+      return Math.max(node.radius + 1, Math.min(
+        this._chartBoundingRect.width - node.radius - 1, node.x))
     }
     if ('width' in node) {
-      return Math.max(0, Math.min(this._chartBoundingRect.width + this._chartBoundingRect.left - node.width, node.left))
+      return Math.max(1, Math.min(
+        this._chartBoundingRect.width + this._chartBoundingRect.left - node.width - 1, node.left))
     }
     throw new TypeError('unable to bound node')
   }
 
   boundY (node) {
     if ('radius' in node) {
-      return Math.max(node.radius, Math.min(this._chartBoundingRect.height - node.radius, node.y))
+      return Math.max(node.radius + 2, Math.min(
+        this._chartBoundingRect.height - node.radius - 2, node.y))
     }
     if ('height' in node) {
-      return Math.max(0, Math.min(this._chartBoundingRect.height - node.height, node.top))
+      return Math.max(2, Math.min(
+        this._chartBoundingRect.height - node.height - 2, node.top))
     }
     throw new TypeError('unable to bound node')
   }

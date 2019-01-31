@@ -28,6 +28,7 @@ export class CircleRender {
       .style('pointer-events', 'none')
       .classed('cluster', true)
       .attr('data-label', n => n.label)
+      .attr('id', n => `cluster${n.label}`)
     this._updateCircles(newCircles.merge(circles))
   }
 
@@ -40,7 +41,12 @@ export class CircleRender {
   }
 
   _getCircles () {
-    return this.container.selectChart('.cluster')
+    return this._getGroup().selectAll('.cluster')
+  }
+
+  _getGroup () {
+    let group = this.container.selectChart('.circleRender').data([1])
+    return group.enter().append('g').classed('circleRender', true).merge(group)
   }
 
   static _makeTransition (circles) {
@@ -71,6 +77,8 @@ export class CircleRender {
       circles
         .classed('selected', d => typeof sel !== 'undefined' && d.label === sel)
         .classed('not-selected', d => typeof sel !== 'undefined' && d.label !== sel)
+      let use = this._getGroup().selectAll('use').data([1])
+      use.enter().append('use').merge(use).attr('xlink:href', `#cluster${sel}`)
     }
   }
 
