@@ -22,6 +22,7 @@ export class LabelRender {
       .attr('id', n => `label${n.label}`)
       .text(i => i.label)
     LabelRender._updateLabels(newLabels.merge(labels))
+    labels.exit().remove()
   }
 
   moveLabels () {
