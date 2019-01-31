@@ -30,6 +30,7 @@ export class CircleRender {
       .attr('data-label', n => n.label)
       .attr('id', n => `cluster${n.label}`)
     this._updateCircles(newCircles.merge(circles))
+    circles.exit().remove()
   }
 
   moveCircles () {
