@@ -27,7 +27,8 @@ export class LabelRender {
   moveLabels () {
     const labels = this._getLabels().data(this.clusters)
     labels.exit().remove()
-    const labelTransition = LabelRender._makeTransition(labels)
+    const labelTransition = labels.transition().ease(d3.easeExpOut).duration(2000)
+      .on('end', () => this.displayLabels(labels))
     LabelRender._updateLabels(labelTransition)
     return labelTransition
   }
@@ -46,10 +47,6 @@ export class LabelRender {
         .classed('selected', d => typeof sel !== 'undefined' && d.label === sel)
         .classed('not-selected', d => typeof sel !== 'undefined' && d.label !== sel)
     }
-  }
-
-  static _makeTransition (labels) {
-    return labels.transition().ease(d3.easeExpOut).duration(2000)
   }
 
   static _updateLabels (labels) {

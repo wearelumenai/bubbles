@@ -35,7 +35,8 @@ export class CircleRender {
   moveCircles () {
     const circles = this._getCircles().data(this.clusters)
     circles.exit().remove()
-    const circleTransition = CircleRender._makeTransition(circles)
+    const circleTransition = circles.transition().ease(d3.easeExpOut).duration(2000)
+      .on('end', () => this.drawCircles())
     this._updateCircles(circleTransition)
     return circleTransition
   }
@@ -47,10 +48,6 @@ export class CircleRender {
   _getGroup () {
     let group = this.container.selectChart('.circleRender').data([1])
     return group.enter().append('g').classed('circleRender', true).merge(group)
-  }
-
-  static _makeTransition (circles) {
-    return circles.transition().ease(d3.easeExpOut).duration(2000)
   }
 
   _updateCircles (circles) {
