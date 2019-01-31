@@ -22,6 +22,7 @@ class Container {
     this._chartElement = this._makeChart(this._containerElement, this._getYAxisWidth())
     this._xAxisElement = this._makeXAxis(this._containerElement, this._getYAxisWidth())
     this._yAxisElement = this._makeYAxis(this._containerElement, this._getYAxisWidth())
+    this._init = true
   }
 
   _setupContainer (containerSelector, document) {
@@ -42,6 +43,7 @@ class Container {
     this._chartElement = this._setupChart(container._chartElement, this._getYAxisWidth())
     this._xAxisElement = this._setupXAxis(container._xAxisElement, this._getYAxisWidth())
     this._yAxisElement = this._setupYAxis(container._yAxisElement, this._getYAxisWidth())
+    this._init = container._init
   }
 
   _initScales () {
@@ -138,6 +140,15 @@ class Container {
         }
       )
     }
+  }
+
+  transition (fn) {
+    this._containerElement.transition().duration(this._init ? 0 : 600).ease(d3.easeCircleOut).style('opacity', 0)
+      .on('end', () => {
+        fn()
+        this._init = false
+        this._containerElement.transition().duration(600).ease(d3.easeCircleIn).style('opacity', 1)
+      })
   }
 
   getShape () {

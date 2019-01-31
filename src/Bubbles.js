@@ -42,8 +42,10 @@ class Bubbles {
   }
 
   optimizeThenDraw () {
-    this._optimizeLayout()
-    this._drawClusters()
+    this.container.transition(() => {
+      this._optimizeLayout()
+      this._drawClusters()
+    })
     return this
   }
 
