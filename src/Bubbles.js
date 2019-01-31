@@ -2,10 +2,10 @@
 
 import * as d3 from 'd3'
 import * as containers from './Container.js'
-import {AxisRender, factoryWithRange} from './AxisRender.js'
-import {CircleRender} from './CircleRender.js'
-import {LabelRender} from './LabelRender.js'
-import {InfoRender, simpleInfoText} from './InfoRender.js'
+import { AxisRender, factoryWithRange } from './AxisRender.js'
+import { CircleRender } from './CircleRender.js'
+import { LabelRender } from './LabelRender.js'
+import { InfoRender, simpleInfoText } from './InfoRender.js'
 
 class Bubbles {
   constructor (container, axisRender, circleRender, labelRender, infoRender, builder) {
@@ -42,8 +42,8 @@ class Bubbles {
   }
 
   optimizeThenDraw () {
+    this._optimizeLayout()
     this.container.transition(() => {
-      this._optimizeLayout()
       this._drawClusters()
     })
     return this
@@ -57,7 +57,7 @@ class Bubbles {
 
   _optimizeLayout () {
     const collisionForce = Bubbles._getCollisionForce()
-    const {xForce, yForce} = this._getPositionForces()
+    const { xForce, yForce } = this._getPositionForces()
     this._collideSimulation = d3.forceSimulation()
       .alphaTarget(0.0005) // runs longer
       .nodes(this.clusters)
@@ -84,7 +84,7 @@ class Bubbles {
   _getPositionForces () {
     const xForce = d3.forceX((_, i) => this.clusters[i].xTarget).strength(0.01)
     const yForce = d3.forceY((_, i) => this.clusters[i].yTarget).strength(0.01)
-    return {xForce, yForce}
+    return { xForce, yForce }
   }
 
   _drawClusters () {
@@ -119,7 +119,7 @@ function init (container) {
 
 export function apply (bubbles, builder) {
   const container = builder.getContainer()
-  const {updatedBuilder, exactlyTheSame} = tryUpdate(bubbles, builder)
+  const { updatedBuilder, exactlyTheSame } = tryUpdate(bubbles, builder)
   const updated = update(container, bubbles, updatedBuilder)
   if (!exactlyTheSame && bubbles.stopIfSimulation()) {
     return updated.optimizeThenMove()
@@ -144,7 +144,7 @@ function tryUpdate (bubbles, builder) {
       updatedBuilder = currentBuilder.updateScales(builder)
     }
   }
-  return {updatedBuilder, exactlyTheSame: quiteTheSame}
+  return { updatedBuilder, exactlyTheSame: quiteTheSame }
 }
 
 function update (container, bubbles, builder) {
