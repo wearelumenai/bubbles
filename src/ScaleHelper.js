@@ -45,7 +45,7 @@ export default class ScaleHelper {
 
   _getColorScale (color) {
     let domain = ScaleHelper._range(color)
-    domain = [domain[0], Math.sqrt((Math.pow(domain[0], 2) + Math.pow(domain[1], 2))) / 2, domain[1]]
+    domain = [domain[0], (domain[0] + domain[1]) / 2, domain[1]]
     const scale = d3.scalePow().exponent(colorScaleExponent).domain(domain).range(['green', 'yellow', 'red'])
     return (i) => scale(color[i])
   }

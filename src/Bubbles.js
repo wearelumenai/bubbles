@@ -2,10 +2,10 @@
 
 import * as d3 from 'd3'
 import * as containers from './Container.js'
-import { AxisRender, factoryWithRange } from './AxisRender.js'
-import { CircleRender } from './CircleRender.js'
-import { LabelRender } from './LabelRender.js'
-import { InfoRender, simpleInfoText } from './InfoRender.js'
+import {AxisRender, factoryWithRange} from './AxisRender.js'
+import {CircleRender} from './CircleRender.js'
+import {LabelRender} from './LabelRender.js'
+import {InfoRender, simpleInfoText} from './InfoRender.js'
 
 class Bubbles {
   constructor (container, axisRender, circleRender, labelRender, infoRender, builder) {
@@ -109,25 +109,40 @@ export function create (containerSelector, listeners, document) {
 
 export function apply (bubbles, builder) {
   const container = builder.getContainer()
-  let exactlyTheSame = false
-  if (builder.samePosition(bubbles.builder)) {
-    if (container.same(bubbles.container)) {
-      exactlyTheSame = true
-      builder = bubbles.builder.updateColors(builder)
-    } else {
-      builder = bubbles.builder.updateScales(builder)
-    }
-  }
-  const axisRender = new AxisRender(container.asAxisContainer(), bubbles.axisRender.percentileFactory, builder)
-  const circleRender = new CircleRender(container.asChartContainer(), builder)
-  const labelRender = new LabelRender(container.asChartContainer(), circleRender, builder)
-  const infoRender = new InfoRender(container.asToolTipContainer(), circleRender, bubbles.infoRender.getInfoText, builder)
-  const updated = new Bubbles(container, axisRender, circleRender, labelRender, infoRender, builder)
+  const { updatedBuilder, exactlyTheSame } = tryUpdate(bubbles, builder)
+  const updated = update(container, bubbles, updatedBuilder)
   if (!exactlyTheSame && bubbles.stopIfSimulation()) {
     return updated.optimizeThenMove()
   } else {
     return updated.optimizeThenDraw()
   }
+}
+
+function tryUpdate (bubbles, builder) {
+  let quiteTheSame = false
+  let currentBuilder = bubbles.builder
+  let updatedBuilder = builder
+  if (builder.samePosition(currentBuilder)) {
+    if (builder.getContainer().same(currentBuilder.getContainer())) {
+      if (builder.sameRadius(currentBuilder)) {
+        quiteTheSame = true
+        updatedBuilder = currentBuilder.updateColors(builder)
+      } else {
+        updatedBuilder = currentBuilder.updateRadiusAndColor(builder)
+      }
+    } else {
+      updatedBuilder = currentBuilder.updateScales(builder)
+    }
+  }
+  return { updatedBuilder, exactlyTheSame: quiteTheSame }
+}
+
+function update (container, bubbles, builder) {
+  const axisRender = new AxisRender(container.asAxisContainer(), bubbles.axisRender.percentileFactory, builder)
+  const circleRender = new CircleRender(container.asChartContainer(), builder)
+  const labelRender = new LabelRender(container.asChartContainer(), circleRender, builder)
+  const infoRender = new InfoRender(container.asToolTipContainer(), circleRender, bubbles.infoRender.getInfoText, builder)
+  return new Bubbles(container, axisRender, circleRender, labelRender, infoRender, builder)
 }
 
 export function resize (bubbles) {
