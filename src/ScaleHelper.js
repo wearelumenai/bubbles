@@ -52,7 +52,7 @@ export default class ScaleHelper {
 
   _getTextColorScale (color) {
     let domain = ScaleHelper._range(color)
-    domain = [domain[0], Math.sqrt((Math.pow(domain[0], 2) + Math.pow(domain[1], 2))) / 2, domain[1]]
+    domain = [domain[0], (domain[0] + domain[1]) / 2, domain[1]]
     const preScale = d3.scalePow().exponent(colorScaleExponent).domain(domain).range([0, 0.5, 1])
     const scale = d3.scaleThreshold().domain([0.25, 0.75]).range(['white', 'black', 'white'])
     return (i) => scale(preScale(color[i]))
