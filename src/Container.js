@@ -145,6 +145,7 @@ class Container {
   transition (fn) {
     this._containerElement.transition().duration(this._init ? 0 : 600).ease(d3.easeCircleOut).style('opacity', 0)
       .on('end', () => {
+        this._doClick(-1, -1)
         fn()
         this._init = false
         this._containerElement.transition().duration(600).ease(d3.easeCircleIn).style('opacity', 1)
@@ -156,19 +157,23 @@ class Container {
   }
 
   onClick (action) {
-    if (typeof this._click === 'undefined') {
-      this._click = [this._listeners['click'], action]
+    if (typeof this._clickActions === 'undefined') {
+      this._clickActions = [this._listeners['click'], action]
     } else {
-      this._click.push(action)
+      this._clickActions.push(action)
     }
     this._applyListeners({
       'click': () => {
         const [x, y] = this.getMousePosition()
-        for (let i = 0; i < this._click.length; i++) {
-          this._click[i](x, y)
-        }
+        this._doClick(x, y)
       }
     })
+  }
+
+  _doClick (x, y) {
+    for (let i = 0; i < this._clickActions.length; i++) {
+      this._clickActions[i](x, y)
+    }
   }
 
   onMouse (onMove, onOut) {
