@@ -51,7 +51,7 @@ class XRange extends Percentiles {
       let label = d.label
       let x = d.x + (i === 0 ? -1 : 1) * d.radius
       let y = '1em'
-      let text = `${Math.round(d.data[0] * 100) / 100}(${d.label})`
+      let text = `${Math.round(d.data[0] * 100) / 100}`
       let anchor = i === 0 ? 'start' : 'end'
       let verticalShift = AxisWidth
       let fill = 'DeepSkyBlue'
@@ -75,7 +75,7 @@ class XQuartiles extends Percentiles {
       let label = d.label
       let x = d.x + (i === 0 ? -1 : i === 4 ? 1 : 0) * d.radius
       let y = '1em'
-      let text = `${Math.round(d.data[0] * 100) / 100}(${d.label})`
+      let text = `${Math.round(d.data[0] * 100) / 100}`
       let anchor = i === 0 ? 'start' : i === 4 ? 'end' : 'middle'
       let verticalShift = AxisWidth
       let fill = i % 2 === 1 ? 'Blue' : (i === 2 ? 'MidnightBlue' : 'DeepSkyBlue')
@@ -128,7 +128,7 @@ class YRange extends Percentiles {
       let label = d.label
       let x = '50%'
       let y = d.y + (i === 0 ? 1 : -1) * d.radius
-      let text = `${Math.round(d.data[1] * 100) / 100}(${d.label})`
+      let text = `${Math.round(d.data[1] * 100) / 100}`
       let anchor = 'middle'
       let verticalShift = i === 0 ? '-0.2em' : '0.8em'
       let fill = 'DeepSkyBlue'
@@ -153,7 +153,7 @@ class YQuartiles extends Percentiles {
       let label = d.label
       let x = '50%'
       let y = d.y + (i === 0 ? 1 : i === 4 ? -1 : 0) * d.radius
-      let text = `${Math.round(d.data[1] * 100) / 100}(${d.label})`
+      let text = `${Math.round(d.data[1] * 100) / 100}`
       let anchor = 'middle'
       let verticalShift = i === 0 ? '-0.2em' : i === 4 ? '0.8em' : '0.5em'
       let fill = i % 2 === 1 ? 'Blue' : (i === 2 ? 'MidnightBlue' : 'DeepSkyBlue')

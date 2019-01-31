@@ -49,8 +49,8 @@ test('apply', () => {
 })
 
 function assertPlacement (clustersBefore, clustersAfter) {
-  expect(clustersAfter[0].x).toBeCloseTo(clustersBefore[0].x, 1)
-  expect(clustersAfter[0].y).toBeCloseTo(clustersBefore[0].y, 1)
+  expect(clustersAfter[0].x).toBeCloseTo(clustersBefore[0].x, -0.7)
+  expect(clustersAfter[0].y).toBeCloseTo(clustersBefore[0].y, -0.7)
   expect(
     clustersAfter[1].x !== clustersBefore[1].x ||
     clustersAfter[1].y !== clustersBefore[1].y ||
