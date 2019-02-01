@@ -136,9 +136,9 @@ export function create (container, listeners, document) {
 
 export function apply (bubbles, builder) {
   const container = builder.getContainer()
-  const { updatedBuilder, quiteTheSame } = tryUpdateBuilder(bubbles, builder)
+  const updatedBuilder = tryUpdateBuilder(bubbles, builder)
   const updated = bubbles.update(container, updatedBuilder)
-  if (!quiteTheSame && bubbles.isActive()) {
+  if (bubbles.isActive()) {
     bubbles.stop()
     return updated.optimizeThenMove()
   } else {
@@ -147,13 +147,11 @@ export function apply (bubbles, builder) {
 }
 
 function tryUpdateBuilder (bubbles, builder) {
-  let quiteTheSame = false
   let currentBuilder = bubbles.builder
   let updatedBuilder = builder
   if (builder.samePosition(currentBuilder)) {
     if (builder.getContainer().same(currentBuilder.getContainer())) {
       if (builder.sameRadius(currentBuilder)) {
-        quiteTheSame = true
         updatedBuilder = currentBuilder.updateColors(builder)
       } else {
         updatedBuilder = currentBuilder.updateRadiusAndColor(builder)
@@ -162,7 +160,7 @@ function tryUpdateBuilder (bubbles, builder) {
       updatedBuilder = currentBuilder.updateScales(builder)
     }
   }
-  return { updatedBuilder, quiteTheSame: quiteTheSame }
+  return updatedBuilder
 }
 
 export function resize (bubbles) {
