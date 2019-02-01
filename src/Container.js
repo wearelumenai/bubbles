@@ -161,8 +161,10 @@ class Container {
   }
 
   onClick (action) {
-    if (typeof this._clickActions === 'undefined') {
+    if (typeof this._clickActions === 'undefined' && this._listeners.hasOwnProperty('click')) {
       this._clickActions = [this._listeners['click'], action]
+    } else if (typeof this._clickActions === 'undefined') {
+      this._clickActions = [action]
     } else {
       this._clickActions.push(action)
     }
