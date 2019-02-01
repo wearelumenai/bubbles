@@ -54,7 +54,7 @@ export default class ScaleHelper {
     let domain = ScaleHelper._range(color)
     domain = [domain[0], (domain[0] + domain[1]) / 2, domain[1]]
     const preScale = d3.scalePow().exponent(colorScaleExponent).domain(domain).range([0, 0.5, 1])
-    const scale = d3.scaleThreshold().domain([0.25, 0.75]).range(['white', 'black', 'white'])
+    const scale = d3.scaleThreshold().domain([0.25, 0.75]).range(['black', 'black', 'black'])
     return (i) => scale(preScale(color[i]))
   }
 
