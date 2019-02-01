@@ -21,6 +21,7 @@ const dummy = [
   [1, 2, 3, 4]
 ]
 
+/*
 test('x collide', () => {
   const axisRender = getAxisRender()
   const start = update(axisRender, dummy)
@@ -41,6 +42,7 @@ test('y collide', () => {
   expect(yClusters[2]).not.toBe(20)
   expect(yClusters[3]).not.toBe(30)
 })
+*/
 
 test('x do not collide', () => {
   const axisRender = getAxisRender()
