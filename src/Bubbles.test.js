@@ -74,5 +74,5 @@ function fakeTransition () {
 }
 
 function getBubbles () {
-  return bubbles.create('#bubble-chart', {}, common.document)
+  return bubbles.create('#bubble-chart', XYNodeBuilder, {}, common.document)
 }

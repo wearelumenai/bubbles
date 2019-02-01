@@ -1,7 +1,6 @@
 'use strict'
 
 import * as d3 from 'd3'
-import * as containers from './Container.js'
 import { AxisRender, factoryWithRange } from './AxisRender.js'
 import { CircleRender } from './CircleRender.js'
 import { LabelRender } from './LabelRender.js'
@@ -125,12 +124,8 @@ class ActiveBubbles extends Bubbles {
   }
 }
 
-export function create (container, listeners, document) {
-  if (typeof container === 'string') {
-    container = new containers.XContainer(container, listeners, document)
-  } else {
-    container = container.reset()
-  }
+export function create (containerSelector, Builder, listeners, document) {
+  let container = new Builder.Container(containerSelector, listeners, document)
   return new Bubbles(container)
 }
 
@@ -161,15 +156,4 @@ function tryUpdateBuilder (bubbles, builder) {
     }
   }
   return updatedBuilder
-}
-
-export function resize (bubbles) {
-  if (typeof bubbles.builder !== 'undefined') {
-    const container = bubbles.container.resize()
-    if (container.same(bubbles.container)) {
-      return bubbles
-    }
-    const builder = bubbles.builder.updateContainer(container)
-    return apply(bubbles, builder)
-  }
 }
