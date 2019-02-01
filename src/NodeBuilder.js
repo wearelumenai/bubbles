@@ -46,9 +46,6 @@ class NodeBuilder {
   }
 
   updateScales (builder) {
-    if (!(builder instanceof XNodeBuilder)) {
-      return builder
-    }
     const otherNodes = builder.getNodes()
     const thisNodes = this.getNodes()
     const heightRatio = builder.container.getShape().height / this.container.getShape().height
@@ -68,8 +65,7 @@ class NodeBuilder {
   }
 
   sameRadius (builder) {
-    if (typeof builder === 'undefined' ||
-      builder.x.length !== this.x.length) {
+    if (builder.x.length !== this.x.length) {
       return false
     }
     for (let i = 0; i < this.x.length; i++) {
@@ -103,7 +99,7 @@ export class XYNodeBuilder extends NodeBuilder {
   }
 
   samePosition (builder) {
-    if (typeof builder === 'undefined' ||
+    if (!(builder instanceof XYNodeBuilder) ||
       builder.x.length !== this.x.length) {
       return false
     }
@@ -147,7 +143,7 @@ export class XNodeBuilder extends NodeBuilder {
   }
 
   samePosition (builder) {
-    if (typeof builder === 'undefined' ||
+    if (!(builder instanceof XNodeBuilder) ||
       builder.x.length !== this.x.length) {
       return false
     }

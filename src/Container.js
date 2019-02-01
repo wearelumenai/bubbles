@@ -18,11 +18,11 @@ class Container {
     this.containerSelector = containerSelector
     this._containerElement = this._setupContainer(containerSelector, document)
     this._listeners = listeners
+    this._document = document
     this._infoElement = this._makeToolTip(this._containerElement, this._getYAxisWidth())
     this._chartElement = this._makeChart(this._containerElement, this._getYAxisWidth())
     this._xAxisElement = this._makeXAxis(this._containerElement, this._getYAxisWidth())
     this._yAxisElement = this._makeYAxis(this._containerElement, this._getYAxisWidth())
-    this._init = true
   }
 
   _setupContainer (containerSelector, document) {
@@ -32,6 +32,7 @@ class Container {
     } else {
       element = d3.select(containerSelector)
     }
+    element.selectAll('*').remove()
     return element.style('position', 'relative').style('margin', '0')
   }
 
@@ -39,11 +40,11 @@ class Container {
     this.containerSelector = container.containerSelector
     this._containerElement = container._containerElement
     this._listeners = container._listeners
+    this._document = container._document
     this._infoElement = this._setupTooltip(container._infoElement, this._getYAxisWidth())
     this._chartElement = this._setupChart(container._chartElement, this._getYAxisWidth())
     this._xAxisElement = this._setupXAxis(container._xAxisElement, this._getYAxisWidth())
     this._yAxisElement = this._setupYAxis(container._yAxisElement, this._getYAxisWidth())
-    this._init = container._init
   }
 
   _initScales () {
@@ -143,13 +144,9 @@ class Container {
   }
 
   transition (fn) {
-    this._containerElement.transition().duration(this._init ? 0 : 600).ease(d3.easeCircleOut).style('opacity', 0)
-      .on('end', () => {
-        this._doClick(-1, -1)
-        fn()
-        this._init = false
-        this._containerElement.transition().duration(600).ease(d3.easeCircleIn).style('opacity', 1)
-      })
+    this._containerElement.style('opacity', 0)
+    fn()
+    this._containerElement.transition().duration(800).ease(d3.easeCircleIn).style('opacity', 1)
   }
 
   getShape () {
@@ -274,6 +271,10 @@ class Container {
 }
 
 export class XYContainer extends Container {
+  reset () {
+    return new XYContainer(this.containerSelector, this._listeners, this._document)
+  }
+
   resize () {
     return new XYContainer(this, {}, undefined)
   }
@@ -288,6 +289,10 @@ export class XYContainer extends Container {
 }
 
 export class XContainer extends Container {
+  reset () {
+    return new XContainer(this.containerSelector, this._listeners, this._document)
+  }
+
   resize () {
     return new XContainer(this, {}, undefined)
   }

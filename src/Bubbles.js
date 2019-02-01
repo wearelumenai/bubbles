@@ -8,8 +8,28 @@ import { LabelRender } from './LabelRender.js'
 import { InfoRender, simpleInfoText } from './InfoRender.js'
 
 class Bubbles {
-  constructor (container, axisRender, circleRender, labelRender, infoRender, builder) {
+  constructor (container) {
     this.container = container
+  }
+
+  getContainer () {
+    return this.container
+  }
+
+  isActive () {
+    return false
+  }
+
+  update (container, builder) {
+    const percentileFactory = factoryWithRange()
+    const getInfoText = simpleInfoText
+    return ActiveBubbles.create(container, builder, percentileFactory, getInfoText)
+  }
+}
+
+class ActiveBubbles extends Bubbles {
+  constructor (container, axisRender, circleRender, labelRender, infoRender, builder) {
+    super(container)
     this.axisRender = axisRender
     this.circleRender = circleRender
     this.labelRender = labelRender
@@ -20,25 +40,22 @@ class Bubbles {
     }
   }
 
-  update (builder) {
-    return new Bubbles(builder.getContainer(), builder, this)
+  isActive () {
+    return true
   }
 
-  getContainer () {
-    return this.container
+  update (container, builder) {
+    const percentileFactory = this.axisRender.percentileFactory
+    const getInfoText = this.infoRender.getInfoText
+    return ActiveBubbles.create(container, builder, percentileFactory, getInfoText)
   }
 
   getClustersAtPosition (x, y) {
     return this.circleRender.getClustersAtPosition(x, y)
   }
 
-  stopIfSimulation () {
-    if (typeof this._collideSimulation !== 'undefined') {
-      this._collideSimulation.stop()
-      return true
-    } else {
-      return false
-    }
+  stop () {
+    this._collideSimulation.stop()
   }
 
   optimizeThenDraw () {
@@ -56,7 +73,7 @@ class Bubbles {
   }
 
   _optimizeLayout () {
-    const collisionForce = Bubbles._getCollisionForce()
+    const collisionForce = ActiveBubbles._getCollisionForce()
     const { xForce, yForce } = this._getPositionForces()
     this._collideSimulation = d3.forceSimulation()
       .alphaTarget(0.0005) // runs longer
@@ -98,30 +115,31 @@ class Bubbles {
     this.labelRender.moveLabels()
     this.axisRender.displayAxis()
   }
+
+  static create (container, builder, percentileFactory, getInfoText) {
+    const axisRender = new AxisRender(container.asAxisContainer(), percentileFactory, builder)
+    const circleRender = new CircleRender(container.asChartContainer(), builder)
+    const labelRender = new LabelRender(container.asChartContainer(), circleRender, builder)
+    const infoRender = new InfoRender(container.asToolTipContainer(), circleRender, getInfoText, builder)
+    return new ActiveBubbles(container, axisRender, circleRender, labelRender, infoRender, builder)
+  }
 }
 
-export function create (containerSelector, listeners, document) {
-  const container = new containers.XContainer(containerSelector, listeners, document)
-  return init(container)
-}
-
-export function reset (bubbles) {
-  return init(bubbles.container)
-}
-
-function init (container) {
-  const axisRender = new AxisRender(container.asAxisContainer(), factoryWithRange())
-  const circleRender = new CircleRender(container.asChartContainer())
-  const labelRender = new LabelRender(container.asChartContainer(), circleRender)
-  const infoRender = new InfoRender(container.asToolTipContainer(), circleRender, simpleInfoText)
-  return new Bubbles(container, axisRender, circleRender, labelRender, infoRender)
+export function create (container, listeners, document) {
+  if (typeof container === 'string') {
+    container = new containers.XContainer(container, listeners, document)
+  } else {
+    container = container.reset()
+  }
+  return new Bubbles(container)
 }
 
 export function apply (bubbles, builder) {
   const container = builder.getContainer()
   const { updatedBuilder, exactlyTheSame } = tryUpdate(bubbles, builder)
   const updated = update(container, bubbles, updatedBuilder)
-  if (!exactlyTheSame && bubbles.stopIfSimulation()) {
+  if (!exactlyTheSame && bubbles.isActive()) {
+    bubbles.stop()
     return updated.optimizeThenMove()
   } else {
     return updated.optimizeThenDraw()
@@ -148,11 +166,7 @@ function tryUpdate (bubbles, builder) {
 }
 
 function update (container, bubbles, builder) {
-  const axisRender = new AxisRender(container.asAxisContainer(), bubbles.axisRender.percentileFactory, builder)
-  const circleRender = new CircleRender(container.asChartContainer(), builder)
-  const labelRender = new LabelRender(container.asChartContainer(), circleRender, builder)
-  const infoRender = new InfoRender(container.asToolTipContainer(), circleRender, bubbles.infoRender.getInfoText, builder)
-  return new Bubbles(container, axisRender, circleRender, labelRender, infoRender, builder)
+  return bubbles.update(container, builder)
 }
 
 export function resize (bubbles) {
