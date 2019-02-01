@@ -3,6 +3,6 @@ import { XYNodeBuilder, XNodeBuilder } from './src/NodeBuilder'
 
 export default {
   bubbles,
-  XYNodeBuilder,
-  XNodeBuilder
+  XYChart: XYNodeBuilder,
+  XChart: XNodeBuilder
 }

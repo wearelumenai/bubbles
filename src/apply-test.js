@@ -28,6 +28,6 @@ function doUpdate (render, projection, ...params) {
   } else if (render instanceof InfoRender) {
     return new InfoRender(container, params[0], render.getInfoText, builder)
   } else {
-    return bubbles.apply(render, builder)
+    return bubbles.update(render, XYNodeBuilder, projection)
   }
 }

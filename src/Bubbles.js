@@ -129,7 +129,23 @@ export function create (containerSelector, Builder, listeners, document) {
   return new Bubbles(container)
 }
 
-export function apply (bubbles, builder) {
+export function resize (bubbles) {
+  if (typeof bubbles.builder !== 'undefined') {
+    const container = bubbles.container.resize()
+    if (container.same(bubbles.container)) {
+      return bubbles
+    }
+    const builder = bubbles.builder.updateContainer(container)
+    return updateBubbles(bubbles, builder)
+  }
+}
+
+export function update (bubbles, Builder, data) {
+  const builder = new Builder(data, bubbles.getContainer())
+  return updateBubbles(bubbles, builder)
+}
+
+function updateBubbles (bubbles, builder) {
   const container = builder.getContainer()
   const updatedBuilder = tryUpdateBuilder(bubbles, builder)
   const updated = bubbles.update(container, updatedBuilder)

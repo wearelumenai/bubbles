@@ -44,7 +44,7 @@ test('cluster position', () => {
 
 test('apply', () => {
   const chart = getBubbles()
-  const updated = bubbles.apply(chart, new XYNodeBuilder(common.Projection, chart.getContainer()))
+  const updated = bubbles.update(chart, XYNodeBuilder, common.Projection)
   expect(updated).not.toBe(chart)
 })
 
