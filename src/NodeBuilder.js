@@ -28,6 +28,7 @@ class NodeBuilder {
     }
     this.colors = builder.colors
     this.areas = builder.areas
+    this.projection = builder.projection
     return this
   }
 
@@ -42,6 +43,7 @@ class NodeBuilder {
       thisNodes[i].data = otherNodes[i].data
     }
     this.colors = builder.colors
+    this.projection = builder.projection
     return this
   }
 
