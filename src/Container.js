@@ -4,9 +4,9 @@ import * as d3 from 'd3'
 import ScaleHelper from './ScaleHelper'
 
 class Container {
-  constructor (container, listeners, document) {
+  constructor (container, listeners) {
     if (typeof container === 'string') {
-      this._initContainer(container, listeners, document)
+      this._initContainer(container, listeners)
     } else {
       this._copyContainer(container)
     }
@@ -14,25 +14,19 @@ class Container {
     this._initScales()
   }
 
-  _initContainer (containerSelector, listeners, document) {
+  _initContainer (containerSelector, listeners) {
     this.containerSelector = containerSelector
-    this._containerElement = this._setupContainer(containerSelector, document)
+    this._containerElement = Container._setupContainer(containerSelector)
     this._listeners = listeners
-    this._document = document
-    this._infoElement = this._makeToolTip(this._containerElement, this._getYAxisWidth())
-    this._chartElement = this._makeChart(this._containerElement, this._getYAxisWidth())
-    this._xAxisElement = this._makeXAxis(this._containerElement, this._getYAxisWidth())
-    this._yAxisElement = this._makeYAxis(this._containerElement, this._getYAxisWidth())
+    this._infoElement = Container._makeToolTip(this._containerElement, this._getYAxisWidth())
+    this._chartElement = Container._makeChart(this._containerElement, this._getYAxisWidth())
+    this._xAxisElement = Container._makeXAxis(this._containerElement, this._getYAxisWidth())
+    this._yAxisElement = Container._makeYAxis(this._containerElement, this._getYAxisWidth())
     this._init = true
   }
 
-  _setupContainer (containerSelector, document) {
-    let element
-    if (typeof document !== 'undefined') {
-      element = d3.select(document).select(containerSelector)
-    } else {
-      element = d3.select(containerSelector)
-    }
+  static _setupContainer (containerSelector) {
+    let element = d3.select(containerSelector)
     element.selectAll('*').remove()
     return element.style('position', 'relative').style('margin', '0')
   }
@@ -41,11 +35,10 @@ class Container {
     this.containerSelector = container.containerSelector
     this._containerElement = container._containerElement
     this._listeners = container._listeners
-    this._document = container._document
-    this._infoElement = this._setupTooltip(container._infoElement, this._getYAxisWidth())
-    this._chartElement = this._setupChart(container._chartElement, this._getYAxisWidth())
-    this._xAxisElement = this._setupXAxis(container._xAxisElement, this._getYAxisWidth())
-    this._yAxisElement = this._setupYAxis(container._yAxisElement, this._getYAxisWidth())
+    this._infoElement = Container._setupTooltip(container._infoElement, this._getYAxisWidth())
+    this._chartElement = Container._setupChart(container._chartElement, this._getYAxisWidth())
+    this._xAxisElement = Container._setupXAxis(container._xAxisElement, this._getYAxisWidth())
+    this._yAxisElement = Container._setupYAxis(container._yAxisElement, this._getYAxisWidth())
     this._init = container._init
   }
 
@@ -54,11 +47,11 @@ class Container {
     this.scaleHelper = new ScaleHelper(this._chartBoundingRect)
   }
 
-  _makeToolTip (container, marginLeft) {
-    return this._setupTooltip(container.append('p'), marginLeft)
+  static _makeToolTip (container, marginLeft) {
+    return Container._setupTooltip(container.append('p'), marginLeft)
   }
 
-  _setupTooltip (tooltip, marginLeft) {
+  static _setupTooltip (tooltip, marginLeft) {
     return tooltip
       .classed('info', true)
       .style('position', 'absolute')
@@ -69,8 +62,8 @@ class Container {
       .style('pointer-events', 'none')
   }
 
-  _makeChart (container, left) {
-    let chart = this._setupChart(container.append('div'), left)
+  static _makeChart (container, left) {
+    let chart = Container._setupChart(container.append('div'), left)
     chart.append('svg')
       .classed('chart', true)
       .style('position', 'absolute')
@@ -81,7 +74,7 @@ class Container {
     return chart
   }
 
-  _setupChart (chart, left) {
+  static _setupChart (chart, left) {
     return chart
       .classed('chart', true)
       .style('position', 'absolute')
@@ -91,8 +84,8 @@ class Container {
       .style('right', '0')
   }
 
-  _makeXAxis (container, left) {
-    let xAxis = this._setupXAxis(container.append('div'), left)
+  static _makeXAxis (container, left) {
+    let xAxis = Container._setupXAxis(container.append('div'), left)
     xAxis.append('svg')
       .classed('x-axis', true)
       .style('position', 'absolute')
@@ -103,7 +96,7 @@ class Container {
     return xAxis
   }
 
-  _setupXAxis (xAxis, left) {
+  static _setupXAxis (xAxis, left) {
     return xAxis
       .classed('x-axis', true)
       .style('position', 'absolute')
@@ -113,8 +106,8 @@ class Container {
       .style('right', '0')
   }
 
-  _makeYAxis (container, width) {
-    let yAxis = this._setupYAxis(container.append('div'), width)
+  static _makeYAxis (container, width) {
+    let yAxis = Container._setupYAxis(container.append('div'), width)
     yAxis.append('svg')
       .classed('y-axis', true)
       .style('position', 'absolute')
@@ -125,7 +118,7 @@ class Container {
     return yAxis
   }
 
-  _setupYAxis (yAxis, width) {
+  static _setupYAxis (yAxis, width) {
     return yAxis
       .classed('y-axis', true)
       .style('position', 'absolute')
@@ -143,6 +136,10 @@ class Container {
         }
       )
     }
+  }
+
+  _getYAxisWidth () {
+    return '0'
   }
 
   transition (fn) {
@@ -281,7 +278,7 @@ class Container {
 
 export class XYContainer extends Container {
   reset () {
-    return new XYContainer(this.containerSelector, this._listeners, this._document)
+    return new XYContainer(this.containerSelector, this._listeners)
   }
 
   resize () {
@@ -299,7 +296,7 @@ export class XYContainer extends Container {
 
 export class XContainer extends Container {
   reset () {
-    return new XContainer(this.containerSelector, this._listeners, this._document)
+    return new XContainer(this.containerSelector, this._listeners)
   }
 
   resize () {
@@ -308,9 +305,5 @@ export class XContainer extends Container {
 
   same (container) {
     return container instanceof XContainer && this.sameBoundingRect(container)
-  }
-
-  _getYAxisWidth () {
-    return '0'
   }
 }

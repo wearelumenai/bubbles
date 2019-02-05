@@ -1,5 +1,3 @@
-import * as d3 from 'd3'
-
 const progressiveTimeLine = [10, 290]
 
 export class CircleRender {
@@ -33,13 +31,11 @@ export class CircleRender {
     circles.exit().remove()
   }
 
-  moveCircles () {
+  moveCircles (transition) {
     const circles = this._getCircles().data(this.clusters)
     circles.exit().remove()
-    const circleTransition = circles.transition().ease(d3.easeExpOut).duration(2000)
-      .on('end', () => this.drawCircles())
+    const circleTransition = transition(circles)
     this._updateCircles(circleTransition)
-    return circleTransition
   }
 
   _getCircles () {
@@ -80,10 +76,10 @@ export class CircleRender {
     }
   }
 
-  progressiveBound (tick) {
-    this.clusters.forEach(c => {
-      c.x = CircleRender._progressiveBound(c.x, this.container.boundX(c), tick, [10, 290])
-      c.y = CircleRender._progressiveBound(c.y, this.container.boundY(c), tick, [10, 290])
+  static progressiveBound (tick, clusters, container) {
+    clusters.forEach(c => {
+      c.x = CircleRender._progressiveBound(c.x, container.boundX(c), tick, [10, 290])
+      c.y = CircleRender._progressiveBound(c.y, container.boundY(c), tick, [10, 290])
     })
   }
 

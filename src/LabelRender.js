@@ -1,5 +1,3 @@
-import * as d3 from 'd3'
-
 export class LabelRender {
   constructor (container, circleRender, builder) {
     this.container = container
@@ -25,13 +23,11 @@ export class LabelRender {
     labels.exit().remove()
   }
 
-  moveLabels () {
+  moveLabels (transition) {
     const labels = this._getLabels().data(this.clusters)
     labels.exit().remove()
-    const labelTransition = labels.transition().ease(d3.easeExpOut).duration(2000)
-      .on('end', () => this.displayLabels(labels))
+    const labelTransition = transition(labels)
     LabelRender._updateLabels(labelTransition)
-    return labelTransition
   }
 
   _getLabels () {

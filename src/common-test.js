@@ -1,33 +1,27 @@
-const jsdom = require('jsdom')
-const d3 = require('d3')
+import ScaleHelper from './ScaleHelper'
 
-export const X = [3, 12, 7]
-export const Y = [14, 12, 9]
-export const Areas = [16, 49, 25]
-export const Colors = [3, 8, 12]
+export const X = [3, 12, 7, 14, 10, 8, 2]
+export const Y = [14, 12, 9, 7, 17, 15, 11]
+export const Colors = [3, 8, 12, 15, 4, 5, 1]
+export const Areas = [16, 49, 25, 36, 16, 9, 25]
 export const Rect = { width: 957, height: 319, left: 0 }
-export const Projection = [
-  [3, 14, 3, 16],
-  [12, 12, 8, 49],
-  [7, 9, 12, 25]
-]
 
-export const document = new jsdom.JSDOM('<body><div id="bubble-chart"></div></body>', {
-  beforeParse (window) {
-    window.Element.prototype.getBoundingClientRect = function () {
-      const content = d3.select(this)
-      if (content.classed('chart')) {
-        return Rect
-      }
-      if (content.classed('info')) {
-        return { width: 32, height: 32, left: 0 }
-      }
-    }
-    window.Element.prototype.getComputedTextLength = function () {
-      return 20
+export function getProjection () {
+  return X.map((x, i) => [x, Y[i], Colors[i], Areas[i]])
+}
+
+export function FakeContainer (containerSelector, listeners) {
+  const scaleHelper = new ScaleHelper(Rect)
+
+  return {
+    getShape: () => {
+      return Rect
+    },
+    getScales: () => {
+      return scaleHelper.generate(X, Y, Areas, Colors)
     }
   }
-}).window.document
+}
 
 export function getXYBetween (n2, n1) {
   let combine = (v1, v2, r1, r2) => v2 + (v1 - v2) * r2 / (r1 + r2)
@@ -37,14 +31,15 @@ export function getXYBetween (n2, n1) {
 }
 
 export function makeOverlap () {
-  const projectionWithOverlap = Projection.slice()
+  const projectionWithOverlap = getProjection().slice()
   projectionWithOverlap[1][1] = 10
   projectionWithOverlap[2][0] = 11
   return projectionWithOverlap
 }
 
 export function makeScramble () {
-  return [Projection[0], Projection[2], Projection[1]]
+  const projection = getProjection()
+  return [projection[0], projection[2], projection[1]]
 }
 
 export function parseAttr (element, name) {

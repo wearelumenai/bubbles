@@ -18,14 +18,14 @@ test('get min and max', () => {
 test('container bounding rectangle', () => {
   const scaleHelper = getScaleHelper()
   const rect = scaleHelper.boundingRect
-  expect(rect.width).toBe(957)
-  expect(rect.height).toBe(319)
+  expect(rect.width).toBe(common.Rect.width)
+  expect(rect.height).toBe(common.Rect.height)
 })
 
 test('ensure positive area unchanged', () => {
   const scaleHelper = getScaleHelper()
   const { domain, positiveArea } = scaleHelper._ensurePositiveArea(common.Areas)
-  expect(domain).toEqual([16, 49])
+  expect(domain).toEqual([9, 49])
   expect(positiveArea).toEqual(common.Areas)
 })
 
@@ -57,8 +57,8 @@ test('radius of lower and upper clusters', () => {
   const scaleHelper = getScaleHelper()
   const radiusScale = scaleHelper._getRadiusScale(common.Areas)
   const { lowerRadius, upperRadius } = scaleHelper.constructor._getBoundRadius(common.X, radiusScale)
-  expect(lowerRadius).toBe(radiusScale(0))
-  expect(upperRadius).toBe(radiusScale(1))
+  expect(lowerRadius).toBe(radiusScale(6))
+  expect(upperRadius).toBe(radiusScale(3))
 })
 
 test('x scale', () => {

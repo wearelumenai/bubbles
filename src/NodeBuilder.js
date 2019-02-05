@@ -1,4 +1,4 @@
-import {XYContainer, XContainer} from './Container'
+import { XYContainer, XContainer } from './Container'
 
 class NodeBuilder {
   constructor (projection, container) {
@@ -93,7 +93,7 @@ class NodeBuilder {
 
 export class XYNodeBuilder extends NodeBuilder {
   constructor (projection, container) {
-    super(projection, new XYNodeBuilder.Container(container))
+    super(projection, XYNodeBuilder.Container(container))
   }
 
   updateContainer (container) {
@@ -134,14 +134,14 @@ export class XYNodeBuilder extends NodeBuilder {
     }))
   }
 
-  static get Container () {
-    return XYContainer
+  static Container (...args) {
+    return new XYContainer(...args)
   }
 }
 
 export class XNodeBuilder extends NodeBuilder {
   constructor (projection, container) {
-    super(projection, new XNodeBuilder.Container(container))
+    super(projection, new XContainer(container))
   }
 
   updateContainer (container) {
@@ -188,8 +188,8 @@ export class XNodeBuilder extends NodeBuilder {
     return []
   }
 
-  static get Container () {
-    return XContainer
+  static Container (...args) {
+    return new XContainer(...args)
   }
 }
 

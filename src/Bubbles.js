@@ -1,10 +1,11 @@
 'use strict'
 
 import * as d3 from 'd3'
-import { AxisRender, factoryWithRange } from './AxisRender.js'
+import { AxisRender } from './AxisRender.js'
 import { CircleRender } from './CircleRender.js'
 import { LabelRender } from './LabelRender.js'
 import { InfoRender, simpleInfoText } from './InfoRender.js'
+import { factoryWithRange } from './quantiles'
 
 class Bubbles {
   constructor (container) {
@@ -58,7 +59,7 @@ class ActiveBubbles extends Bubbles {
   }
 
   optimizeThenDraw () {
-    this._optimizeLayout()
+    this._collideSimulation = this._optimizeLayout(this.clusters, this.container)
     this.container.transition(() => {
       this._drawClusters()
     })
@@ -66,30 +67,31 @@ class ActiveBubbles extends Bubbles {
   }
 
   optimizeThenMove () {
-    this._optimizeLayout()
+    this._collideSimulation = this._optimizeLayout(this.clusters, this.container)
     this._moveLayout()
     return this
   }
 
-  _optimizeLayout () {
+  _optimizeLayout (clusters, container) {
     const collisionForce = ActiveBubbles._getCollisionForce()
-    const { xForce, yForce } = this._getPositionForces()
-    this._collideSimulation = d3.forceSimulation()
+    const { xForce, yForce } = ActiveBubbles._getPositionForces()
+    const collideSimulation = d3.forceSimulation()
       .alphaTarget(0.0005) // runs longer
-      .nodes(this.clusters)
+      .nodes(clusters)
       .force('collide', collisionForce)
       .force('x', xForce)
       .force('y', yForce)
       .stop()
-    this._simulate()
+    this._simulate(clusters, collideSimulation, container)
+    return collideSimulation
   }
 
-  _simulate () {
-    const n = Math.ceil(Math.log(this._collideSimulation.alphaMin()) /
-      Math.log(1 - this._collideSimulation.alphaDecay()))
+  _simulate (clusters, collideSimulation, container) {
+    const n = Math.ceil(Math.log(collideSimulation.alphaMin()) /
+      Math.log(1 - collideSimulation.alphaDecay()))
     for (let i = 0; i < n; i++) {
-      this._collideSimulation.tick()
-      this.circleRender.progressiveBound(i)
+      collideSimulation.tick()
+      CircleRender.progressiveBound(i, clusters, container)
     }
   }
 
@@ -97,9 +99,9 @@ class ActiveBubbles extends Bubbles {
     return d3.forceCollide(n => n.radius).strength(0.6)
   }
 
-  _getPositionForces () {
-    const xForce = d3.forceX((_, i) => this.clusters[i].xTarget).strength(0.01)
-    const yForce = d3.forceY((_, i) => this.clusters[i].yTarget).strength(0.01)
+  static _getPositionForces () {
+    const xForce = d3.forceX(n => n.xTarget).strength(0.01)
+    const yForce = d3.forceY(n => n.yTarget).strength(0.01)
     return { xForce, yForce }
   }
 
@@ -110,9 +112,14 @@ class ActiveBubbles extends Bubbles {
   }
 
   _moveLayout () {
-    this.circleRender.moveCircles()
-    this.labelRender.moveLabels()
+    this.circleRender.moveCircles(this._getTransition(o => this.circleRender.drawCircles(o)))
+    this.labelRender.moveLabels(this._getTransition(o => this.labelRender.displayLabels(o)))
     this.axisRender.displayAxis()
+  }
+
+  _getTransition (onTransitionEnd) {
+    return o => o.transition().ease(d3.easeExpOut).duration(2000)
+      .on('end', () => onTransitionEnd(o))
   }
 
   static create (container, builder, percentileFactory, getInfoText) {
@@ -124,8 +131,8 @@ class ActiveBubbles extends Bubbles {
   }
 }
 
-export function create (containerSelector, Builder, listeners, document) {
-  let container = new Builder.Container(containerSelector, listeners, document)
+export function create (containerSelector, Builder, listeners) {
+  let container = Builder.Container(containerSelector, listeners)
   return new Bubbles(container)
 }
 

@@ -1,9 +1,17 @@
-const { XYNodeBuilder, XNodeBuilder } = require('./NodeBuilder')
 const containers = require('./Container')
+jest.mock('./Container', () => {
+  const { FakeContainer } = require('./common-test')
+  return {
+    XYContainer: FakeContainer,
+    XContainer: FakeContainer
+  }
+})
+
+const { XYNodeBuilder, XNodeBuilder } = require('./NodeBuilder')
 const common = require('./common-test')
 
 test('unzip data', () => {
-  const builder = getNodeBuilder()
+  const builder = getXYNodeBuilder()
   expect(builder.x).toEqual(common.X)
   expect(builder.y).toEqual(common.Y)
   expect(builder.areas).toEqual(common.Areas)
@@ -11,19 +19,18 @@ test('unzip data', () => {
 })
 
 test('get nodes in builder', () => {
-  const builder = getNodeBuilder()
+  const builder = getXYNodeBuilder()
   const nodes = builder.getNodes()
   nodes.forEach(element => {
-    expect(element.x + element.radius).toBeLessThanOrEqual(957)
-    expect(element.x - element.radius).toBeGreaterThanOrEqual(0)
-    expect(element.y + element.radius).toBeLessThanOrEqual(319)
-    expect(element.y - element.radius).toBeGreaterThanOrEqual(0)
+    expect(element.xTarget + element.radius).toBeLessThanOrEqual(common.Rect.width)
+    expect(element.xTarget - element.radius).toBeGreaterThanOrEqual(0)
+    expect(element.yTarget + element.radius).toBeLessThanOrEqual(common.Rect.height)
+    expect(element.yTarget - element.radius).toBeGreaterThanOrEqual(0)
   })
 })
 
-test('no Y builder', () => {
-  const container = new containers.XYContainer('#bubble-chart', {}, common.document)
-  const builder = new XNodeBuilder(common.Projection, container)
+test('XNodeBuilder has constant initial y and fixed x', () => {
+  const builder = getXNodeBuilder()
   const nodes = builder.getNodes()
   nodes.forEach(element => {
     expect(element.fx).toBe(element.x)
@@ -33,53 +40,25 @@ test('no Y builder', () => {
   expect(builder.orderY()).toEqual([])
 })
 
-test('container update', () => {
-  const container = new containers.XYContainer('#bubble-chart', {}, common.document)
-  const xyBuilder = new XYNodeBuilder(common.Projection, container)
-  const updatedXYBuilder = xyBuilder.updateContainer(container)
-  expect(updatedXYBuilder).toBeInstanceOf(XYNodeBuilder)
-  const xBuilder = new XNodeBuilder(common.Projection, container)
-  const updatedXBuilder = xBuilder.updateContainer(container)
-  expect(updatedXBuilder).toBeInstanceOf(XNodeBuilder)
-})
-
-test('container type changes', () => {
-  const container = new containers.XYContainer('#bubble-chart', {}, common.document)
-  const xBuilder = new XNodeBuilder(common.Projection, container)
-  const xContainer = xBuilder.getContainer()
-  expect(xContainer).toBeInstanceOf(containers.XContainer)
-  const xyBuilder = new XYNodeBuilder(common.Projection, xContainer)
-  const xyContainer = xyBuilder.getContainer()
-  expect(xyContainer).toBeInstanceOf(containers.XYContainer)
-})
-
 test('x order', () => {
-  const builder = getNodeBuilder()
+  const builder = getXYNodeBuilder()
   let xOrder = builder.orderX()
-  expect(xOrder).toEqual([0, 2, 1])
+  for (let i = 1; i < xOrder.length; i++) {
+    expect(common.X[xOrder[i]]).toBeGreaterThanOrEqual(common.X[xOrder[i - 1]])
+  }
 })
 
 test('y order', () => {
-  const builder = getNodeBuilder()
+  const builder = getXYNodeBuilder()
   let yOrder = builder.orderY()
-  expect(yOrder).toEqual([2, 1, 0])
+  for (let i = 1; i < yOrder.length; i++) {
+    expect(common.Y[yOrder[i]]).toBeGreaterThanOrEqual(common.Y[yOrder[i - 1]])
+  }
 })
 
-test('XY container', () => {
-  const builder = getNodeBuilder()
-  const updatedBuilder = builder.updateContainer(builder.getContainer())
-  expect(updatedBuilder).toBeInstanceOf(XYNodeBuilder)
-})
-
-test('get container', () => {
-  const builder = getNodeBuilder()
-  const container = builder.getContainer()
-  expect(container).toBeInstanceOf(containers.XYContainer)
-})
-
-test('initial position are identical', () => {
-  const builder0 = getNodeBuilder()
-  const builder1 = getNodeBuilder()
+test('same position', () => {
+  const builder0 = getXYNodeBuilder()
+  const builder1 = getXYNodeBuilder()
   builder1.colors[0] = 'rgb(0, 0, 0)'
   expect(builder0.samePosition(builder1)).toBe(true)
   expect(builder1.samePosition(builder0)).toBe(true)
@@ -90,14 +69,55 @@ test('initial position are identical', () => {
 
 test('update colors', () => {
   const black = 'rgb(0, 0, 0)'
-  const builder0 = getNodeBuilder()
-  const builder1 = getNodeBuilder()
+  const builder0 = getXYNodeBuilder()
+  const builder1 = getXYNodeBuilder()
+  builder1.colors[0] = 0
+  builder1.projection[0][3] = 0
   builder1.getNodes()[0].color = black
   const builder2 = builder0.updateColors(builder1)
-  expect(builder2.nodes[0].color).toBe(black)
+  assertSameBuilders(builder1, builder2)
 })
 
-function getNodeBuilder () {
-  const container = new containers.XYContainer('#bubble-chart', {}, common.document)
-  return new XYNodeBuilder(common.Projection, container)
+test('update radius and colors', () => {
+  const black = 'rgb(0, 0, 0)'
+  const builder0 = getXYNodeBuilder()
+  const builder1 = getXYNodeBuilder()
+  builder1.areas[0] = 1000
+  builder1.projection[0][4] = 1000
+  builder1.getNodes()[0].radius = 400
+  builder1.colors[0] = 0
+  builder1.projection[0][3] = 0
+  builder1.getNodes()[0].color = black
+  const builder2 = builder0.updateRadiusAndColor(builder1)
+  assertSameBuilders(builder1, builder2)
+})
+
+function assertSameBuilders (builder1, builder2) {
+  const nodes1 = builder1.getNodes()
+  const nodes2 = builder2.getNodes()
+  for (let i = 0; i < builder1.projection.length; i++) {
+    expect(builder2.colors[i]).toBe(builder1.colors[i])
+    expect(builder2.areas[i]).toBe(builder1.areas[i])
+    expect(builder2.x[i]).toBe(builder1.x[i])
+    expect(builder2.y[i]).toBe(builder1.y[i])
+    expect(builder2.projection[i]).toEqual(builder1.projection[i])
+    expect(nodes2[i].color).toBe(nodes1[i].color)
+    expect(nodes2[i].radius).toBe(nodes1[i].radius)
+    expect(nodes2[i].xTarget).toBe(nodes1[i].xTarget)
+    expect(nodes2[i].yTarget).toBe(nodes1[i].yTarget)
+    expect(nodes2[i].data).toEqual(nodes1[i].data)
+  }
+}
+
+function getXNodeBuilder () {
+  return new XNodeBuilder(common.getProjection(), new containers.XContainer('#bubbles-chart', {}))
+}
+
+function getXYNodeBuilder () {
+  return new XYNodeBuilder(common.getProjection(), new containers.XYContainer('#bubbles-chart', {}))
+}
+
+module.exports = {
+  getXNodeBuilder,
+  getXYNodeBuilder
 }
