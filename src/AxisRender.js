@@ -49,7 +49,7 @@ class XRange extends Percentiles {
   getAxisTicks (values) {
     return this.xClusters.map((d, i) => {
       let label = d.label
-      let x = d.x + (i === 0 ? -1 : 1) * d.radius
+      let x = d.x
       let y = '1em'
       let text = `${Math.round(d.data[0] * 100) / 100}`
       let anchor = i === 0 ? 'start' : 'end'
@@ -73,7 +73,7 @@ class XQuartiles extends Percentiles {
   getAxisTicks (values) {
     let clusters = this.xClusters.map((d, i) => {
       let label = d.label
-      let x = d.x + (i === 0 ? -1 : i === 4 ? 1 : 0) * d.radius
+      let x = d.x
       let y = '1em'
       let text = `${Math.round(d.data[0] * 100) / 100}`
       let anchor = i === 0 ? 'start' : i === 4 ? 'end' : 'middle'
@@ -127,10 +127,10 @@ class YRange extends Percentiles {
     let clusters = this.yClusters.map((d, i) => {
       let label = d.label
       let x = '50%'
-      let y = d.y + (i === 0 ? 1 : -1) * d.radius
+      let y = d.y
       let text = `${Math.round(d.data[1] * 100) / 100}`
       let anchor = 'middle'
-      let verticalShift = i === 0 ? '-0.2em' : '0.8em'
+      let verticalShift = '0.4em'
       let fill = 'DeepSkyBlue'
       return { label, x, y, text, anchor, verticalShift, fill }
     })
@@ -152,10 +152,10 @@ class YQuartiles extends Percentiles {
     let clusters = this.yClusters.map((d, i) => {
       let label = d.label
       let x = '50%'
-      let y = d.y + (i === 0 ? 1 : i === 4 ? -1 : 0) * d.radius
+      let y = d.y
       let text = `${Math.round(d.data[1] * 100) / 100}`
       let anchor = 'middle'
-      let verticalShift = i === 0 ? '-0.2em' : i === 4 ? '0.8em' : '0.5em'
+      let verticalShift = '0.4em'
       let fill = i % 2 === 1 ? 'Blue' : (i === 2 ? 'MidnightBlue' : 'DeepSkyBlue')
       return { label, x, y, text, anchor, verticalShift, fill }
     })
@@ -238,7 +238,7 @@ export class AxisRender {
     }
     const xEndPoints = getXEndPoints(this.clusters, this.xOrder)
     if (xEndPoints.length > 0) {
-      this._displayAxisLine(this._getXAxis(), { x: xEndPoints })
+      this._displayXAxisLine(this._getXAxis(), xLabels)
     }
     this.container.selectXAxis('*').style('display', 'block')
   }
@@ -250,7 +250,7 @@ export class AxisRender {
     }
     const yEndPoints = getYEndPoints(this.clusters, this.yOrder)
     if (yEndPoints.length > 0) {
-      this._displayAxisLine(this._getYAxis(), { y: yEndPoints })
+      this._displayYAxisLine(this._getYAxis(), yLabels)
     }
     this.container.selectYAxis('*').style('display', 'block')
   }
@@ -271,8 +271,8 @@ export class AxisRender {
     return this.container.selectYAxis('.axis')
   }
 
-  _displayAxisValues (values, clusters) {
-    values.data(clusters).enter().append('text')
+  _displayAxisValues (values, ticks) {
+    values.data(ticks).enter().append('text')
       .attr('data-label', d => d.label)
       .classed('value', true)
       .attr('text-anchor', d => d.anchor)
@@ -284,19 +284,29 @@ export class AxisRender {
       .text(d => d.text)
   }
 
-  _displayAxisLine (values, endPoints) {
-    values = values.data([endPoints]).enter().append('path')
+  _displayXAxisLine (values, ticks) {
+    values = this.makePath(values, ticks)
+    values.attr('d', (ep) => {
+      return `M ${ep[0].x} ${AxisWidth} V 0 H ${ep[1].x} V 7`
+    })
+  }
+
+  _displayYAxisLine (values, ticks) {
+    values = this.makePath(values, ticks)
+    values.attr('d', (ep) => {
+      let yAxisWidth = this.container.getYAxisWidth()
+      return `M ${yAxisWidth - 7} ${ep[0].y} H ${yAxisWidth} V ${ep[1].y} H ${yAxisWidth - 7}`
+    })
+  }
+
+  makePath (values, ticks) {
+    let endPoints = [[ticks[0], ticks[ticks.length - 1]]]
+    return values.data(endPoints).enter().append('path')
       .classed('axis', true)
       .attr('fill', 'none')
       .attr('stroke', 'black')
       .attr('stroke-width', '3')
       .merge(values)
-    values.attr('d', (ep) => {
-      let yAxisWidth = this.container.getYAxisWidth()
-      return ep.hasOwnProperty('x')
-        ? `M ${ep.x[0]} ${AxisWidth} V 0 H ${ep.x[1]} V 7`
-        : `M ${yAxisWidth - 7} ${ep.y[0]} H ${yAxisWidth} V ${ep.y[1]} H ${yAxisWidth - 7}`
-    })
   }
 }
 
