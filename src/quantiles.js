@@ -49,7 +49,7 @@ class XRange extends Percentiles {
   getAxisTicks (textLengths) {
     return this.xClusters.map((d, i) => {
       let label = d.label
-      let x = d.x
+      let x = d.x + d.radius * (i === 0 ? -1 : 1)
       let y = '1em'
       let text = `${Math.round(d.data[0] * 100) / 100}`
       let anchor = i === 0 ? 'start' : 'end'
@@ -126,10 +126,10 @@ class YRange extends Percentiles {
     return this.yClusters.map((d, i) => {
       let label = d.label
       let x = '50%'
-      let y = d.y
+      let y = d.y + d.radius * (i === 0 ? 1 : -1)
       let text = `${Math.round(d.data[1] * 100) / 100}`
       let anchor = 'middle'
-      let verticalShift = '0.4em'
+      let verticalShift = i === 0 ? '-0.2em' : '0.8em'
       let fill = 'DeepSkyBlue'
       return { label, x, y, text, anchor, verticalShift, fill }
     })

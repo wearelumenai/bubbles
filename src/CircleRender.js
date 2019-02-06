@@ -1,5 +1,3 @@
-const progressiveTimeLine = [10, 290]
-
 export class CircleRender {
   constructor (container, builder) {
     this.container = container
@@ -34,7 +32,7 @@ export class CircleRender {
   moveCircles (transition) {
     const circles = this._getCircles().data(this.clusters)
     circles.exit().remove()
-    const circleTransition = transition(circles)
+    const circleTransition = transition(circles).on('end', () => this.drawCircles())
     this._updateCircles(circleTransition)
   }
 
@@ -54,14 +52,8 @@ export class CircleRender {
       })
       .attr('r', n => n.radius)
       .attr('fill', n => n.color)
-      .attr('cx', n => {
-        n.x = CircleRender._progressiveBound(n.x, this.container.boundX(n), n.tick, progressiveTimeLine)
-        return n.x
-      })
-      .attr('cy', n => {
-        n.y = CircleRender._progressiveBound(n.y, this.container.boundY(n), n.tick, progressiveTimeLine)
-        return n.y
-      })
+      .attr('cx', n => n.x)
+      .attr('cy', n => n.y)
   }
 
   _emphasis (x, y) {
@@ -73,23 +65,6 @@ export class CircleRender {
         .classed('not-selected', d => typeof sel !== 'undefined' && d.label !== sel)
       let use = this._getGroup().selectAll('use').data([1])
       use.enter().append('use').merge(use).attr('xlink:href', `#cluster${sel}`)
-    }
-  }
-
-  static progressiveBound (tick, clusters, container) {
-    clusters.forEach(c => {
-      c.x = CircleRender._progressiveBound(c.x, container.boundX(c), tick, [10, 290])
-      c.y = CircleRender._progressiveBound(c.y, container.boundY(c), tick, [10, 290])
-    })
-  }
-
-  static _progressiveBound (current, bound, tick, [t0, t1]) {
-    if (tick >= t1) {
-      return bound
-    } else if (tick > t0) {
-      return current + (bound - current) / (t1 - t0) * (tick - t0)
-    } else {
-      return current
     }
   }
 }

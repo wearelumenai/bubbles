@@ -26,7 +26,7 @@ export class LabelRender {
   moveLabels (transition) {
     const labels = this._getLabels().data(this.clusters)
     labels.exit().remove()
-    const labelTransition = transition(labels)
+    const labelTransition = transition(labels).on('end', () => this.displayLabels())
     LabelRender._updateLabels(labelTransition)
   }
 

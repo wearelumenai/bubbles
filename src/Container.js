@@ -3,8 +3,64 @@
 import * as d3 from 'd3'
 import ScaleHelper from './ScaleHelper'
 
-class Container {
+export class Bounded {
+  boundX (node) {
+    if ('radius' in node) {
+      return Math.max(node.radius + 1, Math.min(
+        this._chartBoundingRect.width - node.radius - 1, node.x))
+    }
+    if ('width' in node) {
+      return Math.max(1, Math.min(
+        this.getShape().width + this.getShape().left - node.width - 1, node.left))
+    }
+    throw new TypeError('unable to bound node')
+  }
+
+  boundY (node) {
+    if ('radius' in node) {
+      return Math.max(node.radius + 2, Math.min(
+        this.getShape().height - node.radius - 2, node.y))
+    }
+    if ('height' in node) {
+      return Math.max(2, Math.min(
+        this.getShape().height - node.height - 2, node.top))
+    }
+    throw new TypeError('unable to bound node')
+  }
+
+  progressiveBound (nodes, tick) {
+    nodes.forEach(c => {
+      c.x = this.progressiveBoundX(c, tick)
+      c.y = this.progressiveBoundY(c, tick)
+    })
+  }
+
+  progressiveBoundX (c, tick) {
+    return Container._progressiveBound(c.x, this.boundX(c), tick, [10, 290])
+  }
+
+  progressiveBoundY (c, tick) {
+    return Container._progressiveBound(c.y, this.boundY(c), tick, [10, 290])
+  }
+
+  static _progressiveBound (current, bound, tick, [t0, t1]) {
+    if (tick >= t1) {
+      return bound
+    } else if (tick > t0) {
+      return current + (bound - current) / (t1 - t0) * (tick - t0)
+    } else {
+      return current
+    }
+  }
+
+  getShape () {
+    throw new Error('not implemented')
+  }
+}
+
+class Container extends Bounded {
   constructor (container, listeners) {
+    super()
     if (typeof container === 'string') {
       this._initContainer(container, listeners)
     } else {
@@ -211,30 +267,6 @@ class Container {
 
   getInfo () {
     return this._infoElement
-  }
-
-  boundX (node) {
-    if ('radius' in node) {
-      return Math.max(node.radius + 1, Math.min(
-        this._chartBoundingRect.width - node.radius - 1, node.x))
-    }
-    if ('width' in node) {
-      return Math.max(1, Math.min(
-        this._chartBoundingRect.width + this._chartBoundingRect.left - node.width - 1, node.left))
-    }
-    throw new TypeError('unable to bound node')
-  }
-
-  boundY (node) {
-    if ('radius' in node) {
-      return Math.max(node.radius + 2, Math.min(
-        this._chartBoundingRect.height - node.radius - 2, node.y))
-    }
-    if ('height' in node) {
-      return Math.max(2, Math.min(
-        this._chartBoundingRect.height - node.height - 2, node.top))
-    }
-    throw new TypeError('unable to bound node')
   }
 
   getYAxisWidth () {

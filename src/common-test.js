@@ -12,15 +12,16 @@ export function getProjection () {
 
 export function FakeContainer (containerSelector, listeners) {
   const scaleHelper = new ScaleHelper(Rect)
+  const container = {}
 
-  return {
-    getShape: () => {
-      return Rect
-    },
-    getScales: () => {
-      return scaleHelper.generate(X, Y, Areas, Colors)
-    }
+  container.getShape = () => {
+    return Rect
   }
+  container.getScales = () => {
+    return scaleHelper.generate(X, Y, Areas, Colors)
+  }
+
+  return container
 }
 
 export function getXYBetween (n2, n1) {
