@@ -1,4 +1,8 @@
-import ScaleHelper from './ScaleHelper'
+import { ScaleHelper } from './ScaleHelper'
+
+const containers = require('./Container')
+containers.XContainer = jest.fn(FakeContainer)
+containers.XYContainer = jest.fn(FakeContainer)
 
 export const X = [3, 12, 7, 14, 10, 8, 2]
 export const Y = [14, 12, 9, 7, 17, 15, 11]
@@ -10,17 +14,17 @@ export function getProjection () {
   return X.map((x, i) => [x, Y[i], Colors[i], Areas[i]])
 }
 
+const container = new containers.Bounded()
+const scaleHelper = new ScaleHelper(Rect)
+
+container.getShape = () => {
+  return Rect
+}
+container.getScales = () => {
+  return scaleHelper.generate(X, Y, Areas, Colors)
+}
+
 export function FakeContainer (containerSelector, listeners) {
-  const scaleHelper = new ScaleHelper(Rect)
-  const container = {}
-
-  container.getShape = () => {
-    return Rect
-  }
-  container.getScales = () => {
-    return scaleHelper.generate(X, Y, Areas, Colors)
-  }
-
   return container
 }
 

@@ -1,14 +1,6 @@
-const containers = require('./Container')
-jest.mock('./Container', () => {
-  const { FakeContainer } = require('./common-test')
-  return {
-    XYContainer: FakeContainer,
-    XContainer: FakeContainer
-  }
-})
-
-const { XYNodeBuilder, XNodeBuilder } = require('./NodeBuilder')
 const common = require('./common-test')
+const { XYContainer, XContainer } = require('./Container')
+const { XYNodeBuilder, XNodeBuilder } = require('./NodeBuilder')
 
 test('unzip data', () => {
   const builder = getXYNodeBuilder()
@@ -110,11 +102,11 @@ function assertSameBuilders (builder1, builder2) {
 }
 
 function getXNodeBuilder () {
-  return new XNodeBuilder(common.getProjection(), new containers.XContainer('#bubbles-chart', {}))
+  return new XNodeBuilder(common.getProjection(), new XContainer('#bubbles-chart', {}))
 }
 
 function getXYNodeBuilder () {
-  return new XYNodeBuilder(common.getProjection(), new containers.XYContainer('#bubbles-chart', {}))
+  return new XYNodeBuilder(common.getProjection(), new XYContainer('#bubbles-chart', {}))
 }
 
 module.exports = {

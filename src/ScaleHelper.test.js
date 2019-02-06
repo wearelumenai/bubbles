@@ -1,5 +1,5 @@
 const d3 = require('d3')
-const ScaleHelper = require('./ScaleHelper.js').default
+const ScaleHelper = require('./ScaleHelper.js').ScaleHelper
 const common = require('./common-test')
 
 test('get indices of min and max', () => {

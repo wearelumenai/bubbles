@@ -1,7 +1,7 @@
 'use strict'
 
 import * as d3 from 'd3'
-import ScaleHelper from './ScaleHelper'
+import { ScaleHelper } from './ScaleHelper'
 
 export class Bounded {
   boundX (node) {

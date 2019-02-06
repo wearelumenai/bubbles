@@ -6,7 +6,7 @@ const xScaleExponent = 0.5
 const yScaleExponent = 0.5
 const colorScaleExponent = 0.05
 
-export default class ScaleHelper {
+export class ScaleHelper {
   constructor (boundingRect) {
     this.boundingRect = boundingRect
   }
