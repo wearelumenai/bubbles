@@ -1,7 +1,7 @@
 export class LabelRender {
-  constructor (container, circleRender, builder) {
+  constructor (container, builder) {
     this.container = container
-    this.circleRender = circleRender
+    this.builder = builder
     this.container.onClick((x, y) => this._emphasis(x, y))
     if (typeof builder !== 'undefined') {
       this.clusters = builder.getNodes()
@@ -38,7 +38,7 @@ export class LabelRender {
 
   _emphasis (x, y) {
     if (this.clusters) {
-      const [sel] = this.circleRender.getClustersAtPosition(x, y)
+      const [sel] = this.builder.getNodesAtPosition(x, y)
       const labels = this._getLabels()
       labels
         .classed('selected', d => typeof sel !== 'undefined' && d.label === sel)

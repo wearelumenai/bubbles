@@ -66,6 +66,7 @@ export class AxisRender {
       .classed('value', true)
       .attr('text-anchor', d => d.anchor)
       .attr('fill', d => d.fill)
+      .attr('dx', d => d.horizontalShift)
       .attr('dy', d => d.verticalShift)
       .merge(values)
       .attr('x', d => d.x)

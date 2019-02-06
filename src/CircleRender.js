@@ -1,20 +1,11 @@
 export class CircleRender {
   constructor (container, builder) {
     this.container = container
+    this.builder = builder
     this.container.onClick((x, y) => this._emphasis(x, y))
     if (typeof builder !== 'undefined') {
       this.clusters = builder.getNodes()
     }
-  }
-
-  getClustersAtPosition (x, y) {
-    let found = []
-    if (this.clusters) {
-      const clustersAtPosition = this.clusters
-        .filter(d => (Math.pow(x - d.x, 2) + Math.pow(y - d.y, 2)) < Math.pow(d.radius, 2))
-      found = clustersAtPosition.sort((a, b) => a.radius - b.radius).map(d => d.label)
-    }
-    return found
   }
 
   drawCircles () {
@@ -25,7 +16,7 @@ export class CircleRender {
       .classed('cluster', true)
       .attr('data-label', n => n.label)
       .attr('id', n => `cluster${n.label}`)
-    this._updateCircles(newCircles.merge(circles))
+    CircleRender._updateCircles(newCircles.merge(circles))
     circles.exit().remove()
   }
 
@@ -33,7 +24,7 @@ export class CircleRender {
     const circles = this._getCircles().data(this.clusters)
     circles.exit().remove()
     const circleTransition = transition(circles).on('end', () => this.drawCircles())
-    this._updateCircles(circleTransition)
+    CircleRender._updateCircles(circleTransition)
   }
 
   _getCircles () {
@@ -45,7 +36,7 @@ export class CircleRender {
     return group.enter().append('g').classed('circleRender', true).merge(group)
   }
 
-  _updateCircles (circles) {
+  static _updateCircles (circles) {
     circles
       .each(n => {
         n.tick = n.tick ? n.tick + 1 : 1
@@ -58,7 +49,7 @@ export class CircleRender {
 
   _emphasis (x, y) {
     if (this.clusters) {
-      const [sel] = this.getClustersAtPosition(x, y)
+      const [sel] = this.builder.getNodesAtPosition(x, y)
       const circles = this._getCircles()
       circles
         .classed('selected', d => typeof sel !== 'undefined' && d.label === sel)

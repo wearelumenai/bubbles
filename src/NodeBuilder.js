@@ -86,6 +86,17 @@ class NodeBuilder {
     return NodeBuilder._order(this.y)
   }
 
+  getNodesAtPosition (x, y) {
+    let found = []
+    const nodes = this.getNodes()
+    if (nodes) {
+      const nodesAtPosition = nodes
+        .filter(d => (Math.pow(x - d.x, 2) + Math.pow(y - d.y, 2)) < Math.pow(d.radius, 2))
+      found = nodesAtPosition.sort((a, b) => a.radius - b.radius).map(d => d.label)
+    }
+    return found
+  }
+
   static _order (array) {
     return array.map((_, i) => i).sort((a, b) => array[a] - array[b])
   }

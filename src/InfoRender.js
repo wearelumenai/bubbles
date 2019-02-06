@@ -1,7 +1,7 @@
 export class InfoRender {
-  constructor (container, circleRender, getInfoText, builder) {
+  constructor (container, getInfoText, builder) {
     this.container = container
-    this.circleRender = circleRender
+    this.builder = builder
     this.getInfoText = getInfoText
     this.container.onMouse((x, y) => this._displayInfo(x, y), () => this._hideInfo())
     if (typeof builder !== 'undefined') {
@@ -11,7 +11,7 @@ export class InfoRender {
 
   _displayInfo (x, y) {
     const info = this.container.getInfo()
-    let [label] = this.circleRender.getClustersAtPosition(x, y)
+    let [label] = this.builder.getNodesAtPosition(x, y)
     if (typeof label !== 'undefined') {
       const cluster = this.clusters[label]
       this._setText(cluster, info)

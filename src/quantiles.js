@@ -53,9 +53,10 @@ class XRange extends Percentiles {
       let y = '1em'
       let text = `${Math.round(d.data[0] * 100) / 100}`
       let anchor = i === 0 ? 'start' : 'end'
+      let horizontalShift = 0
       let verticalShift = AxisWidth
       let fill = 'DeepSkyBlue'
-      return { label, x, y, text, anchor, verticalShift, fill }
+      return { label, x, y, text, anchor, horizontalShift, verticalShift, fill }
     })
   }
 
@@ -73,13 +74,14 @@ class XQuartiles extends Percentiles {
   getAxisTicks (textLengths) {
     let clusters = this.xClusters.map((d, i) => {
       let label = d.label
-      let x = d.x
+      let x = d.x * (i === 0 ? 1 : (i === 4 ? -1 : 0))
       let y = '1em'
       let text = `${Math.round(d.data[0] * 100) / 100}`
       let anchor = i === 0 ? 'start' : i === 4 ? 'end' : 'middle'
+      let horizontalShift = 0
       let verticalShift = AxisWidth
       let fill = i % 2 === 1 ? 'Blue' : (i === 2 ? 'MidnightBlue' : 'DeepSkyBlue')
-      return { label, x, y, text, anchor, verticalShift, fill }
+      return { label, x, y, text, anchor, horizontalShift, verticalShift, fill }
     })
     return XQuartiles._collideXAxis(textLengths, clusters)
   }
@@ -125,13 +127,14 @@ class YRange extends Percentiles {
   getAxisTicks (textHeights) {
     return this.yClusters.map((d, i) => {
       let label = d.label
-      let x = '50%'
+      let x = '100%'
       let y = d.y + d.radius * (i === 0 ? 1 : -1)
       let text = `${Math.round(d.data[1] * 100) / 100}`
-      let anchor = 'middle'
+      let anchor = 'end'
+      let horizontalShift = -AxisWidth
       let verticalShift = i === 0 ? '-0.2em' : '0.8em'
       let fill = 'DeepSkyBlue'
-      return { label, x, y, text, anchor, verticalShift, fill }
+      return { label, x, y, text, anchor, horizontalShift, verticalShift, fill }
     })
   }
 
@@ -149,13 +152,14 @@ class YQuartiles extends Percentiles {
   getAxisTicks (textHeights) {
     let clusters = this.yClusters.map((d, i) => {
       let label = d.label
-      let x = '50%'
-      let y = d.y
+      let x = '100%'
+      let y = d.y + d.radius * (i === 0 ? 1 : (i === 4 ? -1 : 0))
       let text = `${Math.round(d.data[1] * 100) / 100}`
-      let anchor = 'middle'
+      let anchor = 'end'
+      let horizontalShift = -AxisWidth
       let verticalShift = '0.4em'
       let fill = i % 2 === 1 ? 'Blue' : (i === 2 ? 'MidnightBlue' : 'DeepSkyBlue')
-      return { label, x, y, text, anchor, verticalShift, fill }
+      return { label, x, y, text, anchor, horizontalShift, verticalShift, fill }
     })
     return YQuartiles._collideYAxis(textHeights, clusters)
   }

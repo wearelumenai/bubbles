@@ -51,7 +51,7 @@ class ActiveBubbles extends Bubbles {
   }
 
   getClustersAtPosition (x, y) {
-    return this.circleRender.getClustersAtPosition(x, y)
+    return this.builder.getNodesAtPosition(x, y)
   }
 
   stop () {
@@ -87,8 +87,8 @@ class ActiveBubbles extends Bubbles {
   static create (container, builder, percentileFactory, getInfoText) {
     const axisRender = new AxisRender(container.asAxisContainer(), percentileFactory, builder)
     const circleRender = new CircleRender(container.asChartContainer(), builder)
-    const labelRender = new LabelRender(container.asChartContainer(), circleRender, builder)
-    const infoRender = new InfoRender(container.asToolTipContainer(), circleRender, getInfoText, builder)
+    const labelRender = new LabelRender(container.asChartContainer(), builder)
+    const infoRender = new InfoRender(container.asToolTipContainer(), getInfoText, builder)
     return new ActiveBubbles(container, axisRender, circleRender, labelRender, infoRender, builder)
   }
 }
