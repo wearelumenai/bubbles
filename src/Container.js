@@ -74,8 +74,8 @@ class Container extends Bounded {
   _init (containerSelector, listeners) {
     this.containerSelector = containerSelector
     this._containerElement = Container._setupContainer(containerSelector)
-    this._infoElement = layout._makeToolTip(this._containerElement, this._getYAxisWidth())
     this._chartElement = layout._makeChart(this._containerElement, this._getYAxisWidth())
+    this._infoElement = layout._makeToolTip(this._chartElement, 0)
     this._xAxisElement = layout._makeXAxis(this._containerElement, this._getYAxisWidth())
     this._yAxisElement = layout._makeYAxis(this._containerElement, this._getYAxisWidth())
     this._containerEvents = new ContainerEvents(listeners, this._chartElement)
@@ -91,8 +91,8 @@ class Container extends Bounded {
   _copy (container) {
     this.containerSelector = container.containerSelector
     this._containerElement = container._containerElement
-    this._infoElement = layout._setupTooltip(container._infoElement, this._getYAxisWidth())
     this._chartElement = layout._setupChart(container._chartElement, this._getYAxisWidth())
+    this._infoElement = layout._setupTooltip(container._infoElement, 0)
     this._xAxisElement = layout._setupXAxis(container._xAxisElement, this._getYAxisWidth())
     this._yAxisElement = layout._setupYAxis(container._yAxisElement, this._getYAxisWidth())
     this._containerEvents = new ContainerEvents(container._containerEvents, this._chartElement)

@@ -1,12 +1,11 @@
 export function _makeToolTip (container, marginLeft) {
-  return _setupTooltip(container.append('p'), marginLeft)
+  return _setupTooltip(container.append('div'), marginLeft)
 }
 
 export function _setupTooltip (tooltip, marginLeft) {
   return tooltip
     .classed('info', true)
     .style('position', 'absolute')
-    .style('width', '1em')
     .style('padding-left', marginLeft)
     .style('margin-bottom', '2em')
     .style('z-index', '100')
