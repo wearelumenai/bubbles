@@ -101,9 +101,6 @@ export function create (containerSelector, Builder, listeners) {
 export function resize (bubbles) {
   if (typeof bubbles.builder !== 'undefined') {
     const container = bubbles.container.resize()
-    if (container.same(bubbles.container)) {
-      return bubbles
-    }
     const builder = bubbles.builder.updateContainer(container)
     return updateBubbles(bubbles, builder)
   }

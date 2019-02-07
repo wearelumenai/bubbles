@@ -1,7 +1,9 @@
 'use strict'
 
 import * as d3 from 'd3'
-import { ScaleHelper } from './ScaleHelper'
+import {ScaleHelper} from './ScaleHelper'
+import {ContainerEvents} from './ContainerEvents'
+import * as layout from './layout'
 
 export class Bounded {
   boundX (node) {
@@ -61,23 +63,22 @@ export class Bounded {
 class Container extends Bounded {
   constructor (container, listeners) {
     super()
-    if (typeof container === 'string') {
-      this._initContainer(container, listeners)
+    if (container instanceof Container) {
+      this._copy(container)
     } else {
-      this._copyContainer(container)
+      this._init(container, listeners)
     }
-    this._applyListeners(listeners)
     this._initScales()
   }
 
-  _initContainer (containerSelector, listeners) {
+  _init (containerSelector, listeners) {
     this.containerSelector = containerSelector
     this._containerElement = Container._setupContainer(containerSelector)
-    this._listeners = listeners
-    this._infoElement = Container._makeToolTip(this._containerElement, this._getYAxisWidth())
-    this._chartElement = Container._makeChart(this._containerElement, this._getYAxisWidth())
-    this._xAxisElement = Container._makeXAxis(this._containerElement, this._getYAxisWidth())
-    this._yAxisElement = Container._makeYAxis(this._containerElement, this._getYAxisWidth())
+    this._infoElement = layout._makeToolTip(this._containerElement, this._getYAxisWidth())
+    this._chartElement = layout._makeChart(this._containerElement, this._getYAxisWidth())
+    this._xAxisElement = layout._makeXAxis(this._containerElement, this._getYAxisWidth())
+    this._yAxisElement = layout._makeYAxis(this._containerElement, this._getYAxisWidth())
+    this._containerEvents = new ContainerEvents(listeners, this._chartElement)
     this._init = true
   }
 
@@ -87,14 +88,14 @@ class Container extends Bounded {
     return element.style('position', 'relative').style('margin', '0')
   }
 
-  _copyContainer (container) {
+  _copy (container) {
     this.containerSelector = container.containerSelector
     this._containerElement = container._containerElement
-    this._listeners = container._listeners
-    this._infoElement = Container._setupTooltip(container._infoElement, this._getYAxisWidth())
-    this._chartElement = Container._setupChart(container._chartElement, this._getYAxisWidth())
-    this._xAxisElement = Container._setupXAxis(container._xAxisElement, this._getYAxisWidth())
-    this._yAxisElement = Container._setupYAxis(container._yAxisElement, this._getYAxisWidth())
+    this._infoElement = layout._setupTooltip(container._infoElement, this._getYAxisWidth())
+    this._chartElement = layout._setupChart(container._chartElement, this._getYAxisWidth())
+    this._xAxisElement = layout._setupXAxis(container._xAxisElement, this._getYAxisWidth())
+    this._yAxisElement = layout._setupYAxis(container._yAxisElement, this._getYAxisWidth())
+    this._containerEvents = new ContainerEvents(container._containerEvents, this._chartElement)
     this._init = container._init
   }
 
@@ -103,99 +104,25 @@ class Container extends Bounded {
     this.scaleHelper = new ScaleHelper(this._chartBoundingRect)
   }
 
-  static _makeToolTip (container, marginLeft) {
-    return Container._setupTooltip(container.append('p'), marginLeft)
-  }
-
-  static _setupTooltip (tooltip, marginLeft) {
-    return tooltip
-      .classed('info', true)
-      .style('position', 'absolute')
-      .style('width', '1em')
-      .style('padding-left', marginLeft)
-      .style('margin-bottom', '2em')
-      .style('z-index', '100')
-      .style('pointer-events', 'none')
-  }
-
-  static _makeChart (container, left) {
-    let chart = Container._setupChart(container.append('div'), left)
-    chart.append('svg')
-      .classed('chart', true)
-      .style('position', 'absolute')
-      .style('top', '0')
-      .style('left', '0')
-      .style('height', '100%')
-      .style('width', '100%')
-    return chart
-  }
-
-  static _setupChart (chart, left) {
-    return chart
-      .classed('chart', true)
-      .style('position', 'absolute')
-      .style('top', '0')
-      .style('bottom', '2em')
-      .style('left', left)
-      .style('right', '0')
-  }
-
-  static _makeXAxis (container, left) {
-    let xAxis = Container._setupXAxis(container.append('div'), left)
-    xAxis.append('svg')
-      .classed('x-axis', true)
-      .style('position', 'absolute')
-      .style('top', '0')
-      .style('left', '0')
-      .style('height', '100%')
-      .style('width', '100%')
-    return xAxis
-  }
-
-  static _setupXAxis (xAxis, left) {
-    return xAxis
-      .classed('x-axis', true)
-      .style('position', 'absolute')
-      .style('height', '2em')
-      .style('bottom', '0')
-      .style('left', left)
-      .style('right', '0')
-  }
-
-  static _makeYAxis (container, width) {
-    let yAxis = Container._setupYAxis(container.append('div'), width)
-    yAxis.append('svg')
-      .classed('y-axis', true)
-      .style('position', 'absolute')
-      .style('top', '0')
-      .style('left', '0')
-      .style('height', '100%')
-      .style('width', '100%')
-    return yAxis
-  }
-
-  static _setupYAxis (yAxis, width) {
-    return yAxis
-      .classed('y-axis', true)
-      .style('position', 'absolute')
-      .style('top', '0')
-      .style('bottom', '2em')
-      .style('left', '0')
-      .style('width', width)
-  }
-
-  _applyListeners (listeners) {
-    if (listeners) {
-      Object.entries(listeners).forEach(
-        ([event, handler]) => {
-          this._chartElement.on(event, handler)
-        }
-      )
-    }
-  }
-
   _getYAxisWidth () {
     return '0'
+  }
+
+  getShape () {
+    return this._chartBoundingRect
+  }
+
+  getScales (x, y, areas, colors) {
+    return this.scaleHelper.generate(x, y, areas, colors)
+  }
+
+  onClick (action) {
+    this._containerEvents.on('click', action)
+  }
+
+  onMouse (onMove, onOut) {
+    this._containerEvents.on('mousemove', onMove)
+    this._containerEvents.on('mouseout', onOut)
   }
 
   transition (fn) {
@@ -209,75 +136,17 @@ class Container extends Bounded {
     }
   }
 
-  getShape () {
-    return this._chartBoundingRect
-  }
-
-  onClick (action) {
-    if (typeof this._clickActions === 'undefined' && this._listeners.hasOwnProperty('click')) {
-      this._clickActions = [this._listeners['click'], action]
-    } else if (typeof this._clickActions === 'undefined') {
-      this._clickActions = [action]
-    } else {
-      this._clickActions.push(action)
-    }
-    this._applyListeners({
-      'click': () => {
-        const [x, y] = this.getMousePosition()
-        this._doClick(x, y)
-      }
-    })
-  }
-
-  _doClick (x, y) {
-    for (let i = 0; i < this._clickActions.length; i++) {
-      this._clickActions[i](x, y)
-    }
-  }
-
-  onMouse (onMove, onOut) {
-    this._applyListeners({
-      'mousemove': () => {
-        const [x, y] = this.getMousePosition()
-        onMove(x, y)
-      },
-      'mouseout': () => onOut()
-    })
-  }
-
-  getMousePosition () {
-    return d3.mouse(this._chartElement.node())
-  }
-
-  getScales (x, y, areas, colors) {
-    return this.scaleHelper.generate(x, y, areas, colors)
-  }
-
-  selectChart (selector) {
-    return this._containerElement.select('svg').selectAll(selector)
-  }
-
-  selectXAxis (selector) {
-    return this._xAxisElement.select('.x-axis').selectAll(selector)
-  }
-
-  selectYAxis (selector) {
-    return this._yAxisElement.select('.y-axis').selectAll(selector)
-  }
-
-  getInfo () {
-    return this._infoElement
-  }
-
-  getYAxisWidth () {
-    const yRect = this._yAxisElement.node().getBoundingClientRect()
-    return typeof yRect !== 'undefined' ? yRect.width : 0
+  sameBoundingRect (container) {
+    return container._chartBoundingRect.x === this._chartBoundingRect.x &&
+      container._chartBoundingRect.y === this._chartBoundingRect.y &&
+      container._chartBoundingRect.width === this._chartBoundingRect.width &&
+      container._chartBoundingRect.height === this._chartBoundingRect.height
   }
 
   asChartContainer () {
     return {
+      selectChart: (selector) => this._containerElement.select('svg').selectAll(selector),
       onClick: (action) => this.onClick(action),
-      selectChart: (selector) => this.selectChart(selector),
       boundX: (selector) => this.boundX(selector),
       boundY: (selector) => this.boundY(selector)
     }
@@ -285,36 +154,24 @@ class Container extends Bounded {
 
   asToolTipContainer () {
     return {
+      getInfo: () => this._infoElement,
       onMouse: (onMove, onOut) => this.onMouse(onMove, onOut),
       boundX: (selector) => this.boundX(selector),
-      boundY: (selector) => this.boundY(selector),
-      getInfo: () => this.getInfo()
+      boundY: (selector) => this.boundY(selector)
     }
   }
 
   asAxisContainer () {
     return {
-      selectXAxis: (selector) => this.selectXAxis(selector),
-      selectYAxis: (selector) => this.selectYAxis(selector),
-      getYAxisWidth: () => this.getYAxisWidth()
+      selectXAxis: (selector) => this._xAxisElement.select('.x-axis').selectAll(selector),
+      selectYAxis: (selector) => this._yAxisElement.select('.y-axis').selectAll(selector)
     }
-  }
-
-  sameBoundingRect (container) {
-    return container._chartBoundingRect.x === this._chartBoundingRect.x &&
-      container._chartBoundingRect.y === this._chartBoundingRect.y &&
-      container._chartBoundingRect.width === this._chartBoundingRect.width &&
-      container._chartBoundingRect.height === this._chartBoundingRect.height
   }
 }
 
 export class XYContainer extends Container {
-  reset () {
-    return new XYContainer(this.containerSelector, this._listeners)
-  }
-
   resize () {
-    return new XYContainer(this, {}, undefined)
+    return new XYContainer(this, {})
   }
 
   same (container) {
@@ -327,12 +184,8 @@ export class XYContainer extends Container {
 }
 
 export class XContainer extends Container {
-  reset () {
-    return new XContainer(this.containerSelector, this._listeners)
-  }
-
   resize () {
-    return new XContainer(this, {}, undefined)
+    return new XContainer(this, {})
   }
 
   same (container) {
