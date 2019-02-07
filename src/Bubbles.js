@@ -1,11 +1,58 @@
 'use strict'
 
-import {AxisRender} from './AxisRender.js'
-import {CircleRender} from './CircleRender.js'
-import {LabelRender} from './LabelRender.js'
-import {InfoRender, simpleInfoText} from './InfoRender.js'
-import {factoryWithRange} from './quantiles'
-import {getTransition, optimizeLayout} from './optimize'
+import { AxisRender } from './AxisRender.js'
+import { CircleRender } from './CircleRender.js'
+import { LabelRender } from './LabelRender.js'
+import { InfoRender, simpleInfoText } from './InfoRender.js'
+import { factoryWithRange } from './quantiles'
+import { getTransition, optimizeLayout } from './optimize'
+
+export function create (containerSelector, Builder, listeners) {
+  let container = Builder.Container(containerSelector, listeners)
+  return new Bubbles(container)
+}
+
+export function resize (bubbles) {
+  if (typeof bubbles.builder !== 'undefined') {
+    const container = bubbles.container.resize()
+    const builder = bubbles.builder.updateContainer(container)
+    return updateBubbles(bubbles, builder)
+  }
+}
+
+export function update (bubbles, Builder, data) {
+  const builder = new Builder(data, bubbles.getContainer())
+  return updateBubbles(bubbles, builder)
+}
+
+function updateBubbles (bubbles, builder) {
+  const container = builder.getContainer()
+  const updatedBuilder = tryUpdateBuilder(bubbles, builder)
+  const updated = bubbles.update(container, updatedBuilder)
+  if (bubbles.isActive()) {
+    bubbles.stop()
+    return updated.optimizeThenMove()
+  } else {
+    return updated.optimizeThenDraw()
+  }
+}
+
+function tryUpdateBuilder (bubbles, builder) {
+  let currentBuilder = bubbles.builder
+  let updatedBuilder = builder
+  if (builder.samePosition(currentBuilder)) {
+    if (builder.getContainer().same(currentBuilder.getContainer())) {
+      if (builder.sameRadius(currentBuilder)) {
+        updatedBuilder = currentBuilder.updateColors(builder)
+      } else {
+        updatedBuilder = currentBuilder.updateRadiusAndColor(builder)
+      }
+    } else {
+      updatedBuilder = currentBuilder.updateScales(builder)
+    }
+  }
+  return updatedBuilder
+}
 
 class Bubbles {
   constructor (container) {
@@ -91,51 +138,4 @@ class ActiveBubbles extends Bubbles {
     const infoRender = new InfoRender(container.asToolTipContainer(), getInfoText, builder)
     return new ActiveBubbles(container, axisRender, circleRender, labelRender, infoRender, builder)
   }
-}
-
-export function create (containerSelector, Builder, listeners) {
-  let container = Builder.Container(containerSelector, listeners)
-  return new Bubbles(container)
-}
-
-export function resize (bubbles) {
-  if (typeof bubbles.builder !== 'undefined') {
-    const container = bubbles.container.resize()
-    const builder = bubbles.builder.updateContainer(container)
-    return updateBubbles(bubbles, builder)
-  }
-}
-
-export function update (bubbles, Builder, data) {
-  const builder = new Builder(data, bubbles.getContainer())
-  return updateBubbles(bubbles, builder)
-}
-
-function updateBubbles (bubbles, builder) {
-  const container = builder.getContainer()
-  const updatedBuilder = tryUpdateBuilder(bubbles, builder)
-  const updated = bubbles.update(container, updatedBuilder)
-  if (bubbles.isActive()) {
-    bubbles.stop()
-    return updated.optimizeThenMove()
-  } else {
-    return updated.optimizeThenDraw()
-  }
-}
-
-function tryUpdateBuilder (bubbles, builder) {
-  let currentBuilder = bubbles.builder
-  let updatedBuilder = builder
-  if (builder.samePosition(currentBuilder)) {
-    if (builder.getContainer().same(currentBuilder.getContainer())) {
-      if (builder.sameRadius(currentBuilder)) {
-        updatedBuilder = currentBuilder.updateColors(builder)
-      } else {
-        updatedBuilder = currentBuilder.updateRadiusAndColor(builder)
-      }
-    } else {
-      updatedBuilder = currentBuilder.updateScales(builder)
-    }
-  }
-  return updatedBuilder
 }

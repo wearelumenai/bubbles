@@ -1,27 +1,16 @@
 import { AxisWidth, getXEndPoints, getYEndPoints } from './quantiles'
 
-function displayAxisValues (values, ticks) {
-  values.data(ticks).enter().append('text')
-    .attr('data-label', d => d.label)
-    .classed('value', true)
-    .attr('text-anchor', d => d.anchor)
-    .attr('fill', d => d.fill)
-    .attr('dx', d => d.horizontalShift)
-    .attr('dy', d => d.verticalShift)
-    .merge(values)
-    .attr('x', d => d.x)
-    .attr('y', d => d.y)
-    .text(d => d.text)
-}
+export class AxisRender {
+  constructor (container, percentileFactory, builder) {
+    this.percentileFactory = percentileFactory
+    this.xAxisRender = new XAxisRender(container, percentileFactory, builder)
+    this.yAxisRender = new YAxisRender(container, percentileFactory, builder)
+  }
 
-function makePath (values, ticks) {
-  let endPoints = [[ticks[0], ticks[ticks.length - 1]]]
-  return values.data(endPoints).enter().append('path')
-    .classed('axis', true)
-    .attr('fill', 'none')
-    .attr('stroke', 'black')
-    .attr('stroke-width', '3')
-    .merge(values)
+  displayAxis () {
+    this.xAxisRender.displayXAxis()
+    this.yAxisRender.displayYAxis()
+  }
 }
 
 class XAxisRender {
@@ -39,7 +28,7 @@ class XAxisRender {
     const textLengths = this.getXLabels().nodes().map(e => e.getComputedTextLength())
     const xLabels = this._xPercentiles.getAxisTicks(textLengths)
     if (xLabels.length > 0) {
-      displayAxisValues(this.getXLabels(), xLabels)
+      displayAxisLabels(this.getXLabels(), xLabels)
     }
     const xEndPoints = getXEndPoints(this._clusters, this._xOrder)
     if (xEndPoints.length > 0) {
@@ -57,7 +46,7 @@ class XAxisRender {
   }
 
   static displayXAxisLine (values, ticks) {
-    values = makePath(values, ticks)
+    values = makeAxisPath(values, ticks)
     values.attr('d', (ep) => {
       return `M ${ep[0].x} ${AxisWidth} V 0 H ${ep[1].x} V 7`
     })
@@ -79,7 +68,7 @@ export class YAxisRender {
     const textHeights = this.getYLabels().nodes().map(e => parseInt(window.getComputedStyle(e).fontSize, 10))
     const yLabels = this._yPercentiles.getAxisTicks(textHeights)
     if (yLabels.length > 0) {
-      displayAxisValues(this.getYLabels(), yLabels)
+      displayAxisLabels(this.getYLabels(), yLabels)
     }
     const yEndPoints = getYEndPoints(this._clusters, this._yOrder)
     if (yEndPoints.length > 0) {
@@ -97,22 +86,33 @@ export class YAxisRender {
   }
 
   static displayYAxisLine (values, ticks) {
-    values = makePath(values, ticks).style('transform', 'translate(100%)')
+    values = makeAxisPath(values, ticks).style('transform', 'translate(100%)')
     values.attr('d', (ep) => {
       return `M ${-AxisWidth} ${ep[0].y} H 0 V ${ep[1].y} H ${-AxisWidth}`
     })
   }
 }
 
-export class AxisRender {
-  constructor (container, percentileFactory, builder) {
-    this.percentileFactory = percentileFactory
-    this.xAxisRender = new XAxisRender(container, percentileFactory, builder)
-    this.yAxisRender = new YAxisRender(container, percentileFactory, builder)
-  }
+function displayAxisLabels (values, ticks) {
+  values.data(ticks).enter().append('text')
+    .attr('data-label', d => d.label)
+    .classed('value', true)
+    .attr('text-anchor', d => d.anchor)
+    .attr('fill', d => d.fill)
+    .attr('dx', d => d.horizontalShift)
+    .attr('dy', d => d.verticalShift)
+    .merge(values)
+    .attr('x', d => d.x)
+    .attr('y', d => d.y)
+    .text(d => d.text)
+}
 
-  displayAxis () {
-    this.xAxisRender.displayXAxis()
-    this.yAxisRender.displayYAxis()
-  }
+function makeAxisPath (values, ticks) {
+  let endPoints = [[ticks[0], ticks[ticks.length - 1]]]
+  return values.data(endPoints).enter().append('path')
+    .classed('axis', true)
+    .attr('fill', 'none')
+    .attr('stroke', 'black')
+    .attr('stroke-width', '3')
+    .merge(values)
 }

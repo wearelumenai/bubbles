@@ -1,5 +1,13 @@
 export const AxisWidth = 7
 
+export function factoryWithQuartiles () {
+  return new PercentileFactory([XQuartiles, Percentiles], [YQuartiles, Percentiles])
+}
+
+export function factoryWithRange () {
+  return new PercentileFactory([XRange, Percentiles], [YRange, Percentiles])
+}
+
 export function getXEndPoints (clusters, orderedIndexes) {
   return getRange(clusters, orderedIndexes).map((d) => {
     return d.x
@@ -12,22 +20,27 @@ export function getYEndPoints (clusters, orderedIndexes) {
   })
 }
 
-function getRange (clusters, orderedIndex) {
-  if (orderedIndex.length === 0) {
-    return []
+class PercentileFactory {
+  constructor (xPercentiles, yPercentiles) {
+    this.xPercentiles = xPercentiles
+    this.yPercentiles = yPercentiles
   }
-  const last = orderedIndex.length - 1
-  const range = [0, last]
-  return range.map(i => clusters[orderedIndex[i]])
-}
 
-function getQuartiles (clusters, orderedIndex) {
-  if (orderedIndex.length === 0) {
-    return []
+  _getXPercentile (clusters, xOrder) {
+    for (var i = 0; i < this.xPercentiles.length; i++) {
+      if (this.xPercentiles[i].canHandle(xOrder.length)) {
+        return new (this.xPercentiles[i])(clusters, xOrder)
+      }
+    }
   }
-  const last = orderedIndex.length - 1
-  const quartiles = [0, Math.round(last / 4), Math.round(last / 2), Math.round(3 * last / 4), last]
-  return quartiles.map(i => clusters[orderedIndex[i]])
+
+  _getYPercentile (clusters, yOrder) {
+    for (var i = 0; i < this.yPercentiles.length; i++) {
+      if (this.yPercentiles[i].canHandle(yOrder.length)) {
+        return new (this.yPercentiles[i])(clusters, yOrder)
+      }
+    }
+  }
 }
 
 class Percentiles {
@@ -194,33 +207,20 @@ class YQuartiles extends Percentiles {
   }
 }
 
-class PercentileFactory {
-  constructor (xPercentiles, yPercentiles) {
-    this.xPercentiles = xPercentiles
-    this.yPercentiles = yPercentiles
+function getRange (clusters, orderedIndex) {
+  if (orderedIndex.length === 0) {
+    return []
   }
-
-  _getXPercentile (clusters, xOrder) {
-    for (var i = 0; i < this.xPercentiles.length; i++) {
-      if (this.xPercentiles[i].canHandle(xOrder.length)) {
-        return new (this.xPercentiles[i])(clusters, xOrder)
-      }
-    }
-  }
-
-  _getYPercentile (clusters, yOrder) {
-    for (var i = 0; i < this.yPercentiles.length; i++) {
-      if (this.yPercentiles[i].canHandle(yOrder.length)) {
-        return new (this.yPercentiles[i])(clusters, yOrder)
-      }
-    }
-  }
+  const last = orderedIndex.length - 1
+  const range = [0, last]
+  return range.map(i => clusters[orderedIndex[i]])
 }
 
-export function factoryWithQuartiles () {
-  return new PercentileFactory([XQuartiles, Percentiles], [YQuartiles, Percentiles])
-}
-
-export function factoryWithRange () {
-  return new PercentileFactory([XRange, Percentiles], [YRange, Percentiles])
+function getQuartiles (clusters, orderedIndex) {
+  if (orderedIndex.length === 0) {
+    return []
+  }
+  const last = orderedIndex.length - 1
+  const quartiles = [0, Math.round(last / 4), Math.round(last / 2), Math.round(3 * last / 4), last]
+  return quartiles.map(i => clusters[orderedIndex[i]])
 }

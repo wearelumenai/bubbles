@@ -1,8 +1,8 @@
 'use strict'
 
 import * as d3 from 'd3'
-import {ScaleHelper} from './ScaleHelper'
-import {ContainerEvents} from './ContainerEvents'
+import { ScaleHelper } from './ScaleHelper'
+import { ContainerEvents } from './ContainerEvents'
 import * as layout from './layout'
 
 export class Bounded {
