@@ -31,9 +31,14 @@ export class LabelRender {
   }
 
   _getLabels () {
+    let group = this._getGroup()
+    return group.selectAll('.label')
+  }
+
+  _getGroup () {
     let group = this.container.selectChart('.labelRender').data([1])
     group = group.enter().append('g').classed('labelRender', true).merge(group)
-    return group.selectAll('.label')
+    return group
   }
 
   _emphasis (x, y) {

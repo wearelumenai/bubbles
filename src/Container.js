@@ -8,24 +8,24 @@ import * as layout from './layout'
 export class Bounded {
   boundX (node) {
     if ('radius' in node) {
-      return Math.max(node.radius + 1, Math.min(
-        this._chartBoundingRect.width - node.radius - 1, node.x))
+      return Math.max(node.radius, Math.min(
+        this.getShape().width - node.radius, node.x))
     }
     if ('width' in node) {
-      return Math.max(1, Math.min(
-        this.getShape().width + this.getShape().left - node.width - 1, node.left))
+      return Math.max(0, Math.min(
+        this.getShape().width + this.getShape().left - node.width, node.left))
     }
     throw new TypeError('unable to bound node')
   }
 
   boundY (node) {
     if ('radius' in node) {
-      return Math.max(node.radius + 2, Math.min(
-        this.getShape().height - node.radius - 2, node.y))
+      return Math.max(node.radius, Math.min(
+        this.getShape().height - node.radius, node.y))
     }
     if ('height' in node) {
-      return Math.max(2, Math.min(
-        this.getShape().height - node.height - 2, node.top))
+      return Math.max(0, Math.min(
+        this.getShape().height - node.height, node.top))
     }
     throw new TypeError('unable to bound node')
   }
@@ -56,7 +56,6 @@ export class Bounded {
   }
 
   getShape () {
-    throw new Error('not implemented')
   }
 }
 

@@ -14,10 +14,10 @@ test('get nodes in builder', () => {
   const builder = getXYNodeBuilder()
   const nodes = builder.getNodes()
   nodes.forEach(element => {
-    expect(element.xTarget + element.radius).toBeLessThanOrEqual(common.Rect.width)
-    expect(element.xTarget - element.radius).toBeGreaterThanOrEqual(0)
-    expect(element.yTarget + element.radius).toBeLessThanOrEqual(common.Rect.height)
-    expect(element.yTarget - element.radius).toBeGreaterThanOrEqual(0)
+    expect(Math.floor(element.xTarget + element.radius)).toBeLessThanOrEqual(common.Rect.width)
+    expect(Math.ceil(element.xTarget - element.radius)).toBeGreaterThanOrEqual(0)
+    expect(Math.floor(element.yTarget + element.radius)).toBeLessThanOrEqual(common.Rect.height)
+    expect(Math.ceil(element.yTarget - element.radius)).toBeGreaterThanOrEqual(0)
   })
 })
 
@@ -48,23 +48,52 @@ test('y order', () => {
   }
 })
 
-test('same position', () => {
+test('X and XY do not have same position', () => {
+  const builder0 = getXNodeBuilder()
+  const builder1 = getXYNodeBuilder()
+  expect(builder0.samePosition(builder1)).toBeFalsy()
+  expect(builder1.samePosition(builder0)).toBeFalsy()
+})
+
+test('X same position', () => {
+  const builder0 = getXNodeBuilder()
+  const builder1 = getXNodeBuilder()
+  builder1.colors[0] = 'rgb(0, 0, 0)'
+  builder1.y[0] = 1
+  expect(builder0.samePosition(builder1)).toBeTruthy()
+  expect(builder1.samePosition(builder0)).toBeTruthy()
+  builder1.x[0] = 333
+  expect(builder0.samePosition(builder1)).toBeFalsy()
+  expect(builder1.samePosition(builder0)).toBeFalsy()
+})
+
+test('XY same position', () => {
   const builder0 = getXYNodeBuilder()
   const builder1 = getXYNodeBuilder()
   builder1.colors[0] = 'rgb(0, 0, 0)'
-  expect(builder0.samePosition(builder1)).toBe(true)
-  expect(builder1.samePosition(builder0)).toBe(true)
-  builder1.x[0] = 333
-  expect(builder0.samePosition(builder1)).toBe(false)
-  expect(builder1.samePosition(builder0)).toBe(false)
+  expect(builder0.samePosition(builder1)).toBeTruthy()
+  expect(builder1.samePosition(builder0)).toBeTruthy()
+  builder1.y[0] = 333
+  expect(builder0.samePosition(builder1)).toBeFalsy()
+  expect(builder1.samePosition(builder0)).toBeFalsy()
+})
+
+test('same radius', () => {
+  const builder0 = getXYNodeBuilder()
+  const builder1 = getXYNodeBuilder()
+  expect(builder0.sameRadius(builder1)).toBeTruthy()
+  expect(builder1.sameRadius(builder0)).toBeTruthy()
+  builder1.areas[0] = 333
+  expect(builder0.sameRadius(builder1)).toBeFalsy()
+  expect(builder1.sameRadius(builder0)).toBeFalsy()
 })
 
 test('update colors', () => {
   const black = 'rgb(0, 0, 0)'
-  const builder0 = getXYNodeBuilder()
-  const builder1 = getXYNodeBuilder()
+  const builder0 = getXNodeBuilder()
+  const builder1 = getXNodeBuilder()
   builder1.colors[0] = 0
-  builder1.projection[0][3] = 0
+  builder1.projection[0][2] = 0
   builder1.getNodes()[0].color = black
   const builder2 = builder0.updateColors(builder1)
   assertSameBuilders(builder1, builder2)
@@ -75,28 +104,68 @@ test('update radius and colors', () => {
   const builder0 = getXYNodeBuilder()
   const builder1 = getXYNodeBuilder()
   builder1.areas[0] = 1000
-  builder1.projection[0][4] = 1000
+  builder1.projection[0][3] = 1000
   builder1.getNodes()[0].radius = 400
   builder1.colors[0] = 0
-  builder1.projection[0][3] = 0
+  builder1.projection[0][2] = 0
   builder1.getNodes()[0].color = black
   const builder2 = builder0.updateRadiusAndColor(builder1)
   assertSameBuilders(builder1, builder2)
 })
 
+test('update scales', () => {
+  const builder0 = getXYNodeBuilder()
+  const builder1 = getXYNodeBuilder()
+  builder1.container.getShape = () => {
+    return { width: 200, height: 100 }
+  }
+  const builder2 = builder0.updateScales(builder1)
+  const nodes0 = builder0.getNodes()
+  const nodes1 = builder1.getNodes()
+  const nodes2 = builder2.getNodes()
+  for (let i = 0; i < builder0.projection.length; i++) {
+    expect(nodes2[i].x).toBeCloseTo(nodes0[i].x / 2, 6)
+    expect(nodes2[i].y).toBeCloseTo(nodes0[i].y / 3, 6)
+    expect(nodes2[i].xTarget).toEqual(nodes1[i].xTarget)
+    expect(nodes2[i].yTarget).toEqual(nodes1[i].yTarget)
+  }
+})
+
+test('get node at position', () => {
+  const builder = getXYNodeBuilder()
+  const nodes = builder.getNodes()
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = 0; j < 10; j++) {
+      for (let k = 0; j < 10; j++) {
+        let { x, y, radius } = nodes[i]
+        expect(builder.getNodesAtPosition(x - j * radius / 10, y - k * radius / 10)).toContain(i)
+        expect(builder.getNodesAtPosition(x + j * radius / 10, y - k * radius / 10)).toContain(i)
+        expect(builder.getNodesAtPosition(x - j * radius / 10, y + k * radius / 10)).toContain(i)
+        expect(builder.getNodesAtPosition(x + j * radius / 10, y + k * radius / 10)).toContain(i)
+      }
+    }
+  }
+
+  expect(builder.getNodesAtPosition(5, 5)).toEqual([])
+  expect(builder.getNodesAtPosition(common.Rect.width - 5, 5)).toEqual([])
+  expect(builder.getNodesAtPosition(common.Rect.height - 5)).toEqual([])
+  expect(builder.getNodesAtPosition(common.Rect.width - 5, common.Rect.height - 5)).toEqual([])
+})
+
 function assertSameBuilders (builder1, builder2) {
+  expect(Object.getPrototypeOf(builder1)).toBe(Object.getPrototypeOf(builder2))
   const nodes1 = builder1.getNodes()
   const nodes2 = builder2.getNodes()
   for (let i = 0; i < builder1.projection.length; i++) {
-    expect(builder2.colors[i]).toBe(builder1.colors[i])
-    expect(builder2.areas[i]).toBe(builder1.areas[i])
-    expect(builder2.x[i]).toBe(builder1.x[i])
-    expect(builder2.y[i]).toBe(builder1.y[i])
+    expect(builder2.colors[i]).toEqual(builder1.colors[i])
+    expect(builder2.areas[i]).toEqual(builder1.areas[i])
+    expect(builder2.x[i]).toEqual(builder1.x[i])
+    expect(builder2.y[i]).toEqual(builder1.y[i])
     expect(builder2.projection[i]).toEqual(builder1.projection[i])
-    expect(nodes2[i].color).toBe(nodes1[i].color)
-    expect(nodes2[i].radius).toBe(nodes1[i].radius)
-    expect(nodes2[i].xTarget).toBe(nodes1[i].xTarget)
-    expect(nodes2[i].yTarget).toBe(nodes1[i].yTarget)
+    expect(nodes2[i].color).toEqual(nodes1[i].color)
+    expect(nodes2[i].radius).toEqual(nodes1[i].radius)
+    expect(nodes2[i].xTarget).toEqual(nodes1[i].xTarget)
+    expect(nodes2[i].yTarget).toEqual(nodes1[i].yTarget)
     expect(nodes2[i].data).toEqual(nodes1[i].data)
   }
 }

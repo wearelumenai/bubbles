@@ -1,7 +1,7 @@
-import { XYContainer, XContainer } from './Container'
+import { XContainer, XYContainer } from './Container'
 
 class NodeBuilder {
-  constructor (projection, container) {
+  constructor (projection, container, nodes) {
     this.container = container
     this.projection = projection
     const unzipped = this.projection[0].map((col, i) => this.projection.map(row => row[i]))
@@ -9,6 +9,7 @@ class NodeBuilder {
     this.y = unzipped[1]
     this.colors = unzipped[2]
     this.areas = unzipped[3]
+    this.nodes = nodes
   }
 
   getContainer () {
@@ -18,33 +19,22 @@ class NodeBuilder {
   updateRadiusAndColor (builder) {
     const otherNodes = builder.getNodes()
     const thisNodes = this.getNodes()
-    for (let i = 0; i < thisNodes.length; i++) {
-      thisNodes[i].radius = otherNodes[i].radius
-      thisNodes[i].color = otherNodes[i].color
-      thisNodes[i].textColor = otherNodes[i].textColor
-      thisNodes[i].xTarget = otherNodes[i].x
-      thisNodes[i].yTarget = otherNodes[i].y
-      thisNodes[i].data = otherNodes[i].data
-    }
-    this.colors = builder.colors
-    this.areas = builder.areas
-    this.projection = builder.projection
-    return this
+    const updatedNodes = thisNodes.map((n, i) => {
+      const colorUpdate = _colorUpdate(otherNodes[i])
+      const radiusUpdate = { radius: otherNodes[i].radius }
+      return Object.assign({}, n, colorUpdate, radiusUpdate)
+    })
+    return builder._updateNodes(updatedNodes)
   }
 
   updateColors (builder) {
     const otherNodes = builder.getNodes()
     const thisNodes = this.getNodes()
-    for (let i = 0; i < thisNodes.length; i++) {
-      thisNodes[i].color = otherNodes[i].color
-      thisNodes[i].textColor = otherNodes[i].textColor
-      thisNodes[i].xTarget = thisNodes[i].x
-      thisNodes[i].yTarget = thisNodes[i].y
-      thisNodes[i].data = otherNodes[i].data
-    }
-    this.colors = builder.colors
-    this.projection = builder.projection
-    return this
+    const updatedNodes = thisNodes.map((n, i) => {
+      const colorUpdate = _colorUpdate(otherNodes[i])
+      return Object.assign({}, n, colorUpdate)
+    })
+    return builder._updateNodes(updatedNodes)
   }
 
   updateScales (builder) {
@@ -52,11 +42,19 @@ class NodeBuilder {
     const thisNodes = this.getNodes()
     const heightRatio = builder.container.getShape().height / this.container.getShape().height
     const widthRatio = builder.container.getShape().width / this.container.getShape().width
-    for (let i = 0; i < thisNodes.length; i++) {
-      otherNodes[i].x = thisNodes[i].x * widthRatio
-      otherNodes[i].y = thisNodes[i].y * heightRatio
-    }
-    return builder
+    const updatedNodes = otherNodes.map((n, i) => {
+      const updated = {
+        x: thisNodes[i].x * widthRatio,
+        y: thisNodes[i].y * heightRatio
+      }
+      return Object.assign({}, n, updated)
+    })
+    return builder._updateNodes(updatedNodes)
+  }
+
+  _updateNodes (updatedNodes) {
+    const clone = Object.create(Object.getPrototypeOf(this))
+    return Object.assign(clone, this, { nodes: updatedNodes })
   }
 
   getNodes () {
@@ -67,10 +65,10 @@ class NodeBuilder {
   }
 
   sameRadius (builder) {
-    if (builder.x.length !== this.x.length) {
+    if (builder.areas.length !== this.areas.length) {
       return false
     }
-    for (let i = 0; i < this.x.length; i++) {
+    for (let i = 0; i < this.areas.length; i++) {
       if (builder.areas[i] !== this.areas[i]) {
         return false
       }
@@ -97,14 +95,17 @@ class NodeBuilder {
     return found
   }
 
+  _makeNodes () {
+  }
+
   static _order (array) {
     return array.map((_, i) => i).sort((a, b) => array[a] - array[b])
   }
 }
 
 export class XYNodeBuilder extends NodeBuilder {
-  constructor (projection, container) {
-    super(projection, XYNodeBuilder.Container(container))
+  constructor (projection, container, nodes) {
+    super(projection, XYNodeBuilder.Container(container), nodes)
   }
 
   updateContainer (container) {
@@ -126,23 +127,7 @@ export class XYNodeBuilder extends NodeBuilder {
 
   _makeNodes () {
     const scales = this.container.getScales(this.x, this.y, this.areas, this.colors)
-    return this.projection.map((d, i) => ({
-      label: i,
-      x: scales.xScale(i),
-      xTarget: scales.xScale(i),
-      y: scales.yScale(i),
-      yTarget: scales.yScale(i),
-      radius: scales.radiusScale(i),
-      color: scales.colorScale(i),
-      textColor: scales.textColorScale(i),
-      data: d,
-      info: function () {
-        return `x=${_round2(this.data[0])}\ny=${_round2(this.data[1])}`
-      },
-      infoWithArea: function () {
-        return `${this.info()} a=${this.data[3]}`
-      }
-    }))
+    return this.projection.map((d, i) => (makeXYNode(d, i, scales)))
   }
 
   static Container (...args) {
@@ -151,8 +136,8 @@ export class XYNodeBuilder extends NodeBuilder {
 }
 
 export class XNodeBuilder extends NodeBuilder {
-  constructor (projection, container) {
-    super(projection, new XContainer(container))
+  constructor (projection, container, nodes) {
+    super(projection, new XContainer(container), nodes)
   }
 
   updateContainer (container) {
@@ -174,25 +159,7 @@ export class XNodeBuilder extends NodeBuilder {
 
   _makeNodes () {
     const scales = this.container.getScales(this.x, this.y, this.areas, this.colors)
-    return this.projection.map((d, i) => ({
-      label: i,
-      x: scales.xScale(i),
-      xTarget: scales.xScale(i),
-      fx: scales.xScale(i),
-      y: this.container.getShape().height / 2,
-      yTarget: this.container.getShape().height / 2,
-      vy: 1,
-      radius: scales.radiusScale(i),
-      color: scales.colorScale(i),
-      textColor: scales.textColorScale(i),
-      data: d,
-      info: function () {
-        return `${_round2(this.data[0])}`
-      },
-      infoWithArea: function () {
-        return `${this.info()} a=${this.data[3]}`
-      }
-    }))
+    return this.projection.map((d, i) => makeXNode(d, i, scales, this.container.getShape()))
   }
 
   orderY () {
@@ -201,6 +168,48 @@ export class XNodeBuilder extends NodeBuilder {
 
   static Container (...args) {
     return new XContainer(...args)
+  }
+}
+
+function makeXYNode (nodeData, nodeIndex, scales) {
+  return {
+    label: nodeIndex,
+    x: scales.xScale(nodeIndex),
+    xTarget: scales.xScale(nodeIndex),
+    y: scales.yScale(nodeIndex),
+    yTarget: scales.yScale(nodeIndex),
+    radius: scales.radiusScale(nodeIndex),
+    color: scales.colorScale(nodeIndex),
+    textColor: scales.textColorScale(nodeIndex),
+    data: nodeData,
+    info: function () {
+      return `x=${_round2(this.data[0])}\ny=${_round2(this.data[1])}`
+    },
+    infoWithArea: function () {
+      return `${this.info()}\na=${this.data[3]}`
+    }
+  }
+}
+
+function makeXNode (nodeData, nodeIndex, scales, shape) {
+  const node = makeXYNode(nodeData, nodeIndex, scales)
+  node.fx = scales.xScale(nodeIndex)
+  node.y = shape.height / 2
+  node.yTarget = shape.height / 2
+  node.vy = 1
+  node.info = function () {
+    return `${_round2(this.data[0])}`
+  }
+  return node
+}
+
+function _colorUpdate (fromNode) {
+  return {
+    color: fromNode.color,
+    textColor: fromNode.textColor,
+    xTarget: fromNode.x,
+    yTarget: fromNode.y,
+    data: fromNode.data
   }
 }
 

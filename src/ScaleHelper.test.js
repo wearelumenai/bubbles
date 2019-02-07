@@ -43,7 +43,7 @@ test('ensure positive area becomes positive', () => {
 test('area ratio', () => {
   const scaleHelper = getScaleHelper()
   const ratio = scaleHelper._getAreaRatio(common.Areas)
-  expect(ratio).toBeGreaterThan(100)
+  expect(ratio).toBeGreaterThan(10)
   expect(ratio).toBeLessThan(1000)
 })
 

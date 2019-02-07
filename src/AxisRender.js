@@ -1,100 +1,118 @@
 import { AxisWidth, getXEndPoints, getYEndPoints } from './quantiles'
 
-export class AxisRender {
+function displayAxisValues (values, ticks) {
+  values.data(ticks).enter().append('text')
+    .attr('data-label', d => d.label)
+    .classed('value', true)
+    .attr('text-anchor', d => d.anchor)
+    .attr('fill', d => d.fill)
+    .attr('dx', d => d.horizontalShift)
+    .attr('dy', d => d.verticalShift)
+    .merge(values)
+    .attr('x', d => d.x)
+    .attr('y', d => d.y)
+    .text(d => d.text)
+}
+
+function makePath (values, ticks) {
+  let endPoints = [[ticks[0], ticks[ticks.length - 1]]]
+  return values.data(endPoints).enter().append('path')
+    .classed('axis', true)
+    .attr('fill', 'none')
+    .attr('stroke', 'black')
+    .attr('stroke-width', '3')
+    .merge(values)
+}
+
+class XAxisRender {
   constructor (container, percentileFactory, builder) {
-    this.container = container
-    this.percentileFactory = percentileFactory
+    this._container = container
+    this._percentileFactory = percentileFactory
     if (typeof builder !== 'undefined') {
-      this.clusters = builder.getNodes()
-      this.xOrder = builder.orderX()
-      this.yOrder = builder.orderY()
-      this._xPercentiles = this.percentileFactory._getXPercentile(this.clusters, this.xOrder)
-      this._yPercentiles = this.percentileFactory._getYPercentile(this.clusters, this.yOrder)
+      this._clusters = builder.getNodes()
+      this._xOrder = builder.orderX()
+      this._xPercentiles = this._percentileFactory._getXPercentile(this._clusters, this._xOrder)
     }
   }
 
-  displayAxis () {
-    this._displayXAxis()
-    this._displayYAxis()
-  }
-
-  _displayXAxis () {
-    const textLengths = this._getXLabels().nodes().map(e => e.getComputedTextLength())
+  displayXAxis () {
+    const textLengths = this.getXLabels().nodes().map(e => e.getComputedTextLength())
     const xLabels = this._xPercentiles.getAxisTicks(textLengths)
     if (xLabels.length > 0) {
-      AxisRender._displayAxisValues(this._getXLabels(), xLabels)
+      displayAxisValues(this.getXLabels(), xLabels)
     }
-    const xEndPoints = getXEndPoints(this.clusters, this.xOrder)
+    const xEndPoints = getXEndPoints(this._clusters, this._xOrder)
     if (xEndPoints.length > 0) {
-      AxisRender._displayXAxisLine(this._getXAxis(), xLabels)
+      XAxisRender.displayXAxisLine(this.getXAxis(), xLabels)
     }
-    this.container.selectXAxis('*').style('display', 'block')
+    this._container.selectXAxis('*').style('display', 'block')
   }
 
-  _displayYAxis () {
-    const textHeights = this._getYLabels().nodes().map(e => parseInt(window.getComputedStyle(e).fontSize, 10))
-    const yLabels = this._yPercentiles.getAxisTicks(textHeights)
-    if (yLabels.length > 0) {
-      AxisRender._displayAxisValues(this._getYLabels(), yLabels)
-    }
-    const yEndPoints = getYEndPoints(this.clusters, this.yOrder)
-    if (yEndPoints.length > 0) {
-      AxisRender._displayYAxisLine(this._getYAxis(), yLabels)
-    }
-    this.container.selectYAxis('*').style('display', 'block')
+  getXLabels () {
+    return this._container.selectXAxis('.value')
   }
 
-  _getXLabels () {
-    return this.container.selectXAxis('.value')
+  getXAxis () {
+    return this._container.selectXAxis('.axis')
   }
 
-  _getXAxis () {
-    return this.container.selectXAxis('.axis')
-  }
-
-  _getYLabels () {
-    return this.container.selectYAxis('.value')
-  }
-
-  _getYAxis () {
-    return this.container.selectYAxis('.axis')
-  }
-
-  static _displayAxisValues (values, ticks) {
-    values.data(ticks).enter().append('text')
-      .attr('data-label', d => d.label)
-      .classed('value', true)
-      .attr('text-anchor', d => d.anchor)
-      .attr('fill', d => d.fill)
-      .attr('dx', d => d.horizontalShift)
-      .attr('dy', d => d.verticalShift)
-      .merge(values)
-      .attr('x', d => d.x)
-      .attr('y', d => d.y)
-      .text(d => d.text)
-  }
-
-  static _displayXAxisLine (values, ticks) {
-    values = AxisRender.makePath(values, ticks)
+  static displayXAxisLine (values, ticks) {
+    values = makePath(values, ticks)
     values.attr('d', (ep) => {
       return `M ${ep[0].x} ${AxisWidth} V 0 H ${ep[1].x} V 7`
     })
   }
+}
 
-  static _displayYAxisLine (values, ticks) {
-    values = AxisRender.makePath(values, ticks).style('transform', 'translate(100%)')
+export class YAxisRender {
+  constructor (container, percentileFactory, builder) {
+    this._container = container
+    this._percentileFactory = percentileFactory
+    if (typeof builder !== 'undefined') {
+      this._clusters = builder.getNodes()
+      this._yOrder = builder.orderY()
+      this._yPercentiles = this._percentileFactory._getYPercentile(this._clusters, this._yOrder)
+    }
+  }
+
+  displayYAxis () {
+    const textHeights = this.getYLabels().nodes().map(e => parseInt(window.getComputedStyle(e).fontSize, 10))
+    const yLabels = this._yPercentiles.getAxisTicks(textHeights)
+    if (yLabels.length > 0) {
+      displayAxisValues(this.getYLabels(), yLabels)
+    }
+    const yEndPoints = getYEndPoints(this._clusters, this._yOrder)
+    if (yEndPoints.length > 0) {
+      YAxisRender.displayYAxisLine(this.getYAxis(), yLabels)
+    }
+    this._container.selectYAxis('*').style('display', 'block')
+  }
+
+  getYLabels () {
+    return this._container.selectYAxis('.value')
+  }
+
+  getYAxis () {
+    return this._container.selectYAxis('.axis')
+  }
+
+  static displayYAxisLine (values, ticks) {
+    values = makePath(values, ticks).style('transform', 'translate(100%)')
     values.attr('d', (ep) => {
       return `M ${-AxisWidth} ${ep[0].y} H 0 V ${ep[1].y} H ${-AxisWidth}`
     })
   }
+}
 
-  static makePath (values, ticks) {
-    let endPoints = [[ticks[0], ticks[ticks.length - 1]]]
-    return values.data(endPoints).enter().append('path')
-      .classed('axis', true)
-      .attr('fill', 'none')
-      .attr('stroke', 'black')
-      .attr('stroke-width', '3')
-      .merge(values)
+export class AxisRender {
+  constructor (container, percentileFactory, builder) {
+    this.percentileFactory = percentileFactory
+    this.xAxisRender = new XAxisRender(container, percentileFactory, builder)
+    this.yAxisRender = new YAxisRender(container, percentileFactory, builder)
+  }
+
+  displayAxis () {
+    this.xAxisRender.displayXAxis()
+    this.yAxisRender.displayYAxis()
   }
 }
