@@ -137,7 +137,7 @@ export class XYNodeBuilder extends NodeBuilder {
       textColor: scales.textColorScale(i),
       data: d,
       info: function () {
-        return `x=${_round2(this.data[0])} y=${_round2(this.data[1])}`
+        return `x=${_round2(this.data[0])}\ny=${_round2(this.data[1])}`
       },
       infoWithArea: function () {
         return `${this.info()} a=${this.data[3]}`

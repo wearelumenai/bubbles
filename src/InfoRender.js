@@ -16,7 +16,6 @@ export class InfoRender {
       const cluster = this.clusters[label]
       this._setText(cluster, info)
       this._setPosition(info, x, y)
-      info.style('display', 'block')
     } else {
       this._hideInfo(info)
     }
@@ -24,15 +23,15 @@ export class InfoRender {
 
   _setText (cluster, info) {
     const infoText = this.getInfoText(cluster)
-    info.text(infoText)
+    info.text(infoText).style('white-space', 'pre')
   }
 
   _setPosition (info, x, y) {
+    info.style('display', 'block')
     const boundingRect = info.node().getBoundingClientRect()
-    const left = this.container.boundX({ left: x - 40, width: boundingRect.width })
-    const top = this.container.boundY({ top: y, height: boundingRect.height })
-    info.style('left', left + 'px')
-    info.style('top', top + 'px')
+    const left = this.container.boundX({ left: x - boundingRect.width - 5, width: boundingRect.width })
+    const top = this.container.boundY({ top: y - 5, height: boundingRect.height })
+    info.style('left', `${left}px`).style('top', `${top}px`)
   }
 
   _hideInfo () {
