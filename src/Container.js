@@ -78,7 +78,6 @@ class Container extends Bounded {
     this._xAxisElement = layout._makeXAxis(this._containerElement, this._getYAxisWidth())
     this._yAxisElement = layout._makeYAxis(this._containerElement, this._getYAxisWidth())
     this._containerEvents = new ContainerEvents(listeners, this._chartElement)
-    this._init = true
   }
 
   static _setupContainer (containerSelector) {
@@ -95,7 +94,6 @@ class Container extends Bounded {
     this._xAxisElement = layout._setupXAxis(container._xAxisElement, this._getYAxisWidth())
     this._yAxisElement = layout._setupYAxis(container._yAxisElement, this._getYAxisWidth())
     this._containerEvents = new ContainerEvents(container._containerEvents, this._chartElement)
-    this._init = container._init
   }
 
   _initScales () {
@@ -125,14 +123,9 @@ class Container extends Bounded {
   }
 
   transition (fn) {
-    if (this._init) {
-      this._containerElement.style('opacity', 0)
-    }
+    this._containerElement.style('opacity', 0)
     fn()
-    if (this._init) {
-      this._containerElement.transition().duration(800).ease(d3.easeCircleIn).style('opacity', 1)
-      this._init = false
-    }
+    this._containerElement.transition().duration(800).ease(d3.easeCircleIn).style('opacity', 1)
   }
 
   sameBoundingRect (container) {

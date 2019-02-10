@@ -28,13 +28,7 @@ export function update (bubbles, Builder, data) {
 function updateBubbles (bubbles, builder) {
   const container = builder.getContainer()
   const updatedBuilder = tryUpdateBuilder(bubbles, builder)
-  const updated = bubbles.update(container, updatedBuilder)
-  if (bubbles.isActive()) {
-    bubbles.stop()
-    return updated.optimizeThenMove()
-  } else {
-    return updated.optimizeThenDraw()
-  }
+  return bubbles.update(container, updatedBuilder)
 }
 
 function tryUpdateBuilder (bubbles, builder) {
@@ -63,14 +57,11 @@ class Bubbles {
     return this.container
   }
 
-  isActive () {
-    return false
-  }
-
   update (container, builder) {
     const percentileFactory = factoryWithRange()
     const getInfoText = simpleInfoText
-    return ActiveBubbles.create(container, builder, percentileFactory, getInfoText)
+    const updated = ActiveBubbles.create(container, builder, percentileFactory, getInfoText)
+    return updated.optimizeThenDraw()
   }
 }
 
@@ -87,14 +78,12 @@ class ActiveBubbles extends Bubbles {
     }
   }
 
-  isActive () {
-    return true
-  }
-
   update (container, builder) {
+    this.stop()
     const percentileFactory = this.axisRender.percentileFactory
     const getInfoText = this.infoRender.getInfoText
-    return ActiveBubbles.create(container, builder, percentileFactory, getInfoText)
+    const updated = ActiveBubbles.create(container, builder, percentileFactory, getInfoText)
+    return updated.optimizeThenMove()
   }
 
   getClustersAtPosition (x, y) {
