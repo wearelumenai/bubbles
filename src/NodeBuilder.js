@@ -20,9 +20,15 @@ class NodeBuilder {
     const otherNodes = builder.getNodes()
     const thisNodes = this.getNodes()
     const updatedNodes = thisNodes.map((n, i) => {
-      const colorUpdate = _colorUpdate(otherNodes[i])
-      const radiusUpdate = { radius: otherNodes[i].radius }
-      return Object.assign({}, n, colorUpdate, radiusUpdate)
+      const radiusUpdate = {
+        radius: otherNodes[i].radius,
+        color: otherNodes[i].color,
+        textColor: otherNodes[i].textColor,
+        xTarget: otherNodes[i].x,
+        yTarget: otherNodes[i].y,
+        data: otherNodes[i].data
+      }
+      return Object.assign({}, n, radiusUpdate)
     })
     return builder._updateNodes(updatedNodes)
   }
@@ -31,7 +37,13 @@ class NodeBuilder {
     const otherNodes = builder.getNodes()
     const thisNodes = this.getNodes()
     const updatedNodes = thisNodes.map((n, i) => {
-      const colorUpdate = _colorUpdate(otherNodes[i])
+      const colorUpdate = {
+        color: otherNodes[i].color,
+        textColor: otherNodes[i].textColor,
+        xTarget: n.x,
+        yTarget: n.y,
+        data: otherNodes[i].data
+      }
       return Object.assign({}, n, colorUpdate)
     })
     return builder._updateNodes(updatedNodes)
@@ -201,16 +213,6 @@ function makeXNode (nodeData, nodeIndex, scales, shape) {
     return `${_round2(this.data[0])}`
   }
   return node
-}
-
-function _colorUpdate (fromNode) {
-  return {
-    color: fromNode.color,
-    textColor: fromNode.textColor,
-    xTarget: fromNode.x,
-    yTarget: fromNode.y,
-    data: fromNode.data
-  }
 }
 
 function _round2 (number) {
