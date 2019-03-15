@@ -115,8 +115,8 @@ function assertColorScale (colorScale) {
   const color0 = d3.color(colorScale(0))
   const color1 = d3.color(colorScale(1))
   const color2 = d3.color(colorScale(2))
-  expect(color2.r < color1.r || color2.g < color1.g || color2.b < color1.b).toBe(true)
-  expect(color2.r > color0.r || color2.g > color0.g || color2.b > color0.b).toBe(true)
+  expect(color2.r !== color1.r || color2.g !== color1.g || color2.b !== color1.b).toBe(true)
+  expect(color2.r !== color0.r || color2.g !== color0.g || color2.b !== color0.b).toBe(true)
 }
 
 function getScaleHelper () {
