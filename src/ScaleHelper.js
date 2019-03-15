@@ -46,7 +46,10 @@ export class ScaleHelper {
   _getColorScale (color) {
     let domain = ScaleHelper._range(color)
     domain = [domain[0], (domain[0] + domain[1]) / 2, domain[1]]
-    const scale = d3.scalePow().exponent(colorScaleExponent).domain(domain).range(['green', 'yellow', 'red'])
+    // const scale = d3.scalePow().exponent(colorScaleExponent).domain(domain).range(['green', 'yellow', 'red'])
+    // const scale = d3.scalePow().exponent(colorScaleExponent).domain(domain).range(['#87E990', '#FEF86C', '#FF6347'])
+    // const scale = d3.scalePow().exponent(colorScaleExponent).domain(domain).range(['#87E990', '#CECECE', '#BD33A4'])
+    const scale = d3.scalePow().exponent(colorScaleExponent).domain(domain).range(['#D8BFD8', '#DA70D6', '#BD33A4'])
     return (i) => scale(color[i])
   }
 
