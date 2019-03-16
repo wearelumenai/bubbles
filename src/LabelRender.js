@@ -8,8 +8,11 @@ export class LabelRender {
     }
   }
 
-  displayLabels () {
-    const labels = this._getLabels().data(this.clusters)
+  displayLabels (labels) {
+    if (typeof labels === 'undefined') {
+      labels = this._getLabels().data(this.clusters)
+      labels.exit().remove()
+    }
     let newLabels = labels.enter()
       .append('text')
       .style('pointer-events', 'none')
@@ -20,13 +23,12 @@ export class LabelRender {
       .attr('id', n => `label${n.label}`)
       .text(i => i.label)
     LabelRender._updateLabels(newLabels.merge(labels))
-    labels.exit().remove()
   }
 
   moveLabels (transition) {
     const labels = this._getLabels().data(this.clusters)
     labels.exit().remove()
-    const labelTransition = transition(labels).on('end', () => this.displayLabels())
+    const labelTransition = transition(labels).on('end', () => this.displayLabels(labels))
     LabelRender._updateLabels(labelTransition)
   }
 

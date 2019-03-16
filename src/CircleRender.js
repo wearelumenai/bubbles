@@ -8,8 +8,11 @@ export class CircleRender {
     }
   }
 
-  drawCircles () {
-    const circles = this._getCircles().data(this.clusters)
+  drawCircles (circles) {
+    if (typeof circles === 'undefined') {
+      circles = this._getCircles().data(this.clusters)
+      circles.exit().remove()
+    }
     let newCircles = circles.enter()
       .append('circle')
       .style('pointer-events', 'none')
@@ -17,13 +20,12 @@ export class CircleRender {
       .attr('data-label', n => n.label)
       .attr('id', n => `cluster${n.label}`)
     CircleRender._updateCircles(newCircles.merge(circles))
-    circles.exit().remove()
   }
 
   moveCircles (transition) {
     const circles = this._getCircles().data(this.clusters)
     circles.exit().remove()
-    const circleTransition = transition(circles).on('end', () => this.drawCircles())
+    const circleTransition = transition(circles).on('end', () => this.drawCircles(circles))
     CircleRender._updateCircles(circleTransition)
   }
 
