@@ -1,7 +1,7 @@
 import * as d3 from 'd3'
 
 export function getTransition () {
-  return o => o.transition().ease(d3.easeSinOut).duration(1000)
+  return o => o.transition().ease(d3.easeSinOut).duration(800)
 }
 
 export function optimizeLayout (clusters, container) {
