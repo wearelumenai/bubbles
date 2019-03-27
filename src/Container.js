@@ -122,12 +122,6 @@ class Container extends Bounded {
     this._containerEvents.on('mouseout', onOut)
   }
 
-  transition (fn) {
-    this._containerElement.style('opacity', 0)
-    fn()
-    this._containerElement.transition().duration(800).ease(d3.easeCircleIn).style('opacity', 1)
-  }
-
   sameBoundingRect (container) {
     return container._chartBoundingRect.x === this._chartBoundingRect.x &&
       container._chartBoundingRect.y === this._chartBoundingRect.y &&

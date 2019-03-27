@@ -8,7 +8,7 @@ export class CircleRender {
     }
   }
 
-  drawCircles (circles) {
+  drawCircles (transition, circles) {
     if (typeof circles === 'undefined') {
       circles = this._getCircles().data(this.clusters)
       circles.exit().remove()
@@ -17,16 +17,20 @@ export class CircleRender {
       .append('circle')
       .style('pointer-events', 'none')
       .classed('cluster', true)
+      .style('opacity', 0)
       .attr('data-label', n => n.label)
       .attr('id', n => `cluster${n.label}`)
-    CircleRender._updateCircles(newCircles.merge(circles))
+      .attr('r', n => n.radius)
+      .attr('fill', n => n.color)
+      .attr('cx', n => n.x)
+      .attr('cy', n => n.y)
+    CircleRender._updateCircles(transition(newCircles.merge(circles)))
   }
 
   moveCircles (transition) {
     const circles = this._getCircles().data(this.clusters)
-    circles.exit().remove()
-    const circleTransition = transition(circles).on('end', () => this.drawCircles(circles))
-    CircleRender._updateCircles(circleTransition)
+    transition(circles.exit()).style('opacity', 0).remove()
+    this.drawCircles(transition, circles)
   }
 
   _getCircles () {
@@ -55,6 +59,7 @@ export class CircleRender {
       .each(n => {
         n.tick = n.tick ? n.tick + 1 : 1
       })
+      .style('opacity', 1)
       .attr('r', n => n.radius)
       .attr('fill', n => n.color)
       .attr('cx', n => n.x)

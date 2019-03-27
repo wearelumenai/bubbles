@@ -8,7 +8,7 @@ export class LabelRender {
     }
   }
 
-  displayLabels (labels) {
+  displayLabels (transition, labels) {
     if (typeof labels === 'undefined') {
       labels = this._getLabels().data(this.clusters)
       labels.exit().remove()
@@ -17,19 +17,22 @@ export class LabelRender {
       .append('text')
       .style('pointer-events', 'none')
       .classed('label', true)
-      .attr('text-anchor', 'middle')
-      .attr('dy', '0.4em')
+      .style('opacity', 0)
       .attr('data-label', n => n.label)
       .attr('id', n => `label${n.label}`)
+      .attr('text-anchor', 'middle')
+      .attr('dy', '0.4em')
+      .attr('x', n => n.x)
+      .attr('y', n => n.y)
+      .attr('fill', n => n.textColor)
       .text(i => i.label)
-    LabelRender._updateLabels(newLabels.merge(labels))
+    LabelRender._updateLabels(transition(newLabels.merge(labels)))
   }
 
   moveLabels (transition) {
     const labels = this._getLabels().data(this.clusters)
-    labels.exit().remove()
-    const labelTransition = transition(labels).on('end', () => this.displayLabels(labels))
-    LabelRender._updateLabels(labelTransition)
+    transition(labels.exit()).style('opacity', 0).remove()
+    this.displayLabels(transition, labels)
   }
 
   _getLabels () {
@@ -55,6 +58,7 @@ export class LabelRender {
 
   static _updateLabels (labels) {
     labels
+      .style('opacity', 1)
       .attr('x', n => n.x)
       .attr('y', n => n.y)
       .attr('fill', n => n.textColor)

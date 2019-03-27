@@ -96,9 +96,7 @@ class ActiveBubbles extends Bubbles {
 
   optimizeThenDraw () {
     this._collideSimulation = optimizeLayout(this.clusters, this.container)
-    this.container.transition(() => {
-      this._drawClusters()
-    })
+    this._drawClusters()
     return this
   }
 
@@ -109,8 +107,8 @@ class ActiveBubbles extends Bubbles {
   }
 
   _drawClusters () {
-    this.circleRender.drawCircles()
-    this.labelRender.displayLabels()
+    this.circleRender.drawCircles(getTransition())
+    this.labelRender.displayLabels(getTransition())
     this.axisRender.displayAxis()
   }
 
