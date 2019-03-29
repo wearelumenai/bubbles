@@ -59,7 +59,7 @@ export class CircleRender {
       .each(n => {
         n.tick = n.tick ? n.tick + 1 : 1
       })
-      .style('opacity', 1)
+      .style('opacity', null)
       .attr('r', n => n.radius)
       .attr('fill', n => n.color)
       .attr('cx', n => n.x)

@@ -58,7 +58,7 @@ export class LabelRender {
 
   static _updateLabels (labels) {
     labels
-      .style('opacity', 1)
+      .style('opacity', null)
       .attr('x', n => n.x)
       .attr('y', n => n.y)
       .attr('fill', n => n.textColor)
