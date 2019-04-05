@@ -49,7 +49,9 @@ export class ScaleHelper {
     // const scale = d3.scalePow().exponent(colorScaleExponent).domain(domain).range(['green', 'yellow', 'red'])
     // const scale = d3.scalePow().exponent(colorScaleExponent).domain(domain).range(['#87E990', '#FEF86C', '#FF6347'])
     // const scale = d3.scalePow().exponent(colorScaleExponent).domain(domain).range(['#87E990', '#CECECE', '#BD33A4'])
-    const scale = d3.scalePow().exponent(colorScaleExponent).domain(domain).range(['#D8BFD8', '#DA70D6', '#BD33A4'])
+    // const scale = d3.scalePow().exponent(colorScaleExponent).domain(domain).range(['#D8BFD8', '#DA70D6', '#BD33A4'])
+    // const scale = d3.scalePow().exponent(colorScaleExponent).domain(domain).range(['#00C493', '#00C4B6', '#00B0C4'])
+    const scale = d3.scalePow().exponent(colorScaleExponent).domain(domain).range(['#FF8CB7', '#EB3660', '#AE32B8'])
     return (i) => scale(color[i])
   }
 
