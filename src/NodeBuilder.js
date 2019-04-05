@@ -4,7 +4,7 @@ class NodeBuilder {
   constructor (projection, container, nodes) {
     this.container = container
     this.projection = projection
-    const unzipped = this.projection[0].map((col, i) => this.projection.map(row => row[i]))
+    const unzipped = this.projection.data[0].map((col, i) => this.projection.data.map(row => row[i]))
     this.x = unzipped[0]
     this.y = unzipped[1]
     this.colors = unzipped[2]
@@ -14,6 +14,10 @@ class NodeBuilder {
 
   getContainer () {
     return this.container
+  }
+
+  getDimensions () {
+    return this.projection.dimensions
   }
 
   updateRadiusAndColor (builder) {
@@ -139,7 +143,7 @@ export class XYNodeBuilder extends NodeBuilder {
 
   _makeNodes () {
     const scales = this.container.getScales(this.x, this.y, this.areas, this.colors)
-    return this.projection.map((d, i) => (makeXYNode(d, i, scales)))
+    return this.projection.data.map((d, i) => (makeXYNode(d, i, scales)))
   }
 
   static Container (...args) {
@@ -171,7 +175,7 @@ export class XNodeBuilder extends NodeBuilder {
 
   _makeNodes () {
     const scales = this.container.getScales(this.x, this.y, this.areas, this.colors)
-    return this.projection.map((d, i) => makeXNode(d, i, scales, this.container.getShape()))
+    return this.projection.data.map((d, i) => makeXNode(d, i, scales, this.container.getShape()))
   }
 
   orderY () {

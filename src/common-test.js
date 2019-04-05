@@ -9,6 +9,7 @@ export const Y = [14, 12, 9, 7, 17, 10, 11]
 export const Colors = [3, 8, 12, 15, 4, 5, 1]
 export const Areas = [16, 49, 25, 36, 16, 49, 9]
 export const Rect = { width: 400, height: 300, left: 0 }
+export const dimensions = ['wisdom', 'beauty', 'intelligence', 'loyalty']
 
 export function getProjection () {
   return X.map((x, i) => [x, Y[i], Colors[i], Areas[i]])

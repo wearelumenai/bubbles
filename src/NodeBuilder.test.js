@@ -93,7 +93,7 @@ test('update colors', () => {
   const builder0 = getXNodeBuilder()
   const builder1 = getXNodeBuilder()
   builder1.colors[0] = 0
-  builder1.projection[0][2] = 0
+  builder1.projection.data[0][2] = 0
   builder1.getNodes()[0].color = black
   const builder2 = builder0.updateColors(builder1)
   assertSameBuilders(builder1, builder2)
@@ -104,10 +104,10 @@ test('update radius and colors', () => {
   const builder0 = getXYNodeBuilder()
   const builder1 = getXYNodeBuilder()
   builder1.areas[0] = 1000
-  builder1.projection[0][3] = 1000
+  builder1.projection.data[0][3] = 1000
   builder1.getNodes()[0].radius = 400
   builder1.colors[0] = 0
-  builder1.projection[0][2] = 0
+  builder1.projection.data[0][2] = 0
   builder1.getNodes()[0].color = black
   const builder2 = builder0.updateRadiusAndColor(builder1)
   assertSameBuilders(builder1, builder2)
@@ -123,7 +123,7 @@ test('update scales', () => {
   const nodes0 = builder0.getNodes()
   const nodes1 = builder1.getNodes()
   const nodes2 = builder2.getNodes()
-  for (let i = 0; i < builder0.projection.length; i++) {
+  for (let i = 0; i < builder0.projection.data.length; i++) {
     expect(nodes2[i].x).toBeCloseTo(nodes0[i].x / 2, 6)
     expect(nodes2[i].y).toBeCloseTo(nodes0[i].y / 3, 6)
     expect(nodes2[i].xTarget).toEqual(nodes1[i].xTarget)
@@ -152,16 +152,22 @@ test('get node at position', () => {
   expect(builder.getNodesAtPosition(common.Rect.width - 5, common.Rect.height - 5)).toEqual([])
 })
 
+test('get dimension names', () => {
+  const builder = getXYNodeBuilder()
+  const dimensions = builder.getDimensions()
+  expect(dimensions).toEqual(common.dimensions)
+})
+
 function assertSameBuilders (builder1, builder2) {
   expect(Object.getPrototypeOf(builder1)).toBe(Object.getPrototypeOf(builder2))
   const nodes1 = builder1.getNodes()
   const nodes2 = builder2.getNodes()
-  for (let i = 0; i < builder1.projection.length; i++) {
+  for (let i = 0; i < builder1.projection.data.length; i++) {
     expect(builder2.colors[i]).toEqual(builder1.colors[i])
     expect(builder2.areas[i]).toEqual(builder1.areas[i])
     expect(builder2.x[i]).toEqual(builder1.x[i])
     expect(builder2.y[i]).toEqual(builder1.y[i])
-    expect(builder2.projection[i]).toEqual(builder1.projection[i])
+    expect(builder2.projection.data[i]).toEqual(builder1.projection.data[i])
     expect(nodes2[i].color).toEqual(nodes1[i].color)
     expect(nodes2[i].radius).toEqual(nodes1[i].radius)
     expect(nodes2[i].xTarget).toEqual(nodes1[i].xTarget)
@@ -171,11 +177,13 @@ function assertSameBuilders (builder1, builder2) {
 }
 
 function getXNodeBuilder () {
-  return new XNodeBuilder(common.getProjection(), new XContainer('#bubbles-chart', {}))
+  let projection = { data: common.getProjection(), dimensions: common.dimensions }
+  return new XNodeBuilder(projection, new XContainer('#bubbles-chart', {}))
 }
 
 function getXYNodeBuilder () {
-  return new XYNodeBuilder(common.getProjection(), new XYContainer('#bubbles-chart', {}))
+  let projection = { data: common.getProjection(), dimensions: common.dimensions }
+  return new XYNodeBuilder(projection, new XYContainer('#bubbles-chart', {}))
 }
 
 module.exports = {
