@@ -43,6 +43,7 @@ export function _makeXAxis (container, left) {
     .style('left', '0')
     .style('height', '100%')
     .style('width', '100%')
+    .style('overflow', 'visible')
   return xAxis
 }
 
@@ -65,6 +66,7 @@ export function _makeYAxis (container, width) {
     .style('left', '0')
     .style('height', '100%')
     .style('width', '100%')
+    .style('overflow', 'visible')
   return yAxis
 }
 

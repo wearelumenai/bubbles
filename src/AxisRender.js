@@ -21,23 +21,29 @@ class XAxisRender {
       this._clusters = builder.getNodes()
       this._xOrder = builder.orderX()
       this._xPercentiles = this._percentileFactory._getXPercentile(this._clusters, this._xOrder)
+      this._label = builder.getDimensions().x
     }
   }
 
   displayXAxis () {
-    const textLengths = this.getXLabels().nodes().map(e => e.getComputedTextLength())
+    const textLengths = this.getXValues().nodes().map(e => e.getComputedTextLength())
     const xLabels = this._xPercentiles.getAxisTicks(textLengths)
     if (xLabels.length > 0) {
-      displayAxisLabels(this.getXLabels(), xLabels)
+      displayAxisValues(this.getXValues(), xLabels)
     }
     const xEndPoints = getXEndPoints(this._clusters, this._xOrder)
     if (xEndPoints.length > 0) {
       XAxisRender.displayXAxisLine(this.getXAxis(), xLabels)
     }
+    XAxisRender.displayXLabel(this.getXLabel(), this._label)
     this._container.selectXAxis('*').style('display', 'block')
   }
 
-  getXLabels () {
+  getXLabel () {
+    return this._container.selectXAxis('.label')
+  }
+
+  getXValues () {
     return this._container.selectXAxis('.value')
   }
 
@@ -51,6 +57,16 @@ class XAxisRender {
       return `M ${ep[0].x} ${AxisWidth} V 0 H ${ep[1].x} V 7`
     })
   }
+
+  static displayXLabel (nodes, label) {
+    nodes.data([label]).enter().append('text')
+      .classed('label', true)
+      .attr('x', '100%')
+      .attr('dy', -AxisWidth)
+      .attr('text-anchor', 'end')
+      .merge(nodes)
+      .text(label)
+  }
 }
 
 export class YAxisRender {
@@ -61,23 +77,29 @@ export class YAxisRender {
       this._clusters = builder.getNodes()
       this._yOrder = builder.orderY()
       this._yPercentiles = this._percentileFactory._getYPercentile(this._clusters, this._yOrder)
+      this._label = builder.getDimensions().y
     }
   }
 
   displayYAxis () {
-    const textHeights = this.getYLabels().nodes().map(e => parseInt(window.getComputedStyle(e).fontSize, 10))
+    const textHeights = this.getYValues().nodes().map(e => parseInt(window.getComputedStyle(e).fontSize, 10))
     const yLabels = this._yPercentiles.getAxisTicks(textHeights)
     if (yLabels.length > 0) {
-      displayAxisLabels(this.getYLabels(), yLabels)
+      displayAxisValues(this.getYValues(), yLabels)
     }
     const yEndPoints = getYEndPoints(this._clusters, this._yOrder)
     if (yEndPoints.length > 0) {
       YAxisRender.displayYAxisLine(this.getYAxis(), yLabels)
     }
+    YAxisRender.displayYLabel(this.getYLabel(), this._label)
     this._container.selectYAxis('*').style('display', 'block')
   }
 
-  getYLabels () {
+  getYLabel () {
+    return this._container.selectYAxis('.label')
+  }
+
+  getYValues () {
     return this._container.selectYAxis('.value')
   }
 
@@ -91,17 +113,27 @@ export class YAxisRender {
       return `M ${-AxisWidth} ${ep[0].y} H 0 V ${ep[1].y} H ${-AxisWidth}`
     })
   }
+
+  static displayYLabel (nodes, label) {
+    nodes.data([label]).enter().append('text')
+      .classed('label', true)
+      .merge(nodes)
+      .attr('x', '100%')
+      .attr('dx', AxisWidth)
+      .attr('dy', '0.6em')
+      .text(label)
+  }
 }
 
-function displayAxisLabels (values, ticks) {
-  values.data(ticks).enter().append('text')
+function displayAxisValues (nodes, values) {
+  nodes.data(values).enter().append('text')
     .attr('data-label', d => d.label)
     .classed('value', true)
     .attr('text-anchor', d => d.anchor)
     .attr('fill', d => d.fill)
     .attr('dx', d => d.horizontalShift)
     .attr('dy', d => d.verticalShift)
-    .merge(values)
+    .merge(nodes)
     .attr('x', d => d.x)
     .attr('y', d => d.y)
     .text(d => d.text)
