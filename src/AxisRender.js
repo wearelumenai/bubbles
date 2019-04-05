@@ -119,8 +119,8 @@ export class YAxisRender {
       .classed('label', true)
       .merge(nodes)
       .attr('x', '100%')
-      .attr('dx', AxisWidth)
-      .attr('dy', '0.6em')
+      .attr('dx', -AxisWidth)
+      .attr('dy', '-0.4em')
       .text(label)
   }
 }
