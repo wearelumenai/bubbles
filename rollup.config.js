@@ -6,9 +6,9 @@ export default {
   input: 'index.js',
   output: {
     file: 'bubbles.js',
-    format: 'iife',
+    format: 'umd',
     name: 'bub',
-    compact: true,
+    compact: true
   },
   plugins: [
     resolve(),

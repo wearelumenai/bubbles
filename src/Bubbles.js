@@ -7,22 +7,22 @@ import { InfoRender, simpleInfoText } from './InfoRender.js'
 import { factoryWithRange } from './quantiles'
 import { getTransition, optimizeLayout } from './optimize'
 
-export function create (containerSelector, Builder, listeners) {
-  let container = Builder.Container(containerSelector, listeners)
+export function create (containerSelector, builder, listeners) {
+  let container = builder.Container(containerSelector, listeners)
   return new Bubbles(container)
 }
 
-export function resize (bubbles) {
-  if (typeof bubbles.builder !== 'undefined') {
-    const container = bubbles.container.resize()
-    const builder = bubbles.builder.updateContainer(container)
-    return updateBubbles(bubbles, builder)
+export function resize (chart) {
+  if (typeof chart.builder !== 'undefined') {
+    const container = chart.container.resize()
+    const builder = chart.builder.updateContainer(container)
+    return updateBubbles(chart, builder)
   }
 }
 
-export function update (bubbles, Builder, data) {
-  const builder = new Builder(data, bubbles.getContainer())
-  return updateBubbles(bubbles, builder)
+export function update (chart, Builder, data) {
+  const builder = new Builder(data, chart.getContainer())
+  return updateBubbles(chart, builder)
 }
 
 function updateBubbles (bubbles, builder) {
