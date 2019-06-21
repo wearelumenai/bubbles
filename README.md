@@ -19,7 +19,7 @@ The bubbles are positioned vertically in order to avoid overlays.
 `XChart` for 4D charts: 
 elements are spread horizontally and vertically following the first and the second dimension,
 the two other dimensions are represented by bubbles color and area.
-The bubbles are repositioned in order to avoid overlays (the position may not be accurate).
+The bubbles are repositioned in order to avoid overlays (the position may be altered).
 ![4D bubble chart](XYChart.png)
 
 X and Y axis have square root scales which is a generally good compromise 
