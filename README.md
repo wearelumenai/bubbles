@@ -109,7 +109,8 @@ Once a chart has been created, it can be updated with new data:
 const elements = [
   [1.4, 3.0, 4.2, 3.1],
   [20.4, 23.3, 30.2, 21.8],
-  [1.5, 34.6, 19.9, 10.5]]
+  [1.5, 34.6, 19.9, 10.5]
+]
 const columnNames = ["lorem", "ipsum", "dolor", "sit"]
 viz = bub.bubbles.update(viz, bub.XYChart, {elements, columnNames});
 ```
@@ -119,27 +120,25 @@ Data is always a 4 columns matrix, for :
  1. the area of the bubbles
  1. the color of the bubbles
  
-If the chart type is set to `XChart`, the second column is ignored and the bubbles
-are disposed on a single axis.
+If the chart type is set to `XChart`, the second column is ignored.
 
 When the container size changes, the chart can be resized:
 ```javascript
 viz = bub.bubbles.resize(viz)
 ```
 
-Not that each time something is updated, a new `Bubbles` instance is produced, 
+Not that when factory methods are called, a new `Bubbles` instance is produced, 
 thus the variable referencing the instance must be updated (`viz` in our examples).
 Under the hood, the DOM elements are reused in order to optimize the display.
 
-The `Bubbles` instance expose a method name `getClustersAtPosition` that takes
-two parameters, `x` and `y`, and returns the label of the cluster at the given position.
+The `Bubbles` instance exposes a method named `getClustersAtPosition` that takes
+two parameters, `x` and `y`, and returns the labels of the clusters at the given position.
 This is useful in the `"click"` listener passed to the `create` factory method :
 
-The following line of code creates a chart in the div which id is `viz` :
 ```javascript
 var viz = bub.bubbles.create("#viz", bub.XYChart, {
   "click": (x, y) => {
-    [label] = getClustersAtPosition(x, y)
+    [label] = viz.getClustersAtPosition(x, y)
     alert(`the cluster label is ${label}`)
   }
 });
