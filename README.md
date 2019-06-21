@@ -5,7 +5,7 @@
 # Introduction
 
 The library allows to visualize 3D or 4D matrix in a browser.
-We use it for displaying the result of a clustering algorithm.
+We use it to display the result of a clustering algorithm.
 Each row of the matrix is represented as a filled circle or a "bubble".
 For us a bubble represents a cluster.
 Two types of charts are available:
@@ -23,7 +23,7 @@ The bubbles are repositioned in order to avoid overlays (the position may be alt
 ![4D bubble chart](XYChart.png)
 
 X and Y axis have square root scales which is a generally good compromise 
-if few bubbles are far away the other. This might happen with clustering results.
+if few bubbles are far away the others. This might happen with clustering results.
 
 The area is also scaled to avoid very small or huge bubbles.
 Generally we bind the bubble area to cluster cardinality.
@@ -130,6 +130,23 @@ viz = bub.bubbles.resize(viz)
 Not that each time something is updated, a new `Bubbles` instance is produced, 
 thus the variable referencing the instance must be updated (`viz` in our examples).
 Under the hood, the DOM elements are reused in order to optimize the display.
+
+The `Bubbles` instance expose a method name `getClustersAtPosition` that takes
+two parameters, `x` and `y`, and returns the label of the cluster at the given position.
+This is useful in the `"click"` listener passed to the `create` factory method :
+
+The following line of code creates a chart in the div which id is `viz` :
+```javascript
+var viz = bub.bubbles.create("#viz", bub.XYChart, {
+  "click": (x, y) => {
+    [label] = getClustersAtPosition(x, y)
+    alert(`the cluster label is ${label}`)
+  }
+});
+```
+
+_Note:_ if clusters overlay (which is not the case in the current version), multiple
+labels may be returned, in upper-most to lower-most order.
 
 # CSS classes
 
