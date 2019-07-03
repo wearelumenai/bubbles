@@ -26,7 +26,7 @@ export class ScaleHelper {
     const minArea = domain[0] * ratio
     const maxArea = domain[1] * ratio
     const scale = d3.scaleLinear().domain(domain).range([minArea, maxArea])
-    return (i) => Math.sqrt(scale(positiveArea[i]) / Math.PI)
+    return (i) => area[i] === 0 ? 0 : Math.sqrt(scale(positiveArea[i]) / Math.PI)
   }
 
   _getXScale (x, radiusScale) {
@@ -88,8 +88,14 @@ export class ScaleHelper {
 
   static _getBoundRadius (values, radiusScale) {
     const { argmin, argmax } = ScaleHelper._argrange(values)
-    const lowerRadius = radiusScale(argmin)
-    const upperRadius = radiusScale(argmax)
+    let upperRadius = radiusScale(argmax)
+    if (upperRadius < 12) {
+      upperRadius = 12
+    }
+    let lowerRadius = radiusScale(argmin)
+    if (lowerRadius < 12) {
+      lowerRadius = 12
+    }
     return { lowerRadius, upperRadius }
   }
 
@@ -97,8 +103,12 @@ export class ScaleHelper {
     const minmax = [0, 0]
 
     values.forEach((value, i) => {
-      if (values[minmax[0]] > value) { minmax[0] = i }
-      if (values[minmax[1]] < value) { minmax[1] = i }
+      if (values[minmax[0]] > value) {
+        minmax[0] = i
+      }
+      if (values[minmax[1]] < value) {
+        minmax[1] = i
+      }
     })
 
     return { argmin: minmax[0], argmax: minmax[1] }
