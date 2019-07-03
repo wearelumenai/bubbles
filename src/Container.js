@@ -117,6 +117,10 @@ class Container extends Bounded {
     this._containerEvents.on('click', action)
   }
 
+  onDblclick (action) {
+    this._containerEvents.on('dblclick', action)
+  }
+
   onMouse (onMove, onOut) {
     this._containerEvents.on('mousemove', onMove)
     this._containerEvents.on('mouseout', onOut)
@@ -133,6 +137,7 @@ class Container extends Bounded {
     return {
       selectChart: (selector) => this._containerElement.select('svg').selectAll(selector),
       onClick: (action) => this.onClick(action),
+      onDblclick: (action) => this.onDblclick(action),
       boundX: (selector) => this.boundX(selector),
       boundY: (selector) => this.boundY(selector)
     }

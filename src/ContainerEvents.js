@@ -41,7 +41,7 @@ export class ContainerEvents {
 
   _doEvent (event) {
     let args = []
-    if (event === 'click') {
+    if (event === 'click' || event === 'dblclick') {
       args = this.getMousePosition()
     } else if (event === 'mousemove') {
       args = this.getMousePosition()
